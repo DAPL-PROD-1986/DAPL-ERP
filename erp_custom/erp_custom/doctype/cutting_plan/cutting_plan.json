@@ -1,0 +1,196 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "DAPL-CP-.###./.YY",
+ "creation": "2026-01-19 18:52:49.822088",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "cutting_no",
+  "column_break_wwxj",
+  "date",
+  "column_break_unjj",
+  "job_no",
+  "responsibility_section",
+  "column_break_jgxj",
+  "drawn_by",
+  "drawn_date",
+  "column_break_tmqp",
+  "checked_by",
+  "checked_date",
+  "column_break_azax",
+  "approved_by",
+  "approved_date",
+  "section_break_mort",
+  "cutting_plan_plate_details",
+  "section_break_esfk",
+  "cutting_plan_item",
+  "amended_from",
+  "attachment_tab",
+  "cutting_diagram",
+  "diagram_preview",
+  "connections_tab"
+ ],
+ "fields": [
+  {
+   "fieldname": "cutting_no",
+   "fieldtype": "Data",
+   "label": "Cutting Plan ID",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_wwxj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_esfk",
+   "fieldtype": "Section Break",
+   "label": "Item Details"
+  },
+  {
+   "fieldname": "cutting_plan_item",
+   "fieldtype": "Table",
+   "label": "Cutting Plan Item",
+   "options": "Cutting Plan Item"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Approved By"
+  },
+  {
+   "fieldname": "drawn_by",
+   "fieldtype": "Data",
+   "label": "Uploaded By"
+  },
+  {
+   "fieldname": "responsibility_section",
+   "fieldtype": "Section Break",
+   "label": "Responsibility"
+  },
+  {
+   "fieldname": "column_break_jgxj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Cutting Plan",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_tmqp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "checked_by",
+   "fieldtype": "Data",
+   "label": "Checked By"
+  },
+  {
+   "fieldname": "approved_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Approved Date"
+  },
+  {
+   "fieldname": "drawn_date",
+   "fieldtype": "Date",
+   "label": "Uploaded Date"
+  },
+  {
+   "fieldname": "checked_date",
+   "fieldtype": "Date",
+   "label": "Checked Date"
+  },
+  {
+   "fieldname": "column_break_azax",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_mort",
+   "fieldtype": "Section Break",
+   "label": "Plate Details"
+  },
+  {
+   "fieldname": "job_no",
+   "fieldtype": "Table MultiSelect",
+   "hidden": 1,
+   "label": "Job No",
+   "options": "Cutting Plan Job No"
+  },
+  {
+   "fieldname": "column_break_unjj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cutting_plan_plate_details",
+   "fieldtype": "Table",
+   "label": "Cutting Plan Plate Details",
+   "options": "Cutting Plan Plate Details"
+  },
+  {
+   "fieldname": "attachment_tab",
+   "fieldtype": "Tab Break",
+   "label": "Attachment"
+  },
+  {
+   "fieldname": "cutting_diagram",
+   "fieldtype": "Attach",
+   "label": "Cutting Diagram"
+  },
+  {
+   "fieldname": "diagram_preview",
+   "fieldtype": "HTML",
+   "label": "Diagram Preview"
+  },
+  {
+   "fieldname": "connections_tab",
+   "fieldtype": "Tab Break",
+   "label": "Connections"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-04-18 12:18:47.101816",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Cutting Plan",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

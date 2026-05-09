@@ -1,0 +1,234 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "field:qap_id",
+ "creation": "2026-01-12 18:49:03.502905",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "vendor",
+  "qap_id",
+  "date",
+  "tag_no",
+  "item_code",
+  "item_name",
+  "qty",
+  "column_break_dkiq",
+  "project",
+  "sales_order_no",
+  "purchase_order_no",
+  "purchase_order_date",
+  "item_label",
+  "drg_no",
+  "status",
+  "tpi_agency_person",
+  "section_break_mqqc",
+  "per_progress",
+  "qap_progress",
+  "section_break_llfa",
+  "qap_item",
+  "section_break_dkwt",
+  "prepared_by",
+  "column_break_gwvw",
+  "verified_by"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "Client",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "qap_id",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "QAP ID",
+   "unique": 1
+  },
+  {
+   "fieldname": "tag_no",
+   "fieldtype": "Data",
+   "label": "Tag No"
+  },
+  {
+   "fetch_from": "sales_order_no.po_no",
+   "fieldname": "purchase_order_no",
+   "fieldtype": "Data",
+   "label": "Purchase Order No"
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "column_break_dkiq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "label": "Qty"
+  },
+  {
+   "fieldname": "drg_no",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "DRG No"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "QAP Date"
+  },
+  {
+   "fetch_from": "sales_order_no.po_date",
+   "fieldname": "purchase_order_date",
+   "fieldtype": "Date",
+   "label": "Purchase Order Date"
+  },
+  {
+   "fieldname": "section_break_llfa",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "Dynatherm Alloys Private  Limited",
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "section_break_dkwt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "prepared_by",
+   "fieldtype": "Data",
+   "label": "Prepared By"
+  },
+  {
+   "fieldname": "column_break_gwvw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "verified_by",
+   "fieldtype": "Data",
+   "label": "Verified By"
+  },
+  {
+   "fieldname": "qap_item",
+   "fieldtype": "Table",
+   "label": "QAP Item",
+   "options": "QAP Item"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "QAP Status",
+   "options": "\nInProgress\nCompleted"
+  },
+  {
+   "fieldname": "per_progress",
+   "fieldtype": "Percent",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "Progress %",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_mqqc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "qap_progress",
+   "fieldtype": "HTML",
+   "in_filter": 1,
+   "label": "QAP Progress "
+  },
+  {
+   "fieldname": "item_label",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Item Label"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "sales_order_no",
+   "fieldtype": "Link",
+   "label": "Sales Order No",
+   "options": "Sales Order"
+  },
+  {
+   "fetch_from": "sales_order_no.custom_tpi_agency",
+   "fieldname": "tpi_agency_person",
+   "fieldtype": "Data",
+   "label": "TPI Agency Person"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-20 17:02:01.682158",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Quality Assurance Plan",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Quality Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

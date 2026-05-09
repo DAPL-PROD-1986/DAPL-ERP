@@ -1,0 +1,141 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-23 13:57:43.630369",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "characteristics",
+  "type_of_check",
+  "quantum_of_inspection",
+  "applicable_documents",
+  "record__documents",
+  "column_break_szfa",
+  "schedule",
+  "inspection_by",
+  "company",
+  "tpi",
+  "client",
+  "attachment",
+  "attachment_type",
+  "section_break_qsfp",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "characteristics",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Characteristics"
+  },
+  {
+   "fieldname": "type_of_check",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Type Of Check"
+  },
+  {
+   "fieldname": "quantum_of_inspection",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Quantum Of Inspection"
+  },
+  {
+   "fieldname": "applicable_documents",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Applicable Documents"
+  },
+  {
+   "fieldname": "section_break_qsfp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "record__documents",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Record / Documents"
+  },
+  {
+   "fieldname": "column_break_szfa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "inspection_by",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Inspection By"
+  },
+  {
+   "fieldname": "tpi",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "TPI",
+   "options": "\nWitness\nReview\nRandom Witness"
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Attachment"
+  },
+  {
+   "fieldname": "schedule",
+   "fieldtype": "Datetime",
+   "label": "Schedule"
+  },
+  {
+   "fieldname": "attachment_type",
+   "fieldtype": "Select",
+   "label": "Attachment Type",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Company",
+   "options": "\nPerform\nProcurement"
+  },
+  {
+   "fieldname": "client",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Client",
+   "options": "\nApproval\nReview"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-20 17:39:36.542035",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "QAP Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
