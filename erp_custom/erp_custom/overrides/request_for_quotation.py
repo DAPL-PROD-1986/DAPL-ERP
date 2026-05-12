@@ -136,7 +136,7 @@ def send_email_background(doc, method=None):
 
     <br>
 
-    <p>Kindly submit your quotation at the earliest.</p><br>
+    <p>Kindly submit your best / Lowest Price Offer at the earliest. Reach out to DAPL Purchase Team in case of any Clarification.</p><br>
     <p><b>Regards,</b><br>Purchase Team</p>
     """
 
