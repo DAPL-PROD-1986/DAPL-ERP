@@ -58,6 +58,34 @@ def calculate_values(item):
     π = math.pi
     base = 0
 
+	# =====================================================
+	# MANUAL ENTRY MODE
+	# =====================================================
+	
+	if shape == "N/A":
+	
+	    manual_kg = flt(get("custom_kilogramskgs"))
+	    manual_total = flt(get("custom_total_weight"))
+	
+	    # If only KG entered -> auto total
+	    if manual_kg and qty and not manual_total:
+	        manual_total = manual_kg * qty
+	
+	    # If only total entered -> auto kg/unit
+	    elif manual_total and qty and not manual_kg:
+	        manual_kg = manual_total / qty
+	
+	    setv("custom_kilogramskgs", flt(manual_kg, 4))
+	    setv("custom_total_weight", flt(manual_total, 4))
+	
+	    scrap_pct = flt(get("custom_scrap_margin_percentage"))
+	    transport_rate = flt(get("custom_transportation_cost"))
+	
+	    setv("custom_scrap_margin_kgs", flt(manual_total * scrap_pct / 100, 4))
+	    setv("custom_transportation_cost_kgs", flt(manual_total * transport_rate, 2))
+	
+	    return item
+	
     if not density:
         setv("custom_kilogramskgs", 0)
         setv("custom_total_weight", 0)
