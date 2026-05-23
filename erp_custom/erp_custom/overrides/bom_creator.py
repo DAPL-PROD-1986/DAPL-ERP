@@ -381,6 +381,7 @@ def upload_bom_excel(file_url):
         "Rate": "rate",
         "UOM": "uom",
         "Parent Row No": "parent_row_no",
+		"Material Type": "custom_material_type",
 
         "Part Number": "custom_part_number",
         "Length (mm)": "custom_length",
@@ -521,6 +522,7 @@ class CustomBOMCreator(BOMCreator):
             }
 
             CUSTOM_FIELDS = [
+				"custom_material_type",
                 "custom_part_number",
                 "custom_shape",
                 "custom_length",
@@ -577,6 +579,7 @@ def download_bom_template():
     headers = [
         "Part Number",
         "Item Code",
+		"Material Type",
         "Item Group",
         "Shape",
         "Qty",
@@ -589,6 +592,8 @@ def download_bom_template():
         "Density (kg/m³)",
         "Outer Diameter (mm)",
         "Inner Diameter (mm)",
+		"Kgs Per Unit",
+		"Total Weight"
     ]
 
     ws.append(headers)
