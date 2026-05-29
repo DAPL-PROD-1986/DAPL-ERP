@@ -42,11 +42,16 @@ tbody tr:last-child td {
 } */
 
 .page {
-    min-height: 285mm;
+    min-height: 270mm;
     border: 2px solid #000;
     box-sizing: border-box;
     padding: 6px;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
 }
 
 /* Sections */
