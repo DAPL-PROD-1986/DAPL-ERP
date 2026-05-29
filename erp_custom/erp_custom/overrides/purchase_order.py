@@ -51,7 +51,7 @@ def sent_po_supplier(doc):
         return
 
     # Print Format
-    print_format_name = "daplpo"
+    print_format_name = "PO Format"
     pdf_data = frappe.get_print("Purchase Order", doc.name, print_format=print_format_name, as_pdf=True)
     file_name = f"{doc.name}.pdf"
 
