@@ -21,8 +21,9 @@
 <td class="no-border" style="width:50%; vertical-align:top;">
 
     {% if company_doc.company_logo %}
-    <img src="{{ company_doc.company_logo }}"
-         style="max-height:60px; float:left; margin-right:12px;">
+    <!-- <img src="{{ company_doc.company_logo }}"
+         style="max-height:60px; float:left; margin-right:12px;"> -->
+	<img src="{{ company_doc.company_logo }}" style="max-height:60px; margin-right:12px; display:block;">
     {% endif %}
 
     <div style="line-height:1.4;">
@@ -44,7 +45,7 @@
     <b style="display:inline-block; width:140px;">Required Date</b> :
     {{ frappe.format(doc.schedule_date, {'fieldtype':'Date'}) or '' }}<br>
     
-    {% if doc.items[i].supplier_quotation %}
+	{% if items and items[0].supplier_quotation %}
     
     {% set sq = frappe.get_doc("Supplier Quotation", doc.items[i].supplier_quotation) %}
 
@@ -258,7 +259,7 @@
 
 </table>
 </div>
-<p align="center">This is a Computer-Generated Document and does not require any Signature/Seal</p>
+<p style="text-align:center;">This is a Computer-Generated Document and does not require any Signature/Seal</p>
 </div>
 
 {% if not loop.last %}
@@ -328,6 +329,6 @@
 <div class="footer">
 </div>
 
-<p align="center">This is a Computer-Generated Document and does not require any Signature/Seal</p>
+<p style="text-align:center;">This is a Computer-Generated Document and does not require any Signature/Seal</p>
 </div>
 {% endif %}
