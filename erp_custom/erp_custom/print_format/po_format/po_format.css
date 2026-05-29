@@ -32,13 +32,21 @@ tbody tr:last-child td {
     border-bottom: 1px solid #000;
 }
 /* Page Layout */
-.page {
-    height: 285mm; /* exact printable area */
+/* .page {
+    height: 285mm; 
     display: grid;
     grid-template-rows: auto 1fr auto;
     border: 2px solid #000;
     box-sizing: border-box;
     padding: 6px;
+} */
+
+.page {
+    min-height: 285mm;
+    border: 2px solid #000;
+    box-sizing: border-box;
+    padding: 6px;
+    position: relative;
 }
 
 /* Sections */
@@ -91,4 +99,19 @@ td:nth-child(3), th:nth-child(3) {
 /* Remove border */
 .no-border {
     border: none !important;
+}
+
+
+img {
+    max-width: 100%;
+}
+
+.header,
+.content,
+.footer {
+    width: 100%;
+}
+
+table {
+    page-break-inside: avoid;
 }
