@@ -48,10 +48,6 @@ tbody tr:last-child td {
     padding: 6px;
 }
 
-.content {
-    flex: 1;
-}
-
 /* Sections */
 .header { padding-bottom: 5px; }
 .content { height: 100%; }
