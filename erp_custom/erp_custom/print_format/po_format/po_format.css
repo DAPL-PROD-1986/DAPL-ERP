@@ -46,8 +46,6 @@ tbody tr:last-child td {
     border: 2px solid #000;
     box-sizing: border-box;
     padding: 6px;
-    display: flex;
-    flex-direction: column;
 }
 
 .content {
