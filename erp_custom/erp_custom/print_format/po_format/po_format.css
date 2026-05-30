@@ -42,7 +42,7 @@ tbody tr:last-child td {
 } */
 
 .page {
-    min-height: 220mm;
+    min-height: auto;
     border: 2px solid #000;
     box-sizing: border-box;
     padding: 6px;
@@ -53,8 +53,8 @@ tbody tr:last-child td {
 /* .content { height: 100%; }
 .footer { padding-top: 5px; margin-top: 120px; } */
 
-.content { min-height: 180mm; }
-.footer { padding-top: 5px; }
+.content { min-height: auto; }
+.footer { padding-top: 5px; page-break-inside: avoid; }
 
 /* Tables */
 table {
