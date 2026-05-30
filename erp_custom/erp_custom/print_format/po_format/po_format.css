@@ -53,7 +53,7 @@ tbody tr:last-child td {
 /* .content { height: 100%; }
 .footer { padding-top: 5px; margin-top: 120px; } */
 
-.content { min-height: 190mm; }
+.content { min-height: 160mm; }
 .footer { padding-top: 5px; }
 
 /* Tables */
