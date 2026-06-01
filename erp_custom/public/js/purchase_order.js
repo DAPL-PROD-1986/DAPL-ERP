@@ -116,7 +116,7 @@ frappe.ui.form.on("Purchase Order Item", {
     custom_thickness: calculate_kgs,
     custom_outer_diameter: calculate_kgs,
     custom_inner_diameter: calculate_kgs,
-    custom_wall_thickness: calculate_kgs,
+    // custom_wall_thickness: calculate_kgs,
     custom_density: calculate_kgs,
 
     custom_scrap_margin_percentage: calculate_scrap_and_transport,
@@ -145,7 +145,7 @@ function calculate_kgs(frm, cdt, cdn) {
     }
     else if (["Tubes", "Pipes"].includes(type)) {
         const R = flt(row.custom_outer_diameter) / 2;
-        const r = Math.max(R - flt(row.custom_wall_thickness), 0);
+        const r = Math.max(R - flt(row.custom_thickness), 0);
         base_weight = (π * (R ** 2 - r ** 2) * flt(row.custom_length) * density) / 1_000_000;
     }
     else if (["Flanges", "Rings"].includes(type)) {
@@ -156,7 +156,7 @@ function calculate_kgs(frm, cdt, cdn) {
     }
     else if (type === "Forgings") {
         const R = flt(row.custom_outer_diameter) / 2;
-        const r = Math.max(R - flt(row.custom_wall_thickness), 0);
+        const r = Math.max(R - flt(row.custom_thickness), 0);
         base_weight = (π * (R ** 2 - r ** 2) * flt(row.custom_length) * density) / 1_000_000;
     }
 

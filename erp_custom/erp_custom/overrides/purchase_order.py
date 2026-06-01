@@ -68,10 +68,7 @@ def sent_po_supplier(doc):
         sender="purchase@dynatherm.co.in",
         reply_to="purchase@dynatherm.co.in", 
         recipients=[supplier_email],
-		cc=[
-            "erp_admin@dynatherm.co.in",
-            "kumar@dynatherm.co.in"
-        ],
+		cc=["DAPL-team@dynatherm.co.in"],
         subject=subject,
         message=message,
         attachments=[{

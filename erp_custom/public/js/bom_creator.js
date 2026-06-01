@@ -155,7 +155,7 @@ frappe.ui.form.on('BOM Creator Item', {
     custom_density: trigger_calc,
     custom_outer_diameter: trigger_calc,
     custom_inner_diameter: trigger_calc,
-    custom_wall_thickness: trigger_calc,
+    // custom_wall_thickness: trigger_calc,
     custom_scrap_margin_percentage: trigger_calc,
     custom_transportation_cost: trigger_calc,
     item_group: trigger_calc,
@@ -178,7 +178,7 @@ frappe.ui.form.on('BOM Creator Item', {
             row.custom_thickness = 0;
             row.custom_outer_diameter = 0;
             row.custom_inner_diameter = 0;
-            row.custom_wall_thickness = 0;
+            // row.custom_wall_thickness = 0;
 
             frm.refresh_field("items");
 

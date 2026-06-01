@@ -42,7 +42,7 @@ tbody tr:last-child td {
 } */
 
 .page {
-    height: 260mm; 
+    height: 265mm; 
     display: grid;
     grid-template-rows: auto 1fr auto;
     border: 2px solid #000;
