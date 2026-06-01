@@ -153,8 +153,8 @@
 {% elif item.item_group == "Pipes" %}
     OD {{ item.custom_outer_diameter or 0 }} x {{ item.custom_wall_thickness or 0 }} mm<br>
     <b>
-    {{ frappe.utils.flt(item.custom_kilogramskgs, 2) }} Kg / Pc<br>
-    {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg Total
+    {{ frappe.utils.flt(item.custom_kilogramskgs, 2) }} mtr / Pc<br>
+    {{ frappe.utils.flt(item.custom_total_weights, 2) }} mtr Total
     </b>
 
 {% elif item.item_group == "Fasteners" %}
@@ -184,6 +184,25 @@
 <td class="center">{{ item.uom }}</td>
 
 {# ✅ Rate Logic #}
+{% if item.item_group == "Plates" %}
+    {% set rate = item.custom_rate_per_kg or item.rate %}
+    {% set rate_unit = "Kg" %}
+
+{% elif item.item_group == "Pipes" %}
+    {% set rate = item.custom_rate_per_kg or item.rate %}
+    {% set rate_unit = "Mtr" %}
+
+{% else %}
+    {% set rate = item.rate %}
+    {% set rate_unit = "" %}
+{% endif %}
+
+<td class="right">
+    {{ frappe.format_value(rate, {"fieldtype": "Currency"}) }}
+    {% if rate_unit %} / {{ rate_unit }}{% endif %}
+</td>
+
+<!-- {# ✅ Rate Logic #}
 {% if item.item_group in ["Plates", "Pipes"] %}
     {% set rate = item.custom_rate_per_kg or item.rate %}
     {% set is_kg = true %}
@@ -195,7 +214,7 @@
 <td class="right">
     {{ frappe.format_value(rate, {"fieldtype": "Currency"}) }}
     {% if is_kg %} / Kg{% endif %}
-</td>
+</td> -->
 
 {# ✅ Amount Logic (IMPORTANT FIX) #}
 <td class="right">
