@@ -152,12 +152,20 @@
     Total: {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg
     </b>
 
-{% elif item.item_group == "Pipes" %}
-    OD {{ item.custom_outer_diameter or 0 }} x {{ item.custom_thickness or 0 }} mm<br>
+{% elif item.item_group in ["Pipes", "Tubes"] %}
+
+    {% set mtr_per_pc = (item.custom_length or 0) / 1000 %}
+    {% set total_mtr = mtr_per_pc * (item.qty or 0) %}
+
+    OD {{ item.custom_outer_diameter or 0 }} x
+    {{ item.custom_thickness or 0 }} THK x
+    {{ item.custom_length or 0 }} LG<br>
+
     <b>
-    {{ frappe.utils.flt(item.custom_kilogramskgs, 2) }} mtr / Pc<br>
-    {{ frappe.utils.flt(item.custom_total_weights, 2) }} mtr Total
+        {{ frappe.utils.flt(mtr_per_pc, 2) }} Mtr / Pc<br>
+        {{ frappe.utils.flt(total_mtr, 2) }} Mtr Total
     </b>
+
 
 {% elif item.item_group == "Fasteners" %}
     M {{ item.custom_outer_diameter or 0 }} x {{ item.custom_length or 0 }} LG <br>
@@ -317,19 +325,14 @@
 
 <td class="no-border" style="width:50%; padding-left:12px !important; font-size:14px; line-height:1.6;">
 
-    <b style="display:inline-block; width:140px;">ORDER No</b> :
-    <b style="font-size:13px;">{{ doc.name }}</b><br>
+    <b style="display:inline-block; width:140px;">ORDER No</b> : <b style="font-size:13px;">{{ doc.name }}</b><br>
 
-    <b style="display:inline-block; width:140px;">ORDER Date</b> :
-    {{ frappe.format(doc.transaction_date, {'fieldtype':'Date'}) }}<br>
-    <b style="display:inline-block; width:140px;">Required Date</b> :
-    {{ frappe.format(doc.schedule_date, {'fieldtype':'Date'}) or '' }}<br>
+    <b style="display:inline-block; width:140px;">ORDER Date</b> : {{ frappe.format(doc.transaction_date, {'fieldtype':'Date'}) }}<br>
+    <b style="display:inline-block; width:140px;">Required Date</b> : {{ frappe.format(doc.schedule_date, {'fieldtype':'Date'}) or '' }}<br>
 
-    <b style="display:inline-block; width:140px;">Supplier Ref No</b> :
-    {{ doc.supplier_ref_no or "" }}<br>
+    <b style="display:inline-block; width:140px;">Supplier Ref No</b> : {{ frappe.format(sq.quotation_number) or "" }} <br>
 
-    <b style="display:inline-block; width:140px;">Supplier Ref Date</b> :
-    {{ frappe.format(doc.supplier_ref_date, {'fieldtype':'Date'}) or "" }}<br>
+    <b style="display:inline-block; width:140px;">Supplier Ref Date</b> : {{ frappe.format(sq.transaction_date) or "" }} <br>
 </td>
 
 </tr>
