@@ -80,7 +80,14 @@
 
 <tr>
 <td>
-<h3>Supplier</h3>
+<!-- <h3>Supplier</h3> -->
+ <h3>
+{% if supplier_doc and supplier_doc.get("is_transporter") %}
+    Transporter
+{% else %}
+    Supplier
+{% endif %}
+</h3>
 {{ doc.supplier_name }}<br>
 {{ doc.address_display }}
 </td>
