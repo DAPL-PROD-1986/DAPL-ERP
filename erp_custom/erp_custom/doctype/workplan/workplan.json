@@ -1,0 +1,89 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-06-03 11:15:13.545816",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "section_break_njmi",
+  "table_cfdd",
+  "section_break_wuvc",
+  "prepared_by",
+  "factory_manager",
+  "column_break_rnbp",
+  "shop_floor_supervisor",
+  "machine_supervisor"
+ ],
+ "fields": [
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "section_break_njmi",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "table_cfdd",
+   "fieldtype": "Table",
+   "options": "Workplan Item"
+  },
+  {
+   "fieldname": "section_break_wuvc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "prepared_by",
+   "fieldtype": "Data",
+   "label": "Prepared by"
+  },
+  {
+   "fieldname": "factory_manager",
+   "fieldtype": "Data",
+   "label": "Factory Manager "
+  },
+  {
+   "fieldname": "machine_supervisor",
+   "fieldtype": "Data",
+   "label": "Machine Supervisor"
+  },
+  {
+   "fieldname": "shop_floor_supervisor",
+   "fieldtype": "Data",
+   "label": "Shop Floor Supervisor"
+  },
+  {
+   "fieldname": "column_break_rnbp",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-04 16:06:35.070443",
+ "modified_by": "msk312508@gmail.com",
+ "module": "ERP Custom",
+ "name": "Workplan",
+ "owner": "msk312508@gmail.com",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
