@@ -19,21 +19,26 @@ frappe.ui.form.on("Purchase Order", {
         }
     },
 
-    supplier(frm) {
+supplier(frm) {
         if (!frm.doc.supplier) return;
 
-        frappe.db.get_value("Supplier", frm.doc.supplier, "is_transporter").then(r => {
+        frappe.db.get_value("Supplier", frm.doc.supplier, "is_transporter")
+            .then(r => {
 
-            if (r.message.is_transporter) {
-                frm.set_value("custom_order_type", "Transport Order");
-            }
-            else if (frm.doc.is_subcontracted) {
-                frm.set_value("custom_order_type", "Work Order");
-            }
-            else {
-                frm.set_value("custom_order_type", "Purchase Order");
-            }
-        });
+                if (r.message.is_transporter) {
+                    frm.set_value("custom_order_type", "Transport Order");
+                }
+                else if (frm.doc.is_subcontracted == 1) {
+                    frm.set_value("custom_order_type", "Work Order");
+                }
+                else {
+                    frm.set_value("custom_order_type", "Purchase Order");
+                }
+            });
+    },
+
+    is_subcontracted(frm) {
+        frm.trigger("supplier");
     },
 
     validate(frm) {
