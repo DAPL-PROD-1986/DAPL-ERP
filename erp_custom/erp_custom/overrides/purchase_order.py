@@ -55,15 +55,23 @@ def sent_po_supplier(doc):
     pdf_data = frappe.get_print("Purchase Order", doc.name, print_format=print_format_name, as_pdf=True)
     file_name = f"{doc.name}.pdf"
 
-    subject = f"Purchase Order {doc.name}"
+    if frappe.db.get_value("Supplier", doc.supplier, "is_transporter"):
+        order_type = "Transport Order"
+    elif doc.is_subcontracted:
+        order_type = "Work Order"
+    else:
+        order_type = "Purchase Order"
+
+    subject = f"{order_type} {doc.name}"
     message = f"""
     <p>Dear {doc.supplier},</p>
-    <p>Please find attached the Purchase Order <b>{doc.name}</b>.</p>
+    <p>Please find attached the {order_type} <b>{doc.name}</b>.</p>
     <p><a href="{frappe.utils.get_url_to_form('Purchase Order', doc.name)}">View Purchase Order</a></p><br>
-    <p>Kindly acknowledge receipt of this Purchase Order and confirm the delivery schedule at the earliest.</p><br>
+    <p>Kindly acknowledge receipt of this {order_type} and confirm the delivery schedule at the earliest.</p><br>
     <p><b>Regards,</b><br>Purchase Team</p>
     """
 
+# Official
     frappe.sendmail(
         sender="purchase@dynatherm.co.in",
         reply_to="purchase@dynatherm.co.in", 
@@ -77,8 +85,22 @@ def sent_po_supplier(doc):
             "fcontent": pdf_data
         }]
     )
+# Local
+    # frappe.sendmail(
+    #     sender="karthickarjunan08@gmail.com",
+    #     reply_to="karthickarjunan08@gmail.com", 
+    #     recipients=[supplier_email],
+	# 	# cc=["DAPL-team@dynatherm.co.in"],
+    #     # bcc=["DAPL-team@dynatherm.co.in"],
+    #     subject=subject,
+    #     message=message,
+    #     attachments=[{
+    #         "fname": file_name,
+    #         "fcontent": pdf_data
+    #     }]
+    # )
 
-    frappe.msgprint(f"✅ Purchase Order sent to {supplier_email}")
+    frappe.msgprint(f"✅ {order_type} sent to {supplier_email}")
 
 
 # # =========================================================

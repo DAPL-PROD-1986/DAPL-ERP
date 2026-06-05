@@ -8,7 +8,7 @@ frappe.ui.form.on("Purchase Order", {
         calculate_total(frm);
         // sync_fields_from_sq_to_po(frm);
         if (frm.doc.docstatus === 1) {
-            frm.add_custom_button("Send Email for Purchase", function () {
+            frm.add_custom_button("📧 Send Email for Purchase", function () {
                 frappe.call({
                     method: "erp_custom.erp_custom.overrides.purchase_order.sent_po_supplier",
                     args: {
@@ -17,6 +17,23 @@ frappe.ui.form.on("Purchase Order", {
                 });
             });
         }
+    },
+
+    supplier(frm) {
+        if (!frm.doc.supplier) return;
+
+        frappe.db.get_value("Supplier", frm.doc.supplier, "is_transporter").then(r => {
+
+            if (r.message.is_transporter) {
+                frm.set_value("custom_order_type", "Transport Order");
+            }
+            else if (frm.doc.is_subcontracted) {
+                frm.set_value("custom_order_type", "Work Order");
+            }
+            else {
+                frm.set_value("custom_order_type", "Purchase Order");
+            }
+        });
     },
 
     validate(frm) {
