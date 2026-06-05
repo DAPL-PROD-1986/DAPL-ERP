@@ -66,7 +66,7 @@ def sent_po_supplier(doc):
     message = f"""
     <p>Dear {doc.supplier},</p>
     <p>Please find attached the {order_type} <b>{doc.name}</b>.</p>
-    <p><a href="{frappe.utils.get_url_to_form('Purchase Order', doc.name)}">View Purchase Order</a></p><br>
+    <p><a href="{frappe.utils.get_url_to_form('Purchase Order', doc.name)}">View {order_type}</a></p><br>
     <p>Kindly acknowledge receipt of this {order_type} and confirm the delivery schedule at the earliest.</p><br>
     <p><b>Regards,</b><br>Purchase Team</p>
     """
