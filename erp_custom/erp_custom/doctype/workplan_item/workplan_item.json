@@ -9,6 +9,12 @@
   "name1",
   "job_no",
   "tag_no",
+  "column_break_yluh",
+  "department",
+  "attendance_status",
+  "in_time",
+  "out_time",
+  "section_break_bxwb",
   "work"
  ],
  "fields": [
@@ -45,14 +51,44 @@
    "in_preview": 1,
    "in_standard_filter": 1,
    "label": "Work"
+  },
+  {
+   "fieldname": "attendance_status",
+   "fieldtype": "Select",
+   "label": "Attendance Status",
+   "options": "Present\nAbsent"
+  },
+  {
+   "fieldname": "column_break_yluh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "in_time",
+   "fieldtype": "Datetime",
+   "label": "In Time"
+  },
+  {
+   "fieldname": "out_time",
+   "fieldtype": "Datetime",
+   "label": "Out Time"
+  },
+  {
+   "fieldname": "section_break_bxwb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Select",
+   "label": "Department",
+   "options": "\nFactory Manager\nShop Floor Supervisor\nMachine Supervisor"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-06-04 14:55:30.626105",
- "modified_by": "Administrator",
+ "modified": "2026-06-05 17:09:07.410994",
+ "modified_by": "msk312508@gmail.com",
  "module": "ERP Custom",
  "name": "Workplan Item",
  "owner": "msk312508@gmail.com",
