@@ -4,39 +4,11 @@
 # Copyright (c) 2026, maze and contributors
 # For license information, please see license.txt
 
-# import frappe
-# from frappe.model.document import Document
-
-
-# class WeeklyPOReport(Document):
-
-#     @frappe.whitelist()
-#     def send_weekly_po_mail(self):
-
-#         frappe.sendmail(
-#             recipients=["manager@company.com"],   # Change recipient
-#             sender="msk312508@gmail.com",
-#             subject=f"Weekly PO Report - {self.name}",
-#             message="""
-#                 Dear Team,<br><br>
-
-#                 Please find the Weekly PO Report.<br><br>
-
-#                 Regards,<br>
-#                 DAPL ERP
-#             """
-#         )
-
-#         return "Success"
-
-
-
 import frappe
 from frappe.model.document import Document
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from io import BytesIO
-
 
 class WeeklyPOReport(Document):
 
@@ -118,8 +90,8 @@ class WeeklyPOReport(Document):
         output.seek(0)
 
         frappe.sendmail(
-            recipients=["manager@company.com"],  # Change Recipient
-            sender="msk312508@gmail.com",
+            recipients=["DAPL-team@dynatherm.co.in"],  # Change Recipient
+            sender="erp_admin@dynatherm.co.in",
             subject=f"Weekly PO Report - {self.name}",
             message=f"""
                 Dear Team,<br><br>

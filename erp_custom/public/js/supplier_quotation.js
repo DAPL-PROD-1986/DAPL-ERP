@@ -304,9 +304,6 @@
 // SUPPLIER QUOTATION (PARENT)
 // =====================================================
 frappe.ui.form.on("Supplier Quotation", {
-    // onload(frm) {
-    //     sync_rate_from_sq(frm);
-    // },
     refresh(frm) {
         calculate_total(frm);
         // sync_rate_from_sq(frm);

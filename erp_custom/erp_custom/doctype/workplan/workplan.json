@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "DAPL-WP-.DD.-.MM.-.YY.-.####",
  "creation": "2026-06-03 11:15:13.545816",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -62,10 +63,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-04 16:06:35.070443",
+ "modified": "2026-06-09 14:59:19.191081",
  "modified_by": "msk312508@gmail.com",
  "module": "ERP Custom",
  "name": "Workplan",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "msk312508@gmail.com",
  "permissions": [
   {

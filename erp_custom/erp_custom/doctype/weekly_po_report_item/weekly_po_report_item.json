@@ -83,7 +83,7 @@
    "label": "Grand Total"
   },
   {
-   "fetch_from": "order_number.status",
+   "fetch_from": "order_number.workflow_state",
    "fieldname": "status",
    "fieldtype": "Data",
    "label": "Status"
@@ -109,7 +109,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-06-08 15:27:11.679643",
+ "modified": "2026-06-08 17:22:34.890600",
  "modified_by": "msk312508@gmail.com",
  "module": "ERP Custom",
  "name": "Weekly PO Report Item",

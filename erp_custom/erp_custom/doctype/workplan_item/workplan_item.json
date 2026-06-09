@@ -6,16 +6,17 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "department",
   "name1",
   "job_no",
   "tag_no",
   "column_break_yluh",
-  "department",
   "attendance_status",
   "in_time",
   "out_time",
   "section_break_bxwb",
-  "work"
+  "work",
+  "remarks"
  ],
  "fields": [
   {
@@ -37,12 +38,11 @@
   },
   {
    "fieldname": "tag_no",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "in_preview": 1,
    "in_standard_filter": 1,
-   "label": "Tag No",
-   "options": "Supplier"
+   "label": "Tag No"
   },
   {
    "fieldname": "work",
@@ -80,14 +80,19 @@
    "fieldname": "department",
    "fieldtype": "Select",
    "label": "Department",
-   "options": "\nFactory Manager\nShop Floor Supervisor\nMachine Supervisor"
+   "options": "\nShop Floor\nMachine Shop\nStore"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-06-05 17:09:07.410994",
+ "modified": "2026-06-09 15:03:31.673708",
  "modified_by": "msk312508@gmail.com",
  "module": "ERP Custom",
  "name": "Workplan Item",
