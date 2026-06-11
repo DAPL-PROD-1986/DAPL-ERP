@@ -1,6 +1,12 @@
 frappe.ui.form.on("Expense Claim", {
     refresh(frm) {
 
+         // Set today's date only for new documents
+        if (frm.is_new() && !frm.doc.custom_date) {
+            frm.set_value("custom_date", frappe.datetime.get_today());
+        }
+
+        // Set users name fetch automatically
         if (frm.is_new() && !frm.doc.employee) {
 
             frappe.db.get_value("Employee",

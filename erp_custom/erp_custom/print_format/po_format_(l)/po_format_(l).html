@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+/* ==========================================================================
+   CSS STYLES
+   ========================================================================== */
+@page {
+    size: A4;
+    margin: 8mm; /* Safe print margins */
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    color: #000;
+}
+
+/* Fixed outer border wrapper framework on EVERY page */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid #000000;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Master outer wrapper */
+.print-wrap {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* CRITICAL FIX: This inner container ensures that any table or text 
+   breaking onto a new page stops exactly 12px before hitting the bottom border.
+*/
+.print-content {
+    padding: 8px 8px 15px 8px; 
+    box-sizing: border-box;
+}
+
+/* Global Tables setup */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-bottom: 12px;
+}
+
+th, td {
+    border: 1px solid #000;
+    padding: 5px 4px;
+    vertical-align: top;
+    word-wrap: break-word;
+}
+
+th {
+    background: #eaeaea;
+    font-size: 11px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Layout Utilities */
+.no-border { border: none !important; }
+.right { text-align: right; }
+.center { text-align: center; }
+
+.header-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 8px 0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+h3 {
+    margin: 0 0 4px 0;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Dynamic Item Table Constraints */
+.item-table {
+    width: 100%;
+}
+
+/* Repeat headers cleanly if table elements move to multiple pages */
+thead { 
+    display: table-header-group; 
+}
+
+/* Forces row contents to stay together and push cleanly onto next page */
+tr { 
+    page-break-inside: avoid !important; 
+    page-break-after: auto; 
+}
+
+/* Summary Box spacing and alignment safeguards */
+.footer-block {
+    page-break-inside: avoid !important;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.totals-table td {
+    padding: 0;
+}
+
+/* Terms & Conditions Section Styling */
+.terms-page {
+    page-break-before: always;
+    padding-top: 10px;
+}
+
+.terms-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 6px;
+    letter-spacing: 1px;
+}
+
+/* Prevent text wrapping in specific metric/dimension column */
+td:nth-child(3), th:nth-child(3) {
+    white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+{% set company_doc = frappe.get_doc("Company", doc.company) %}
+{% set supplier_doc = frappe.get_doc("Supplier", doc.supplier) %}
+{% set total_items = doc.items|length %}
+
+<div class="print-wrap">
+    <div class="print-content">
+
+        <table>
+            <tr>
+                <td class="no-border" style="width:50%; vertical-align:top;">
+                    {% if company_doc.company_logo %}
+                        <img src="{{ company_doc.company_logo }}" style="max-height:60px; margin-right:12px;"><br>
+                    {% endif %}
+                    <div style="line-height:1.4; margin-top: 5px;">
+                        <b style="font-size:14px;">
+                            No.1, 1st Floor, 4th Cross Street, Devaraj Nagar, Sholinganallur,
+                            Chennai - 600119<br>
+                        </b>
+                        <b style="font-size:14px;">GSTIN: {{ company_doc.gstin or "" }}</b>
+                    </div>
+                </td>
+
+                <td class="no-border" style="width:50%; padding-left:12px; font-size:14px; line-height:1.3;">
+                    <b style="display:inline-block; width:140px;">ORDER No</b> : <b style="font-size:13px;">{{ doc.name }}</b><br>
+                    <b style="display:inline-block; width:140px;">ORDER Date</b> : {{ frappe.format(doc.transaction_date, {'fieldtype':'Date'}) }}<br>
+                    <b style="display:inline-block; width:140px;">Required Date</b> : {{ frappe.format(doc.schedule_date, {'fieldtype':'Date'}) or '' }}<br>
+                    
+                    {% if doc.items and doc.items[0].supplier_quotation %}
+                        {% set sq = frappe.get_doc("Supplier Quotation", doc.items[0].supplier_quotation) %}
+                        <b style="display:inline-block; width:140px;">Supplier Ref no</b> : {{ sq.quotation_number or "" }}<br>
+                        <b style="display:inline-block; width:140px;">Supplier Ref Date</b> : {{ frappe.format(sq.transaction_date, {'fieldtype':'Date'}) or "" }}<br>
+                    {% endif %}
+                    <b style="display:inline-block; width:140px;">DAPL Job Reference</b> : {{ doc.custom_dapl_reference or "" }}
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2" class="header-title">
+                    {% if supplier_doc and supplier_doc.get("is_transporter") %}
+                        TRANSPORT ORDER
+                    {% elif (supplier_doc and supplier_doc.get("is_inspection_agency")) or doc.is_subcontracted %}
+                        WORK ORDER
+                    {% else %}
+                        PURCHASE ORDER
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <h3>
+                        {% if supplier_doc and supplier_doc.get("is_transporter") %}
+                            Transporter
+                        {% else %}
+                            Supplier
+                        {% endif %}
+                    </h3>
+                    <b>{{ doc.supplier_name }}</b><br>
+                    {{ doc.address_display or "" }}
+                </td>
+                <td>
+                    <h3>Ship To</h3>
+                    {{ doc.shipping_address_display or "As per company registration address" }}
+                </td>
+            </tr>
+        </table>
+
+        <table class="item-table">
+            <thead>
+                <tr>
+                    <th style="width:4%">Sl</th>
+                    <th style="width:20%">Item Name</th>
+                    <th style="width:10%">HSN</th>
+                    <th style="width:23%">Description</th>
+                    <th style="width:8%">Qty</th>
+                    <th style="width:7%">UOM</th>
+                    <th style="width:15%">Rate</th>
+                    <th style="width:13%">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if total_items == 0 %}
+                    <tr>
+                        <td colspan="8" class="center"><b>No Items Available</b></td>
+                    </tr>
+                {% else %}
+                    {% for item in doc.items %}
+                    <tr>
+                        <td class="center">{{ loop.index }}</td>
+                        <td>
+                            <b>{{ item.item_name }}</b> <br>
+                            {% if item.custom_material_type %}
+                                <span>{{ item.custom_material_type }}</span><br>
+                            {% endif %}
+                            {% if item.custom_item_brand %}
+                                <span><b>Brand:</b> {{ item.custom_item_brand }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="center">
+                            {{ item.gst_hsn_code or item.hsn_code or "" }}
+                        </td>
+                        <td>
+                            {{ item.description or "" }}
+                        </td>
+                        <td class="center">{{ item.qty }}</td>
+                        <td class="center">{{ item.uom }}</td>
+
+                        {# Rate Conditional calculations #}
+                        {% if item.item_group == "Plates" or item.item_group == "Pipes" %}
+                            {% set rate = item.custom_rate_per_kg or item.rate %}
+                            {% set rate_unit = "Kg" if item.item_group == "Plates" else "Mtr" %}
+                        {% else %}
+                            {% set rate = item.rate %}
+                            {% set rate_unit = "" %}
+                        {% endif %}
+
+                        <td class="right">
+                            {{ frappe.format_value(rate, {"fieldtype": "Currency"}) }}
+                            {% if rate_unit %} / {{ rate_unit }}{% endif %}
+                        </td>
+
+                        <td class="right">
+                            {{ frappe.format_value(item.amount, {"fieldtype": "Currency"}) }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+
+        {% if total_items > 0 %}
+        <div class="footer-block">
+            <table>
+                <tr>
+                    <td colspan="4" style="width:55%; vertical-align: middle; padding: 6px;">
+                        <b>IN WORDS:</b><br>
+                        <span>{{ doc.in_words or "" }}</span>
+                    </td>
+                    <td colspan="4" style="width:45%; padding: 0;">
+                        <table style="margin: 0; border: none;">
+                            <tr>
+                                <td class="no-border" style="padding: 4px 6px;">Subtotal</td>
+                                <td class="no-border right" style="padding: 4px 6px;">{{ frappe.format_value(doc.total, {"fieldtype":"Currency"}) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="no-border" style="padding: 4px 6px;">Total Taxes</td>
+                                <td class="no-border right" style="padding: 4px 6px;">{{ frappe.format_value(doc.total_taxes_and_charges, {"fieldtype":"Currency"}) }}</td>
+                            </tr>
+                            <tr style="border-top: 1px solid #000;">
+                                <td class="no-border" style="padding: 6px 6px;"><b>Total</b></td>
+                                <td class="no-border right" style="padding: 6px 6px;"><b>{{ frappe.format_value(doc.grand_total, {"fieldtype":"Currency"}) }}</b></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+
+        <p style="text-align:center; color: #555; margin-top: 20px; font-size: 10px;">
+            This is a Computer-Generated Document and does not require any Signature/Seal
+        </p>
+    </div>
+</div>
+
+{% if doc.terms %}
+<div class="print-wrap terms-page">
+    <div class="print-content">
+        <div class="terms-title">TERMS & CONDITIONS</div>
+        <div style="line-height:1.6; font-size:11px; padding: 5px;">
+            {{ doc.terms }}
+        </div>
+        
+        <p style="text-align:center; color: #555; margin-top: 30px; font-size: 10px;">
+            This is a Computer-Generated Document and does not require any Signature/Seal
+        </p>
+    </div>
+</div>
+{% endif %}
+
+</body>
+</html>

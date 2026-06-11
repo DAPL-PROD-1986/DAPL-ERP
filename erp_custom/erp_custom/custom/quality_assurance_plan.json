@@ -1,0 +1,32 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Quality Assurance Plan",
+ "links": [],
+ "property_setters": [
+  {
+   "_assign": null,
+   "_comments": null,
+   "_liked_by": null,
+   "_user_tags": null,
+   "creation": "2026-06-11 15:36:43.779935",
+   "default_value": null,
+   "doc_type": "Quality Assurance Plan",
+   "docstatus": 0,
+   "doctype_or_field": "DocField",
+   "field_name": "item_code",
+   "idx": 0,
+   "is_system_generated": 0,
+   "modified": "2026-06-11 15:36:43.779935",
+   "modified_by": "msk312508@gmail.com",
+   "module": null,
+   "name": "Quality Assurance Plan-item_code-label",
+   "owner": "msk312508@gmail.com",
+   "property": "label",
+   "property_type": "Data",
+   "row_name": null,
+   "value": "Item Code / Material Code"
+  }
+ ],
+ "sync_on_migrate": 1
+}
