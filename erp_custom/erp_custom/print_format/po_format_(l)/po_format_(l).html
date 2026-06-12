@@ -201,6 +201,10 @@ td:nth-child(3), th:nth-child(3) {
                 </td>
                 <td>
                     <h3>Ship To</h3>
+                     <b> {{ (doc.shipping_address or "")
+            .replace("-Billing", "")
+            .replace(" - 1", "")
+            .strip() }} </b><br>
                     {{ doc.shipping_address_display or "As per company registration address" }}
                 </td>
             </tr>
