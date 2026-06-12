@@ -96,7 +96,7 @@
    "in_preview": 1,
    "in_standard_filter": 1,
    "label": "Completion Status",
-   "options": "\nPending\nIn Progress\nCompleted"
+   "options": "\nYet to Start\nIn Progress\nCompleted"
   },
   {
    "fieldname": "qc_clearance",
@@ -112,7 +112,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-06-12 16:24:46.244561",
+ "modified": "2026-06-12 16:40:52.197356",
  "modified_by": "msk312508@gmail.com",
  "module": "ERP Custom",
  "name": "Workplan Item",

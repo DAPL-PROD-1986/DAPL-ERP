@@ -14,7 +14,8 @@
   "factory_manager",
   "column_break_rnbp",
   "shop_floor_supervisor",
-  "machine_supervisor"
+  "machine_supervisor",
+  "amended_from"
  ],
  "fields": [
   {
@@ -58,12 +59,23 @@
   {
    "fieldname": "column_break_rnbp",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Workplan",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2026-06-09 14:59:19.191081",
+ "modified": "2026-06-12 16:42:43.307272",
  "modified_by": "msk312508@gmail.com",
  "module": "ERP Custom",
  "name": "Workplan",
