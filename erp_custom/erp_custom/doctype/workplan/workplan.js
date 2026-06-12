@@ -6,3 +6,12 @@
 
 // 	},
 // });
+
+
+frappe.ui.form.on("Workplan", {
+    onload(frm) {
+        if (frm.is_new() && !frm.doc.date) {
+            frm.set_value("date", frappe.datetime.get_today());
+        }
+    }
+});
