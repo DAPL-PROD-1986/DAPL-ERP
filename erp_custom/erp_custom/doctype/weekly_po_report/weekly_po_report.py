@@ -90,7 +90,7 @@ class WeeklyPOReport(Document):
         output.seek(0)
 
         frappe.sendmail(
-            recipients=["DAPL-team@dynatherm.co.in"],  # Change Recipient
+            recipients=["dapl-team@dynatherm.co.in"],  # Change Recipient
             sender="erp_admin@dynatherm.co.in",
             subject=f"Weekly PO Report - {self.name}",
             message=f"""

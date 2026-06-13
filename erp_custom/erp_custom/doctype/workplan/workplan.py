@@ -11,7 +11,7 @@ class Workplan(Document):
 			# recipients=["msk312508@gmail.com"],
             # sender="karthickarjunan08@gmail.com",
 
-			recipients=["DAPL-team@dynatherm.co.in"],
+			recipients=["dapl-team@dynatherm.co.in"],
             sender="production@dynatherm.co.in",
             subject=f"Today's {self.doctype} Submitted - {self.name}",
             message=f"""
