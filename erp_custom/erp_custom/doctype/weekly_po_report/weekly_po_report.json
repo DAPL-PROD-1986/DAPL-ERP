@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "DAPL-WEEK-.YYYY.-.MM.-.DD.-",
+ "autoname": "DAPL-PO-REPORT-{report_week_from_date}-TO-{report_week_to_date}",
  "creation": "2026-06-08 15:08:50.453857",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -64,11 +64,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-08 16:07:51.679472",
- "modified_by": "msk312508@gmail.com",
+ "modified": "2026-06-15 12:14:02.816023",
+ "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Weekly PO Report",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression",
  "owner": "msk312508@gmail.com",
  "permissions": [
   {

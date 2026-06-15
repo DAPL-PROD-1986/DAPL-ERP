@@ -12,6 +12,16 @@ from io import BytesIO
 
 class WeeklyPOReport(Document):
 
+    def autoname(self):
+        from frappe.utils import formatdate
+
+        self.name = (
+            f"DAPL-PO-REPORT-"
+            f"{formatdate(self.report_week_from_date, 'dd-MM-yy')}"
+            f"-TO-"
+            f"{formatdate(self.report_week_to_date, 'dd-MM-yy')}"
+        )
+
     @frappe.whitelist()
     def send_weekly_po_mail(self):
 
@@ -91,8 +101,9 @@ class WeeklyPOReport(Document):
 
         frappe.sendmail(
             recipients=["dapl-team@dynatherm.co.in"],  # Change Recipient
+            # recipients=["msk312508@gmail.com"],  # Change Recipient
             sender="erp_admin@dynatherm.co.in",
-            subject=f"Weekly PO Report - {self.name}",
+            subject=f"Weekly - {self.name}",
             message=f"""
                 Dear Team,<br><br>
 
