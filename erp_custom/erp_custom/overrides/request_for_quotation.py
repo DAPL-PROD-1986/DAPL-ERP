@@ -58,7 +58,7 @@ def send_email_background(doc, method=None):
     # -------------------------------------------------
     header_html = """
         <th>Item Code</th>
-        <th>Brand</th>
+        <th>Description</th>
         <th>Schedule Date</th>
         <th>Qty</th>
         <th>UOM</th>
@@ -84,7 +84,7 @@ def send_email_background(doc, method=None):
         row = f"""
         <tr>
             <td>{d.item_code or ""}</td>
-            <td>{d.custom_item_brand or ""}</td>
+            <td>{d.description or ""}</td>
             <td>{d.schedule_date or ""}</td>
             <td>{d.qty or ""}</td>
             <td>{d.uom or ""}</td>
@@ -149,6 +149,9 @@ def send_email_background(doc, method=None):
         message=message,
         sender="purchase@dynatherm.co.in",
         reply_to="purchase@dynatherm.co.in", 
+        # Local
+        # sender="msk312508@gmail.com",
+        # reply_to="msk312508@gmail.com", 
         reference_doctype="Request for Quotation",
         reference_name=doc.name
     )
