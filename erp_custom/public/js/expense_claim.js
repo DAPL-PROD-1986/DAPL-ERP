@@ -18,6 +18,9 @@ frappe.ui.form.on("Expense Claim", {
                     frm.set_value("employee", r.message.name);
                     frm.set_value("department", r.message.department);
                     frm.set_value("expense_approver", r.message.expense_approver);
+
+                    // Set Cost Center
+                    frm.set_value("cost_center", "Main - DA");
                 }
 
             });

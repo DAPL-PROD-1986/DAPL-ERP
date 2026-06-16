@@ -181,6 +181,10 @@ function calculate_kgs(frm, cdt, cdn) {
 
         frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(kg, 4));
         frappe.model.set_value(cdt, cdn, "custom_total_weights", flt(total, 4));
+
+        calculate_rate_from_weight(frm, cdt, cdn);
+        calculate_custom_amount(frm, cdt, cdn);
+        calculate_scrap_and_transport(frm, cdt, cdn);
         return;
     }
 
@@ -312,15 +316,24 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
 // =====================================================
 function calculate_rate_from_weight(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
+    const kg = flt(row.custom_kilogramskgs) || 0;
     const rate_per_kg = flt(row.custom_rate_per_kg) || 0;
-    const weight = flt(row.custom_total_weights) || 0;
+    const rate = kg * rate_per_kg;
 
-    if (rate_per_kg && weight) {
-        const rate = rate_per_kg * weight;
-
-        frappe.model.set_value(cdt, cdn, "rate", flt(rate, 2));
-    }
+    frappe.model.set_value(cdt, cdn, "rate", flt(rate, 2));
 }
+
+// function calculate_rate_from_weight(frm, cdt, cdn) {
+//     const row = locals[cdt][cdn];
+//     const rate_per_kg = flt(row.custom_rate_per_kg) || 0;
+//     const weight = flt(row.custom_total_weights) || 0;
+
+//     if (rate_per_kg && weight) {
+//         const rate = rate_per_kg * weight;
+
+//         frappe.model.set_value(cdt, cdn, "rate", flt(rate, 2));
+//     }
+// }
 
 
 function update_amount(frm, cdt, cdn) {

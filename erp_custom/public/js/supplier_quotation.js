@@ -435,7 +435,7 @@ function calculate_kgs(frm, cdt, cdn) {
 
     if (shape === "N/A") {
         let kg = flt(row.custom_kilogramskgs);
-        let total = flt(row.custom_total_weight);
+        let total = flt(row.custom_total_weights);
 
         if (kg > 0 && qty > 0) {
             total = kg * qty;
@@ -445,13 +445,13 @@ function calculate_kgs(frm, cdt, cdn) {
         }
 
         frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(kg, 4));
-        frappe.model.set_value(cdt, cdn, "custom_total_weight", flt(total, 4));
+        frappe.model.set_value(cdt, cdn, "custom_total_weights", flt(total, 4));
         return;
     }
 
     if (!density) {
         frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", 0);
-        frappe.model.set_value(cdt, cdn, "custom_total_weight", 0);
+        frappe.model.set_value(cdt, cdn, "custom_total_weights", 0);
         return;
     }
 
@@ -523,53 +523,8 @@ function calculate_kgs(frm, cdt, cdn) {
     }
 
     frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
-    frappe.model.set_value(cdt, cdn, "custom_total_weight", flt(base_weight * qty, 4));
+    frappe.model.set_value(cdt, cdn, "custom_total_weights", flt(base_weight * qty, 4));
 }
-
-// function calculate_kgs(frm, cdt, cdn) {
-//     const row = locals[cdt][cdn];
-//     const type = row.item_group;
-//     const density = flt(row.custom_density) || 0;
-//     const π = Math.PI;
-
-//     let base_weight = 0;
-
-//     if (!density) {
-//         frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", 0);
-//         frappe.model.set_value(cdt, cdn, "custom_total_weights", 0);
-//         frappe.model.set_value(cdt, cdn, "custom_amount_overall_weight_based", 0);
-//         return;
-//     }
-
-//     if (type === "Plates") {
-//         base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1_000_000;
-//     }
-
-//     else if (["Tubes", "Pipes"].includes(type)) {
-//         const R = flt(row.custom_outer_diameter) / 2;
-//         const r = Math.max(R - flt(row.custom_wall_thickness), 0);
-//         base_weight = (π * (R ** 2 - r ** 2) * flt(row.custom_length) * density) / 1_000_000;
-//     }
-
-//     else if (["Flanges", "Rings"].includes(type)) {
-//         base_weight = (π * ((flt(row.custom_outer_diameter) / 2) ** 2 - (flt(row.custom_inner_diameter) / 2) ** 2) * flt(row.custom_thickness) * density) / 1_000_000;
-//     }
-
-//     else if (type === "Rods") {
-//         base_weight = (π * (flt(row.custom_outer_diameter) / 2) ** 2 * flt(row.custom_length) * density) / 1_000_000;
-//     }
-
-//     else if (type === "Forgings") {
-//         const R = flt(row.custom_outer_diameter) / 2;
-//         const r = Math.max(R - flt(row.custom_wall_thickness), 0);
-//         base_weight = (π * (R ** 2 - r ** 2) * flt(row.custom_length) * density) / 1_000_000;
-//     }
-
-//     frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
-
-//     calculate_total_weight(frm, cdt, cdn);
-// }
-
 
 // =====================================================
 // TOTAL WEIGHT
@@ -591,20 +546,14 @@ function calculate_total_weight(frm, cdt, cdn) {
 // =====================================================
 // CUSTOM AMOUNT (SAFE)
 // =====================================================
+
 function calculate_custom_amount(frm, cdt, cdn) {
+
     const row = locals[cdt][cdn];
-
-    const qty = flt(row.qty) || 0;
-    const rate = flt(row.rate) || 0;
-    const amount = qty * rate;
-
-    // ✅ Update standard amount field (IMPORTANT)
+    const amount = flt(row.qty) * flt(row.rate);
     frappe.model.set_value(cdt, cdn, "amount", flt(amount, 2));
 
-    // ✅ Keep your custom field also (no break)
-    // frappe.model.set_value(cdt, cdn, "custom_amount_overall_weight_based", flt(amount, 2));
-
-    calculate_total_amount(frm);
+    calculate_total(frm);
 }
 
 // =====================================================
@@ -630,21 +579,15 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
 // =====================================================
 function calculate_rate_from_weight(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
-
+    const kg = flt(row.custom_kilogramskgs) || 0;
     const rate_per_kg = flt(row.custom_rate_per_kg) || 0;
-    const weight = flt(row.custom_total_weights) || 0;
-
-    if (rate_per_kg && weight) {
-        const rate = rate_per_kg * weight;
-
-        frappe.model.set_value(cdt, cdn, "rate", flt(rate, 2));
-    }
+    const rate = kg * rate_per_kg;
+    frappe.model.set_value(cdt, cdn, "rate", flt(rate, 2));
 }
 
 
 function update_amount(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
-
     row.amount = (flt(row.qty) * flt(row.rate));
 
     frm.refresh_field('items');
@@ -657,7 +600,6 @@ function update_amount(frm, cdt, cdn) {
 // ===============================
 function calculate_total(frm) {
     let total = 0;
-
     (frm.doc.items || []).forEach(row => {
         total += flt(row.amount);
     });
