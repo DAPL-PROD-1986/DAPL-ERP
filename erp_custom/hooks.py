@@ -372,7 +372,9 @@ doctype_js = {
     
     "Project": "public/js/projects.js",
     "Quality Inspection": "public/js/quality_inspection.js",
+
     "Expense Claim": "public/js/expense_claim.js",
+    "Employee Advance": "public/js/employee_advance.js",
     
 }
 
