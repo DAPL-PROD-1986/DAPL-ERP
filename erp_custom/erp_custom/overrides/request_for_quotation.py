@@ -1,7 +1,7 @@
 import frappe
 from frappe.model.document import Document
 from frappe.utils import flt
-
+from frappe.utils.file_manager import get_file_path
 
 class RequestforQuotation(Document):
 
@@ -140,6 +140,29 @@ def send_email_background(doc, method=None):
     <p><b>Regards,</b><br>Purchase Team</p>
     """
 
+    attachments = []
+    for item in doc.items:
+        reference_file = item.get("custom_reference_file")
+        if reference_file:
+            try:
+                file_doc = frappe.get_doc(
+                    "File",
+                    {"file_url": reference_file}
+                )
+                attachments.append({
+                    "fname": file_doc.file_name,
+                    "fcontent": file_doc.get_content()
+                })
+
+            except Exception:
+
+                frappe.log_error(
+                    frappe.get_traceback(),
+                    f"RFQ Attachment Error : {reference_file}"
+                )
+    # frappe.msgprint(f"Reference File : {reference_file}")
+    # frappe.msgprint(f"Attachment Count : {len(attachments)}")
+
     # -------------------------------------------------
     # Send Email
     # -------------------------------------------------
@@ -147,13 +170,14 @@ def send_email_background(doc, method=None):
         recipients=recipients,
         subject=subject,
         message=message,
-        sender="purchase@dynatherm.co.in",
-        reply_to="purchase@dynatherm.co.in", 
+        # sender="purchase@dynatherm.co.in",
+        # reply_to="purchase@dynatherm.co.in", 
         # Local
-        # sender="msk312508@gmail.com",
-        # reply_to="msk312508@gmail.com", 
+        sender="msk312508@gmail.com",
+        reply_to="msk312508@gmail.com", 
         reference_doctype="Request for Quotation",
-        reference_name=doc.name
+        reference_name=doc.name,
+        attachments=attachments
     )
 
 
