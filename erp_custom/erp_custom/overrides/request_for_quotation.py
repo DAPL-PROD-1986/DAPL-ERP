@@ -170,11 +170,11 @@ def send_email_background(doc, method=None):
         recipients=recipients,
         subject=subject,
         message=message,
-        # sender="purchase@dynatherm.co.in",
-        # reply_to="purchase@dynatherm.co.in", 
+        sender="purchase@dynatherm.co.in",
+        reply_to="purchase@dynatherm.co.in", 
         # Local
-        sender="msk312508@gmail.com",
-        reply_to="msk312508@gmail.com", 
+        # sender="msk312508@gmail.com",
+        # reply_to="msk312508@gmail.com", 
         reference_doctype="Request for Quotation",
         reference_name=doc.name,
         attachments=attachments
