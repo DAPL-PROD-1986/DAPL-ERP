@@ -166,26 +166,6 @@ def send_email_background(doc, method=None):
     # -------------------------------------------------
     # Send Email
     # -------------------------------------------------
-    # for recipient in recipients:
-    #     frappe.sendmail(
-    #         recipients=[recipient],
-    #         subject=subject,
-    #         message=message,
-    #         sender="purchase@dynatherm.co.in",
-    #         reply_to="purchase@dynatherm.co.in",
-    #         cc=["dapl-team@dynatherm.co.in"], 
-    #         # Local
-    #         # sender="msk312508@gmail.com",
-    #         # reply_to="msk312508@gmail.com", 
-    #         # cc=["erp_admin@dynatherm.co.in"],
-    #         expose_recipients="header",
-    #         reference_doctype="Request for Quotation",
-    #         reference_name=doc.name,
-    #         attachments=attachments
-    #     )
-
-
-    # 1. Send the private emails to each vendor/recipient
     for recipient in recipients:
         frappe.sendmail(
             recipients=[recipient],
@@ -193,23 +173,43 @@ def send_email_background(doc, method=None):
             message=message,
             sender="purchase@dynatherm.co.in",
             reply_to="purchase@dynatherm.co.in",
-            # Removed CC from here to prevent cloud SMTP spam-blocking
+            cc=["dapl-team@dynatherm.co.in"], 
+            # Local
+            # sender="msk312508@gmail.com",
+            # reply_to="msk312508@gmail.com", 
+            # cc=["erp_admin@dynatherm.co.in"],
+            expose_recipients="header",
             reference_doctype="Request for Quotation",
             reference_name=doc.name,
             attachments=attachments
         )
 
-    # 2. Send ONE single master copy to your internal team so they have a record
-    frappe.sendmail(
-        recipients=["dapl-team@dynatherm.co.in"],
-        subject=f"[Internal Copy] {subject}",
-        message=f"<b>Note: The following mail was sent to vendors ({', '.join(recipients)}):</b><br><br>{message}",
-        sender="purchase@dynatherm.co.in",
-        reply_to="purchase@dynatherm.co.in",
-        reference_doctype="Request for Quotation",
-        reference_name=doc.name,
-        attachments=attachments
-    )
+
+    # 1. Send the private emails to each vendor/recipient
+    # for recipient in recipients:
+    #     frappe.sendmail(
+    #         recipients=[recipient],
+    #         subject=subject,
+    #         message=message,
+    #         sender="purchase@dynatherm.co.in",
+    #         reply_to="purchase@dynatherm.co.in",
+    #         # Removed CC from here to prevent cloud SMTP spam-blocking
+    #         reference_doctype="Request for Quotation",
+    #         reference_name=doc.name,
+    #         attachments=attachments
+    #     )
+
+    # # 2. Send ONE single master copy to your internal team so they have a record
+    # frappe.sendmail(
+    #     recipients=["dapl-team@dynatherm.co.in"],
+    #     subject=f"[Internal Copy] {subject}",
+    #     message=f"<b>Note: The following mail was sent to vendors ({', '.join(recipients)}):</b><br><br>{message}",
+    #     sender="purchase@dynatherm.co.in",
+    #     reply_to="purchase@dynatherm.co.in",
+    #     reference_doctype="Request for Quotation",
+    #     reference_name=doc.name,
+    #     attachments=attachments
+    # )
 
 # =========================================================
 # BLOCK ERPNext CORE RFQ EMAIL
