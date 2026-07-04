@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "cutting_no",
+  "bom_no",
   "column_break_wwxj",
   "date",
   "column_break_unjj",
@@ -162,13 +163,18 @@
    "fieldname": "connections_tab",
    "fieldtype": "Tab Break",
    "label": "Connections"
+  },
+  {
+   "fieldname": "bom_no",
+   "fieldtype": "Data",
+   "label": "BOM No"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-18 12:18:47.101816",
+ "modified": "2026-06-27 11:06:14.027738",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",

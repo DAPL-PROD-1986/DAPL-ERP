@@ -62,6 +62,10 @@ def make_material_request(cutting_plan):
     mr.material_request_type = "Purchase"
     mr.schedule_date = cp.date
 
+    # Parent custom fields
+    mr.custom_bom_no = cp.bom_no
+    mr.custom_cutting_plan_no = cp.name
+
     # Loop Cutting Plan Plate Details
     for row in cp.cutting_plan_plate_details:
          # ✅ Only send items where material is To Be Ordered

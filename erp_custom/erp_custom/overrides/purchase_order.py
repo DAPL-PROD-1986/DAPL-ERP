@@ -6,6 +6,42 @@ class CustomPurchaseOrder(PurchaseOrder):
     
     def validate_fg_item_for_subcontracting(self):
         return
+    
+    def on_submit(self):
+        super().on_submit()
+
+        supplier_quotations = {
+            item.supplier_quotation
+            for item in self.items
+            if item.supplier_quotation
+        }
+
+        for sq_name in supplier_quotations:
+            sq = frappe.get_doc("Supplier Quotation", sq_name)
+            sq.db_set("custom_purchase_order_no", self.name, update_modified=False)
+
+    def on_cancel(self):
+        super().on_cancel()
+
+        supplier_quotations = {
+            item.supplier_quotation
+            for item in self.items
+            if item.supplier_quotation
+        }
+
+        for sq_name in supplier_quotations:
+            sq = frappe.get_doc("Supplier Quotation", sq_name)
+            sq.db_set("custom_purchase_order_no", "", update_modified=False)
+
+
+    def set_missing_values(self, *args, **kwargs):
+        super().set_missing_values(*args, **kwargs)
+
+        if self.items and self.items[0].supplier_quotation:
+            sq = frappe.get_doc("Supplier Quotation", self.items[0].supplier_quotation)
+
+            self.custom_bom_no = sq.custom_bom_no
+            self.custom_cutting_plan_no = sq.custom_cutting_plan_no
 
 
 @frappe.whitelist()

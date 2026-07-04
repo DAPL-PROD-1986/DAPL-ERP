@@ -115,9 +115,9 @@
 <thead>
 <tr>
     <th style="width:4%">Sl</th>
-    <th style="width:20%">Item Name</th>
-    <th style="width:10%">HSN</th>
-    <th style="width:23%">Description</th>
+    <th style="width:25%">Item Name</th>
+    <!-- <th style="width:10%">HSN</th> -->
+    <th style="width:28%">Description</th>
     <th style="width:8%">Qty</th>
     <th style="width:7%">UOM</th>
     <th style="width:15%">Rate</th>
@@ -134,22 +134,26 @@
     <b>{{ item.item_name }}</b> <br>
 
     {% if item.custom_material_type %}
-        <span>{{ item.custom_material_type }}</span>
+        <span>{{ item.custom_material_type }}</span><br>
     {% endif %}
 
     <!-- {% if item.description %}
-        <span>{{ item.description }}</span>
+        <span>{{ item.description }}</span><br>
     {% endif %} -->
 
     {% if item.custom_item_brand %}
-        <span><b>Brand:</b> {{ item.custom_item_brand }}</span>
-        <!-- <br> -->
+        <span><b>Brand:</b> {{ item.custom_item_brand }}</span><br>
     {% endif %}
-</td><td>
+
+     {% if item.gst_hsn_code or item.hsn_code %}
+        <span><b>HSN:</b> {{ item.gst_hsn_code or item.hsn_code }}</span>
+    {% endif %}
+</td>
+<!-- <td>
     {% if item.gst_hsn_code or item.hsn_code %}
         <span> {{ item.gst_hsn_code or item.hsn_code }}</span>
     {% endif %}
-</td>
+</td> -->
 
 <td>
         {% if item.description %}

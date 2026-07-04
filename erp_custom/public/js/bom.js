@@ -10,6 +10,7 @@ frappe.ui.form.on("BOM", {
             frm.add_custom_button(__("Cutting Plan"), () => {
                 frappe.new_doc("Cutting Plan", {
                     bom: frm.doc.name,
+                    bom_no: frm.doc.name, 
                     company: frm.doc.company
                 }, (doc) => {
 

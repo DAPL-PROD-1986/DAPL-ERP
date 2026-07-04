@@ -28,7 +28,7 @@ required_apps = ["frappe/erpnext"]
 # app_include_js = "/assets/erp_custom/js/erp_custom.js"
 
 app_include_js = [
-    "/assets/erp_custom/js/stock_entry.js"
+    "/assets/erp_custom/js/stock_entry.js", "/assets/erp_custom/js/purchase_order_preview.js"
 ]
 
 
@@ -408,7 +408,9 @@ override_whitelisted_methods = {
 override_doctype_class = {
     "BOM": "erp_custom.erp_custom.overrides.bom.CustomBOM",
     "Purchase Order": "erp_custom.erp_custom.overrides.purchase_order.CustomPurchaseOrder",
-    "BOM Creator":"erp_custom.erp_custom.overrides.bom_creator.CustomBOMCreator"  
+    "BOM Creator":"erp_custom.erp_custom.overrides.bom_creator.CustomBOMCreator",
+
+    "Supplier Quotation": "erp_custom.erp_custom.overrides.supplier_quotation.CustomSupplierQuotation",
 }
 
 
@@ -435,13 +437,8 @@ override_doctype_dashboards = {
     "Project": "erp_custom.erp_custom.overrides.projects_dashboard.get_data"
 }
 
-# doc_events = {
-#     "Stock Entry": {
-#         "before_save": "erp_custom.overrides.stock_entry_utils.copy_custom_dimensions_from_work_order"
-#     }
-# }
-
 
 doctype_list_js = {
-    "BOM Creator": "public/js/bom_creator_list.js"
+    "BOM Creator": "public/js/bom_creator_list.js",
+    "Purchase Order": "public/js/purchase_order_list.js",
 }

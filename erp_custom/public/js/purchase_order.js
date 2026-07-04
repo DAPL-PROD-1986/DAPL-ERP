@@ -261,8 +261,16 @@ function calculate_kgs(frm, cdt, cdn) {
         }
     }
 
-    frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
-    frappe.model.set_value(cdt, cdn, "custom_total_weights", flt(base_weight * qty, 4));
+    const kg = flt(base_weight, 4);
+    const total = flt(base_weight * qty, 4);
+
+    if (flt(row.custom_kilogramskgs) !== kg) {
+        frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", kg);
+    }
+
+    if (flt(row.custom_total_weights) !== total) {
+        frappe.model.set_value(cdt, cdn, "custom_total_weights", total);
+    }
 }
 
 // ====================================================
@@ -272,7 +280,9 @@ function calculate_total_weight(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
     const total_weight = flt(row.qty) * flt(row.custom_kilogramskgs);
 
+    if (flt(row.custom_total_weights) !== flt(total_weight, 4)) {
     frappe.model.set_value(cdt, cdn, "custom_total_weights", flt(total_weight, 4));
+    }
 
     calculate_rate_from_weight(frm, cdt, cdn);
     calculate_custom_amount(frm, cdt, cdn);
@@ -291,7 +301,9 @@ function calculate_custom_amount(frm, cdt, cdn) {
     const amount = qty * rate;
 
     // ✅ Update standard amount field (IMPORTANT)
+    if (flt(row.amount) !== flt(amount, 2)) {
     frappe.model.set_value(cdt, cdn, "amount", flt(amount, 2));
+    }
 
     calculate_total(frm);
 }
@@ -355,5 +367,7 @@ function calculate_total(frm) {
         total += flt(row.amount);
     });
 
-    frm.set_value('total', total);
+    if (flt(frm.doc.total) !== flt(total, 2)) {
+    frm.set_value('total', flt(total, 2));
+    }
 }

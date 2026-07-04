@@ -9,6 +9,30 @@ class RequestforQuotation(Document):
     def process_item_selection(self, item_idx=None):
         pass
 
+    def before_insert(self):
+        self.set_reference_numbers()
+
+    def set_reference_numbers(self):
+
+        if not self.items:
+            return
+
+        mr_name = None
+
+        # Find the Material Request from first item
+        for row in self.items:
+            if row.material_request:
+                mr_name = row.material_request
+                break
+
+        if not mr_name:
+            return
+
+        mr = frappe.get_doc("Material Request", mr_name)
+
+        self.custom_bom_no = mr.custom_bom_no
+        self.custom_cutting_plan_no = mr.custom_cutting_plan_no
+
 
 # =========================================================
 # CUSTOM RFQ EMAIL
