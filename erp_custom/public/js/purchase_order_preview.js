@@ -61,10 +61,10 @@
 <p><b>PO No:</b> ${doc.name}</p>
 <p><b>Supplier:</b> ${doc.supplier}</p>
 <p><b>Date:</b> ${doc.transaction_date}</p>
-<p><b>Status:</b>
-<span style="background:${status_bg};color:white;padding:3px 8px;border-radius:4px;font-weight:bold;">
-${doc.status}
-</span>
+<p><b>Order Type:</b> ${doc.custom_order_type}</p>
+<p><b>Status:</b><span style="background:${status_bg};color:white;padding:3px 8px;border-radius:4px;font-weight:bold;"> ${doc.status}</span>
+<p><b>Status:</b> ${doc.workflow_state} </p>
+<p><b>Project:</b> ${doc.project} </p>
 </p>
 </div>
 
@@ -90,8 +90,10 @@ ${doc.status}
             const items_html = (doc.items || []).map(i => `
 <tr style="text-align:center;">
 <td>${i.item_code}</td>
+<td>${i.description}</td>
 <td>${i.qty}</td>
 <td>${i.uom || "-"}</td>
+<td>${i.custom_total_weights}</td>
 <td>${frappe.format(i.rate, { fieldtype: "Currency" })}</td>
 <td>${frappe.format(i.amount, { fieldtype: "Currency" })}</td>
 </tr>
@@ -104,8 +106,10 @@ ${doc.status}
                     <thead>
                     <tr>
                     <th>Item</th>
+                    <th>Description</th>
                     <th>Qty</th>
                     <th>UOM</th>
+                    <th>Total Weight</th>
                     <th>Rate</th>
                     <th>Amount</th>
                     </tr>
@@ -123,9 +127,7 @@ ${doc.status}
                     ${po_summary}${items_card}
 
                     <div class="mt-3">
-                    <a href="/app/purchase-order/${doc.name}" class="btn btn-primary btn-sm">
-                    Open Full Purchase Order
-                    </a>
+                    <a href="/app/purchase-order/${doc.name}" class="btn btn-primary btn-sm"> Open Full Purchase Order </a>
                     </div>
 
                     <div style="position:absolute;bottom:15px;right:15px;display:flex;gap:8px;">

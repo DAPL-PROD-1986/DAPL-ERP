@@ -102,10 +102,34 @@ def sent_po_supplier(doc):
     message = f"""
     <p>Dear {doc.supplier},</p>
     <p>Please find attached the {order_type} <b>{doc.name}</b>.</p>
-    <p><a href="{frappe.utils.get_url_to_form('Purchase Order', doc.name)}">View {order_type}</a></p><br>
     <p>Kindly acknowledge receipt of this {order_type} and confirm the delivery schedule at the earliest.</p><br>
     <p><b>Regards,</b><br>Purchase Team</p>
     """
+
+    # ----------------------------
+    # ATTACHMENTS (DEFAULT PO PDF)
+    # ----------------------------
+    attachments = [{
+        "fname": file_name,
+        "fcontent": pdf_data
+    }]
+
+    # -----------------------------------------
+    # ADD CUSTOM REFERENCE FILE (NEW ADDITION)
+    # -----------------------------------------
+    if doc.custom_reference_file:
+        try:
+            file_doc = frappe.get_doc("File",
+                {"file_url": doc.custom_reference_file})
+
+            attachments.append({
+                "fname": file_doc.file_name,
+                "fcontent": file_doc.get_content()
+            })
+
+        except Exception:
+            frappe.log_error(frappe.get_traceback(),
+                "Purchase Order - custom_reference_file email attachment error")
 
 # Official
     frappe.sendmail(
@@ -116,24 +140,23 @@ def sent_po_supplier(doc):
         # bcc=["DAPL-team@dynatherm.co.in"],
         subject=subject,
         message=message,
-        attachments=[{
-            "fname": file_name,
-            "fcontent": pdf_data
-        }]
+        attachments=attachments
     )
+
 # Local
     # frappe.sendmail(
     #     sender="karthickarjunan08@gmail.com",
     #     reply_to="karthickarjunan08@gmail.com", 
     #     recipients=[supplier_email],
 	# 	# cc=["DAPL-team@dynatherm.co.in"],
-    #     # bcc=["DAPL-team@dynatherm.co.in"],
+    #   # bcc=["DAPL-team@dynatherm.co.in"],
     #     subject=subject,
     #     message=message,
-    #     attachments=[{
-    #         "fname": file_name,
-    #         "fcontent": pdf_data
-    #     }]
+    #     attachments=attachments
+    #     # attachments=[{
+    #     #     "fname": file_name,
+    #     #     "fcontent": pdf_data
+    #     # }]
     # )
 
     frappe.msgprint(f"✅ {order_type} sent to {supplier_email}")

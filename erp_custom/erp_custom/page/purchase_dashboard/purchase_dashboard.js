@@ -322,8 +322,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                 </div>
             </div>
 
-            
-
         </div>
     </div>
     `);
@@ -552,36 +550,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
         $("#ig_total_qty").text(total_qty);
         $("#ig_total_amount").html(frappe.format(total_amount, { fieldtype: "Currency" }));
     }
-
-    // function render_full_po_table(rows) {
-    //     let html = "";
-    //     let total_amount = 0;
-
-    //     if (!rows || !rows.length) {
-    //         $("#full_po_table").html(`<tr><td colspan="8" class="text-muted py-3">No Purchase Orders found for the selected filters.</td></tr>`);
-    //         $("#full_po_total_amount").html(frappe.format(0, { fieldtype: "Currency" }));
-    //         return;
-    //     }
-
-    //     rows.forEach(r => {
-    //         let amount = Number(r.grand_total || 0);
-    //         total_amount += amount;
-    //         html += `
-    //             <tr>
-    //                 <td><a href="/app/purchase-order/${r.name}" target="_blank">${r.name}</a></td>
-    //                 <td>${r.supplier || "-"}</td>
-    //                 <td>${r.project || "-"}</td>
-    //                 <td>${r.custom_order_type || "Purchase Order"}</td>
-    //                 <td>${frappe.datetime.str_to_user(r.transaction_date) || "-"}</td>
-    //                 <td>${r.schedule_date ? frappe.datetime.str_to_user(r.schedule_date) : "-"}</td>
-    //                 <td>${r.workflow_state || "Draft"}</td>
-    //                 <td>${frappe.format(amount, { fieldtype: "Currency" })}</td>
-    //             </tr>`;
-    //     });
-
-    //     $("#full_po_table").html(html);
-    //     $("#full_po_total_amount").html(frappe.format(total_amount, { fieldtype: "Currency" }));
-    // }
 
     let full_po_names = [];
 
