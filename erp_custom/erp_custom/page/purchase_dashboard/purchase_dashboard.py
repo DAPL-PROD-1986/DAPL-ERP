@@ -223,20 +223,18 @@ def get_dashboard_data(filters=None):
 	# -----------------------------
 	# 6. RFQ COUNT
 	# -----------------------------
-	# rfq_conditions = []
+	rfq_conditions = []
 
-	# if filters.get("transaction_date"):
-	# 	rfq_conditions.append("transaction_date = %(transaction_date)s")
+	if filters.get("transaction_date"):
+		rfq_conditions.append("transaction_date = %(transaction_date)s")
 
-	# where_rfq = "WHERE " + " AND ".join(rfq_conditions) if rfq_conditions else ""
+	where_rfq = "WHERE " + " AND ".join(rfq_conditions) if rfq_conditions else ""
 
-	# rfq_result = frappe.db.sql(f"""
-	# 	SELECT COUNT(name) AS count
-	# 	FROM `tabRequest for Quotation`
-	# 	{where_rfq}
-	# """, filters, as_dict=True)
 
-	# rfq_count = rfq_result[0].count if rfq_result else 0
+	rfq_result = frappe.db.sql(f"""
+		SELECT COUNT(name) AS count FROM `tabRequest for Quotation` {where_rfq} """, filters, as_dict=True)
+
+	rfq_count = rfq_result[0].count if rfq_result else 0
 	
 
 	# -----------------------------
@@ -251,5 +249,5 @@ def get_dashboard_data(filters=None):
 		"status_counts": status_counts or [],
 		"full_po_list": full_po_list or [],
 		"upcoming_required_by": upcoming_required_by or [],
-		# "rfq_count": rfq_count
+		"rfq_count": rfq_count
 	}

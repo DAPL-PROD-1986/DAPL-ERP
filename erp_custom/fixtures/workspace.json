@@ -15,7 +15,7 @@
     "label": "PO Suppliers"
    }
   ],
-  "content": "[{\"id\":\"IHddmyOzxS\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Purchase Order\",\"col\":4}},{\"id\":\"sPK3YsY7ba\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Tranport Order\",\"col\":4}},{\"id\":\"0hH346R9dx\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Work Order\",\"col\":4}},{\"id\":\"lc2G2Y_wv1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"MWOg6KZ7EG\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overall Orders\",\"col\":3}},{\"id\":\"3pOcCkt095\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Draft\",\"col\":3}},{\"id\":\"2LBBMXAWHj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Technical Review\",\"col\":3}},{\"id\":\"kBel9oDHN6\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Finance Review\",\"col\":3}},{\"id\":\"cnPFsvA6XY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cancelled\",\"col\":3}},{\"id\":\"V5x2v8j-Jk\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved\",\"col\":3}},{\"id\":\"zj-4v6K3Dt\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"wkWWtkl2hb\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Purchase Orders by Status\",\"col\":6}},{\"id\":\"9XAzbKvarS\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Project\",\"col\":6}},{\"id\":\"aExT0VQs54\",\"type\":\"chart\",\"data\":{\"chart_name\":\"PO Suppliers\",\"col\":6}},{\"id\":\"oN7lXSwQji\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Xe2GVLOq8J\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"QwqyG6XuUt\",\"type\":\"card\",\"data\":{\"card_name\":\"Buying\",\"col\":4}},{\"id\":\"bTPjOxC_N_\",\"type\":\"card\",\"data\":{\"card_name\":\"Items & Pricing\",\"col\":4}},{\"id\":\"87ht0HIneb\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings\",\"col\":4}},{\"id\":\"EDOsBOmwgw\",\"type\":\"card\",\"data\":{\"card_name\":\"Supplier\",\"col\":4}},{\"id\":\"oWNNIiNb2i\",\"type\":\"card\",\"data\":{\"card_name\":\"Supplier Scorecard\",\"col\":4}},{\"id\":\"7F_13-ihHB\",\"type\":\"card\",\"data\":{\"card_name\":\"Key Reports\",\"col\":4}},{\"id\":\"pfwiLvionl\",\"type\":\"card\",\"data\":{\"card_name\":\"Other Reports\",\"col\":4}}]",
+  "content": "[{\"id\":\"IHddmyOzxS\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Purchase Order\",\"col\":4}},{\"id\":\"sPK3YsY7ba\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Transport Order\",\"col\":4}},{\"id\":\"0hH346R9dx\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Work Order\",\"col\":4}},{\"id\":\"lc2G2Y_wv1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"MWOg6KZ7EG\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overall Orders\",\"col\":3}},{\"id\":\"3pOcCkt095\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Draft\",\"col\":3}},{\"id\":\"2LBBMXAWHj\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Technical Review\",\"col\":3}},{\"id\":\"kBel9oDHN6\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Finance Review\",\"col\":3}},{\"id\":\"cnPFsvA6XY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cancelled\",\"col\":3}},{\"id\":\"V5x2v8j-Jk\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved\",\"col\":3}},{\"id\":\"zj-4v6K3Dt\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"wkWWtkl2hb\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Purchase Orders by Status\",\"col\":6}},{\"id\":\"9XAzbKvarS\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Project\",\"col\":6}},{\"id\":\"aExT0VQs54\",\"type\":\"chart\",\"data\":{\"chart_name\":\"PO Suppliers\",\"col\":12}},{\"id\":\"oN7lXSwQji\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Xe2GVLOq8J\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"QwqyG6XuUt\",\"type\":\"card\",\"data\":{\"card_name\":\"Buying\",\"col\":4}},{\"id\":\"bTPjOxC_N_\",\"type\":\"card\",\"data\":{\"card_name\":\"Items & Pricing\",\"col\":4}},{\"id\":\"87ht0HIneb\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings\",\"col\":4}},{\"id\":\"EDOsBOmwgw\",\"type\":\"card\",\"data\":{\"card_name\":\"Supplier\",\"col\":4}},{\"id\":\"oWNNIiNb2i\",\"type\":\"card\",\"data\":{\"card_name\":\"Supplier Scorecard\",\"col\":4}},{\"id\":\"7F_13-ihHB\",\"type\":\"card\",\"data\":{\"card_name\":\"Key Reports\",\"col\":4}},{\"id\":\"pfwiLvionl\",\"type\":\"card\",\"data\":{\"card_name\":\"Other Reports\",\"col\":4}}]",
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",
@@ -720,13 +720,17 @@
     "type": "Link"
    }
   ],
-  "modified": "2026-07-07 16:43:15.732767",
+  "modified": "2026-07-11 14:35:53.854625",
   "module": "Buying",
   "name": "Buying",
   "number_cards": [
    {
     "label": "Draft",
     "number_card_name": "Draft Purchase Orders"
+   },
+   {
+    "label": "Transport Order",
+    "number_card_name": "Transport Order (PO)"
    },
    {
     "label": "Overall Orders",
@@ -739,10 +743,6 @@
    {
     "label": "Finance Review",
     "number_card_name": "Finance Purchase Orders"
-   },
-   {
-    "label": "Tranport Order",
-    "number_card_name": "Tranport Order (PO)"
    },
    {
     "label": "Cancelled",
