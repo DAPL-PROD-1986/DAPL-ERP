@@ -340,14 +340,32 @@ fixtures = [
     },
      # Dashboard Charts
     {
-        "doctype": "Dashboard Chart",
-        "filters": [["name", "is", "set"]]
+    "doctype": "Dashboard Chart",
+    "filters": [
+        ["name", "in", [
+            "Project (PO)",
+            "Suppliers (PO)",
+            "Purchase Orders by Status"
+        ]]
+    ]
     },
 
     # Number Cards
     {
-        "doctype": "Number Card",
-        "filters": [["name", "is", "set"]]
+    "doctype": "Number Card",
+    "filters": [
+        ["name", "in", [
+            "Draft Purchase Orders",
+            "Technical Purchase Orders",
+            "Finance Purchase Orders",
+            "Approved",
+            "Cancelled Purchase Orders",
+            "Total Order (PO)",
+            "Purchase Order (PO)",
+            "Work Order (PO)",
+            "Transport Order (PO)"
+        ]]
+    ]
     },
 
     {
