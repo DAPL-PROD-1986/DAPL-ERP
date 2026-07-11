@@ -118,9 +118,9 @@
     <th style="width:25%">Item Name</th>
     <!-- <th style="width:10%">HSN</th> -->
     <th style="width:28%">Description</th>
-    <th style="width:13%">Measurement</th>
-    <!-- <th style="width:7%">QTY</th>
-    <th style="width:7%">UOM</th> -->
+    <!-- <th style="width:13%">Measurement</th> -->
+    <th style="width:7%">QTY</th>
+    <th style="width:7%">UOM</th>
     <th style="width:15%">Rate</th>
     <th style="width:15%">Amount</th>
 </tr>
@@ -156,15 +156,7 @@
     {% endif %}
 </td> -->
 
-<td>
-        {% if item.description %}
-        <span>{{ item.description }}</span>
-    {% endif %}
 
-     {% if item.qty %}
-        <span><b>QTY:</b> {{ item.qty }} {{ item.uom }}</span>
-    {% endif %}
-</td>
 <!-- <td class="center">
 
 {% if item.item_group == "Plates" %}
@@ -213,51 +205,33 @@
 </td> -->
 
 <!-- <td class="center">{{ item.custom_total_weights }}</td> -->
- <td class="center">
+ <td>
+    {% if item.description %}
+        <span>{{ item.description }}</span>
+    {% endif %}
 
-{% if item.item_group == "Plates" %}
-    <!-- {{ item.custom_length or 0 }} x {{ item.custom_width or 0 }} x {{ item.custom_thickness or 0 }} mm<br> -->
-    <b>
-    <!-- Wt/Pc: {{ frappe.utils.flt(item.custom_kilogramskgs, 2) }} Kg<br> -->
-     {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg
-    </b>
+    {% if item.custom_total_weights and item.custom_total_weights > 0 %}
 
-{% elif item.item_group in ["Pipes", "Tubes"] %}
+        {% if item.item_group in ["Pipes", "Tubes"] %}
+            {% set mtr_per_pc = (item.custom_length or 0) / 1000 %}
+            {% set total_mtr = mtr_per_pc * (item.qty or 0) %}
 
-    {% set mtr_per_pc = (item.custom_length or 0) / 1000 %}
-    {% set total_mtr = mtr_per_pc * (item.qty or 0) %}
+            <span>
+                <b>Total Meter:</b>
+                {{ frappe.utils.flt(total_mtr, 2) }} Mtr
+            </span>
 
-    <!-- OD {{ item.custom_outer_diameter or 0 }} x {{ item.custom_thickness or 0 }} THK x {{ item.custom_length or 0 }} LG<br> -->
+        {% else %}
+            <span>
+                <b>Total Weight:</b>
+                {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg
+            </span>
+        {% endif %}
 
-    <b>
-        <!-- {{ frappe.utils.flt(mtr_per_pc, 2) }} Mtr / Pc<br> -->
-        {{ frappe.utils.flt(total_mtr, 2) }} Mtr
-    </b>
-
-
-{% elif item.item_group == "Fasteners" %}
-    <!-- M {{ item.custom_outer_diameter or 0 }} x {{ item.custom_length or 0 }} LG <br> -->
-
-{% elif item.item_group == "Forgings" %}
-    <!-- M{{ item.custom_outer_diameter or 0 }} x {{ item.custom_length or 0 }} LG<br> -->
-    <b>
-    <!-- {{ frappe.utils.flt(item.custom_kilogramskgs, 2) }} Kg / Pc<br> -->
-    {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg 
-    </b>
-
-{% elif item.item_group == "Rods" %}
-    <!-- {{ item.custom_outer_diameter or 0 }} x {{ item.custom_length or 0 }} mm<br> -->
-    <b>
-    <!-- {{ frappe.utils.flt(item.custom_kilogramskgs, 2) }} Kg / Pc<br> -->
-    {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg 
-    </b>
-
-{% else %}
-    {{ item.dimension or "" }}
-{% endif %}
-
+    {% endif %}
 </td>
-<!-- <td class="center">{{ item.uom }}</td> -->
+<td class="center">{{ item.qty }}</td>
+<td class="center">{{ item.uom }}</td>
 
 {# ✅ Rate Logic #}
 {% if item.item_group == "Plates" %}
