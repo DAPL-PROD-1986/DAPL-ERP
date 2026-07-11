@@ -405,9 +405,9 @@ def download_bom_template():
         "Length (mm)",
         "Width (mm)",
         "Thickness (mm)",
-        "Density (kg/m³)",
         "Outer Diameter (mm)",
         "Inner Diameter (mm)",
+        "Density (kg/m³)",
 		"Kgs Per Unit",
 		"Total Weight"
     ]

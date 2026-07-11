@@ -335,8 +335,42 @@ fixtures = [
     {
         "doctype": "Workspace",
         "filters": [
-            ["name", "in", ["Quality", "Frappe HR"]]
+            ["name", "in", ["Quality", "Frappe HR", "Buying"]]
         ]
+    },
+     # Dashboard Charts
+    {
+        "doctype": "Dashboard Chart",
+        "filters": [["name", "is", "set"]]
+    },
+
+    # Number Cards
+    {
+        "doctype": "Number Card",
+        "filters": [["name", "is", "set"]]
+    },
+
+    {
+        "doctype": "Custom Field",
+        "filters": [["name", "is", "set"]]
+    },
+    
+     # Client Scripts
+    {
+        "doctype": "Client Script",
+        "filters": [["name", "is", "set"]]
+    },
+
+     # Property Setters
+    {
+        "doctype": "Property Setter",
+        "filters": [["name", "is", "set"]]
+    },
+
+    # Server Scripts
+    {
+        "doctype": "Server Script",
+        "filters": [["name", "is", "set"]]
     },
 ]
 
