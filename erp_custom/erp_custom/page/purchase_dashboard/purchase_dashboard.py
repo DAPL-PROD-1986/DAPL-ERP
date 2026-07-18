@@ -113,13 +113,13 @@ def get_dashboard_data(filters=None):
 		SELECT
 			poi.item_code AS item,
 			SUM(poi.qty) AS qty,
-			SUM(poi.amount) AS total_amount
+			SUM(po.grand_total) AS total_amount
 		FROM `tabPurchase Order Item` poi
 		INNER JOIN `tabPurchase Order` po ON po.name = poi.parent
 		LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
 		{where_with_item}
 		GROUP BY poi.item_code
-		ORDER BY SUM(poi.amount) DESC
+		ORDER BY SUM(po.grand_total) DESC
 		LIMIT 10
 	""", filters, as_dict=True)
 
@@ -128,30 +128,39 @@ def get_dashboard_data(filters=None):
 		SELECT
 			po.project,
 			COUNT(DISTINCT po.name) AS count,
-			SUM(poi.qty) AS qty,
-			SUM(poi.amount) AS total_amount
+
+			IFNULL((
+				SELECT SUM(so.grand_total)
+				FROM `tabSales Order` so
+				WHERE so.project = po.project
+				AND so.docstatus = 1
+			), 0) AS so_grand_total,
+
+			SUM(po.grand_total) AS total_amount
+
 		FROM `tabPurchase Order` po
-		INNER JOIN `tabPurchase Order Item` poi ON poi.parent = po.name
-		LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
+		INNER JOIN `tabPurchase Order Item` poi
+			ON poi.parent = po.name
+
+		LEFT JOIN `tabSupplier` sup
+			ON sup.name = po.supplier
+
 		{where_with_item}
 		GROUP BY po.project
-		ORDER BY SUM(poi.amount) DESC
-		LIMIT 10
-	""", filters, as_dict=True)
+		ORDER BY SUM(po.grand_total) DESC LIMIT 10 """, filters, as_dict=True)
 
 	# Top Item Group (joins poi)
 	top_item_groups = frappe.db.sql(f"""
 		SELECT
 			poi.item_group,
 			COUNT(DISTINCT po.name) AS count,
-			SUM(poi.qty) AS qty,
-			SUM(poi.amount) AS total_amount
+			SUM(po.grand_total) AS total_amount
 		FROM `tabPurchase Order Item` poi
 		INNER JOIN `tabPurchase Order` po ON po.name = poi.parent
 		LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
 		{where_with_item}
 		GROUP BY poi.item_group
-		ORDER BY SUM(poi.amount) DESC
+		ORDER BY SUM(po.grand_total) DESC
 		LIMIT 10
 	""", filters, as_dict=True)
 
