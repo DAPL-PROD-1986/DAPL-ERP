@@ -113,20 +113,21 @@ def get_dashboard_data(filters=None):
 		SELECT
 			poi.item_code AS item,
 			SUM(poi.qty) AS qty,
-			SUM(po.grand_total) AS total_amount
+			SUM(poi.amount) AS total_amount
 		FROM `tabPurchase Order Item` poi
 		INNER JOIN `tabPurchase Order` po ON po.name = poi.parent
 		LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
 		{where_with_item}
 		GROUP BY poi.item_code
-		ORDER BY SUM(po.grand_total) DESC
+		ORDER BY SUM(poi.amount) DESC
 		LIMIT 10
 	""", filters, as_dict=True)
 
-	# Top Projects (joins poi)
+	# Top Projects
 	top_projects = frappe.db.sql(f"""
 		SELECT
 			po.project,
+
 			COUNT(DISTINCT po.name) AS count,
 
 			IFNULL((
@@ -139,28 +140,31 @@ def get_dashboard_data(filters=None):
 			SUM(po.grand_total) AS total_amount
 
 		FROM `tabPurchase Order` po
-		INNER JOIN `tabPurchase Order Item` poi
-			ON poi.parent = po.name
 
 		LEFT JOIN `tabSupplier` sup
 			ON sup.name = po.supplier
 
-		{where_with_item}
+		{ where_po_only + (" AND " if where_po_only else "WHERE ") + "IFNULL(po.workflow_state, 'Draft') != 'Cancelled'" }
+
 		GROUP BY po.project
-		ORDER BY SUM(po.grand_total) DESC LIMIT 10 """, filters, as_dict=True)
+
+		ORDER BY total_amount DESC
+
+		LIMIT 10
+	""", filters, as_dict=True)
 
 	# Top Item Group (joins poi)
 	top_item_groups = frappe.db.sql(f"""
 		SELECT
 			poi.item_group,
 			COUNT(DISTINCT po.name) AS count,
-			SUM(po.grand_total) AS total_amount
+			SUM(poi.amount) AS total_amount
 		FROM `tabPurchase Order Item` poi
 		INNER JOIN `tabPurchase Order` po ON po.name = poi.parent
 		LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
 		{where_with_item}
 		GROUP BY poi.item_group
-		ORDER BY SUM(po.grand_total) DESC
+		ORDER BY SUM(poi.amount) DESC
 		LIMIT 10
 	""", filters, as_dict=True)
 

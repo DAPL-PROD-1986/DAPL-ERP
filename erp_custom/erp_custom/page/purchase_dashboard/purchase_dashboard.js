@@ -614,7 +614,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                     <td>&nbsp;</td>
                     <td></td>
                     <td></td>
-                    <td></td>
                 </tr>
             `;
         }
@@ -639,7 +638,9 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
         rows.forEach(r => {
             let amount = Number(r.grand_total || 0);
-            total_amount += amount;
+            if (r.workflow_state !== "Cancelled") {
+                total_amount += amount;
+            }
             html += `
                 <tr>
                     <td>
