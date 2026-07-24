@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "autoincrement",
+ "autoname": "DAPL-PO-.DD.-.MM.-.YY.-.##",
  "creation": "2026-07-09 11:56:02.250700",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -73,11 +73,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-09 12:25:55.080866",
+ "modified": "2026-07-21 17:36:53.704858",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Daily PO Report",
- "naming_rule": "Autoincrement",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

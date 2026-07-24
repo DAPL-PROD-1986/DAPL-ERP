@@ -63,18 +63,13 @@ def get_dashboard_data(filters=None):
 				WHEN po.custom_order_type IS NULL OR po.custom_order_type = '' THEN 'Others'
 				ELSE po.custom_order_type
 			END AS custom_order_type,
-
 			COUNT(DISTINCT po.name) AS count,
-
 			IFNULL(SUM(po.grand_total), 0) AS total_amount
-
 		FROM `tabPurchase Order` po
-
 		LEFT JOIN `tabSupplier` sup 
 			ON sup.name = po.supplier
 
 		{where_po_only}
-
 		GROUP BY 
 			CASE
 				WHEN po.custom_order_type IS NULL OR po.custom_order_type = '' THEN 'Others'
@@ -96,8 +91,7 @@ def get_dashboard_data(filters=None):
 	# -----------------------------
 	# Top Suppliers (po only)
 	top_suppliers = frappe.db.sql(f"""
-    SELECT
-        po.supplier AS supplier,
+    SELECT po.supplier AS supplier,
         COUNT(DISTINCT po.name) AS count,
         IFNULL(SUM(po.grand_total), 0) AS total_amount
     FROM `tabPurchase Order` po
@@ -110,8 +104,7 @@ def get_dashboard_data(filters=None):
 
 	# Top Items (joins poi)
 	top_items = frappe.db.sql(f"""
-		SELECT
-			poi.item_code AS item,
+		SELECT poi.item_code AS item,
 			SUM(poi.qty) AS qty,
 			SUM(poi.amount) AS total_amount
 		FROM `tabPurchase Order Item` poi
@@ -125,31 +118,25 @@ def get_dashboard_data(filters=None):
 
 	# Top Projects
 	top_projects = frappe.db.sql(f"""
-		SELECT
-			po.project,
-
+		SELECT po.project,
 			COUNT(DISTINCT po.name) AS count,
-
 			IFNULL((
-				SELECT SUM(so.grand_total)
-				FROM `tabSales Order` so
-				WHERE so.project = po.project
-				AND so.docstatus = 1
-			), 0) AS so_grand_total,
-
+				SELECT SUM(soi.amount)
+				FROM `tabSales Order Item` soi
+				INNER JOIN `tabSales Order` so
+					ON so.name = soi.parent
+				WHERE soi.project = po.project
+				AND so.docstatus = 1), 0) AS so_grand_total,
 			SUM(po.grand_total) AS total_amount
 
 		FROM `tabPurchase Order` po
-
 		LEFT JOIN `tabSupplier` sup
 			ON sup.name = po.supplier
 
 		{ where_po_only + (" AND " if where_po_only else "WHERE ") + "IFNULL(po.workflow_state, 'Draft') != 'Cancelled'" }
 
 		GROUP BY po.project
-
 		ORDER BY total_amount DESC
-
 		LIMIT 10
 	""", filters, as_dict=True)
 
@@ -188,12 +175,7 @@ def get_dashboard_data(filters=None):
 	offset = cint(filters.get("offset") or 0)
 
 	full_po_list = frappe.db.sql(f"""
-		SELECT
-			po.name,
-			po.supplier,
-			po.project,
-			po.transaction_date,
-			po.schedule_date,
+		SELECT po.name, po.supplier, po.project, po.transaction_date, po.schedule_date,
 			IFNULL(po.custom_order_type, 'Purchase Order') AS custom_order_type,
 			IFNULL(po.workflow_state, 'Draft') AS workflow_state,
 			IFNULL(po.grand_total, 0) AS grand_total
@@ -216,12 +198,7 @@ def get_dashboard_data(filters=None):
 	# 5. REQUIRED BY - NEXT 7 DAYS (rolling window from today)
 	# -----------------------------
 	upcoming_required_by = frappe.db.sql(f"""
-		SELECT
-			po.name,
-			po.supplier,
-			po.project,
-			po.transaction_date,
-			po.schedule_date,
+		SELECT po.name, po.supplier, po.project, po.transaction_date, po.schedule_date,
 			IFNULL(po.custom_order_type, 'Purchase Order') AS custom_order_type,
 			IFNULL(po.workflow_state, 'Draft') AS workflow_state,
 			IFNULL(po.grand_total, 0) AS grand_total
