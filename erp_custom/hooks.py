@@ -335,7 +335,7 @@ fixtures = [
     {
         "doctype": "Workspace",
         "filters": [
-            ["name", "in", ["Quality", "Frappe HR", "Buying"]]
+            ["name", "in", ["Projects", "Quality", "Frappe HR", "Buying", "Manufacturing"]]
         ]
     },
      # Dashboard Charts
@@ -345,7 +345,8 @@ fixtures = [
         ["name", "in", [
             "Project (PO)",
             "Suppliers (PO)",
-            "Purchase Orders by Status"
+            "Purchase Orders by Status",
+            "Quality Assurance Plan"
         ]]
     ]
     },
@@ -363,7 +364,10 @@ fixtures = [
             "Total Order (PO)",
             "Purchase Order (PO)",
             "Work Order (PO)",
-            "Transport Order (PO)"
+            "Transport Order (PO)",
+            "Overall BOM",
+            "Overall Cutting Plan",
+            "Overall Material Request"
         ]]
     ]
     },
