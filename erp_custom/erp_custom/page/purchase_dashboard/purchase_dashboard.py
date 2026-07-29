@@ -89,79 +89,97 @@ def get_dashboard_data(filters=None):
 	# -----------------------------
 	# 2. TOP Tables
 	# -----------------------------
-	# Top Suppliers (po only)
 	top_suppliers = frappe.db.sql(f"""
-    SELECT po.supplier AS supplier,
-        COUNT(DISTINCT po.name) AS count,
-        IFNULL(SUM(po.grand_total), 0) AS total_amount
-    FROM `tabPurchase Order` po
-    LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
-    {where_po_only}
-    GROUP BY po.supplier
-    ORDER BY SUM(po.grand_total) DESC
-    LIMIT 10
-""", filters, as_dict=True)
+		SELECT
+			po.supplier AS supplier,
+			COUNT(DISTINCT po.name) AS count,
+			IFNULL(SUM(poi.amount),0) AS total_amount,
+			IFNULL(SUM(poi.igst_amount),0) AS igst_amount
+
+		FROM `tabPurchase Order` po
+
+		INNER JOIN `tabPurchase Order Item` poi
+			ON poi.parent = po.name
+
+		LEFT JOIN `tabSupplier` sup
+			ON sup.name = po.supplier
+
+		{ where_with_item + (" AND " if where_with_item else "WHERE ") + "IFNULL(po.workflow_state,'Draft') != 'Cancelled'" }
+
+		GROUP BY po.supplier
+		ORDER BY total_amount DESC
+		LIMIT 10
+	""", filters, as_dict=True)
 
 	# Top Items (joins poi)
 	top_items = frappe.db.sql(f"""
-		SELECT poi.item_code AS item,
-			SUM(poi.qty) AS qty,
-			SUM(poi.amount) AS total_amount
+		SELECT poi.item_code AS item, poi.item_group,
+			COUNT(DISTINCT po.name) AS order_count,
+			IFNULL(SUM(poi.amount),0) AS basic_value,
+			IFNULL(SUM(poi.igst_amount),0) AS gst_value
+
 		FROM `tabPurchase Order Item` poi
 		INNER JOIN `tabPurchase Order` po ON po.name = poi.parent
 		LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
-		{where_with_item}
-		GROUP BY poi.item_code
-		ORDER BY SUM(poi.amount) DESC
-		LIMIT 10
-	""", filters, as_dict=True)
+
+		{ where_with_item + (" AND " if where_with_item else "WHERE ") + "IFNULL(po.workflow_state,'Draft') != 'Cancelled'" }
+		GROUP BY poi.item_code, poi.item_group
+		ORDER BY basic_value DESC
+		LIMIT 10 """, filters, as_dict=True)
 
 	# Top Projects
 	top_projects = frappe.db.sql(f"""
 		SELECT po.project,
 			COUNT(DISTINCT po.name) AS count,
+
+			/* Tag Name from Sales Order Item */
+			IFNULL((
+				SELECT GROUP_CONCAT(DISTINCT soi.item_code SEPARATOR ', ')
+				FROM `tabSales Order Item` soi
+				INNER JOIN `tabSales Order` so
+					ON so.name = soi.parent
+				WHERE soi.project = po.project
+				AND so.docstatus = 1), '') AS tag_name,
+
+			/* SO Basic Value */
 			IFNULL((
 				SELECT SUM(soi.amount)
 				FROM `tabSales Order Item` soi
 				INNER JOIN `tabSales Order` so
 					ON so.name = soi.parent
 				WHERE soi.project = po.project
-				AND so.docstatus = 1), 0) AS so_grand_total,
-			SUM(po.grand_total) AS total_amount
+				AND so.docstatus = 1), 0) AS so_basic_value,
+
+			/* SO GST */
+			IFNULL((
+				SELECT SUM(soi.igst_amount)
+				FROM `tabSales Order Item` soi
+				INNER JOIN `tabSales Order` so
+					ON so.name = soi.parent
+				WHERE soi.project = po.project
+				AND so.docstatus = 1), 0) AS so_gst_value,
+
+			/* PO Basic Value */
+			IFNULL(SUM(po.total),0) AS po_basic_value,
+
+			/* PO Spend */
+			IFNULL(SUM(po.grand_total),0) AS total_amount
 
 		FROM `tabPurchase Order` po
-		LEFT JOIN `tabSupplier` sup
-			ON sup.name = po.supplier
+		LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
 
-		{ where_po_only + (" AND " if where_po_only else "WHERE ") + "IFNULL(po.workflow_state, 'Draft') != 'Cancelled'" }
+		{ where_po_only + (" AND " if where_po_only else "WHERE ") + "IFNULL(po.workflow_state,'Draft') != 'Cancelled'" }
 
 		GROUP BY po.project
 		ORDER BY total_amount DESC
-		LIMIT 10
-	""", filters, as_dict=True)
+		LIMIT 10 """, filters, as_dict=True)
 
-	# Top Item Group (joins poi)
-	top_item_groups = frappe.db.sql(f"""
-		SELECT
-			poi.item_group,
-			COUNT(DISTINCT po.name) AS count,
-			SUM(poi.amount) AS total_amount
-		FROM `tabPurchase Order Item` poi
-		INNER JOIN `tabPurchase Order` po ON po.name = poi.parent
-		LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
-		{where_with_item}
-		GROUP BY poi.item_group
-		ORDER BY SUM(poi.amount) DESC
-		LIMIT 10
-	""", filters, as_dict=True)
 
 	# -----------------------------
 	# 3. WORKFLOW STATUS COUNTS (po only)
 	# -----------------------------
 	status_counts = frappe.db.sql(f"""
-		SELECT
-			IFNULL(po.workflow_state, 'Draft') AS workflow_state,
-			COUNT(DISTINCT po.name) AS count
+		SELECT IFNULL(po.workflow_state, 'Draft') AS workflow_state, COUNT(DISTINCT po.name) AS count
 		FROM `tabPurchase Order` po
 		LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
 		{where_po_only}
@@ -235,7 +253,7 @@ def get_dashboard_data(filters=None):
 		"top_suppliers": top_suppliers or [],
 		"top_items": top_items or [],
 		"top_projects": top_projects or [],
-		"top_item_groups": top_item_groups or [],
+		# "top_item_groups": top_item_groups or [],
 		"status_counts": status_counts or [],
 		"full_po_list": full_po_list or [],
 		"upcoming_required_by": upcoming_required_by or [],

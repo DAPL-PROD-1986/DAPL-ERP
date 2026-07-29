@@ -142,6 +142,8 @@ td:nth-child(3), th:nth-child(3) {
 {% set company_doc = frappe.get_doc("Company", doc.company) %}
 {% set supplier_doc = frappe.get_doc("Supplier", doc.supplier) %}
 {% set total_items = doc.items|length %}
+{% set currency = frappe.get_doc("Currency", doc.currency) %}
+{% set currency_symbol = currency.symbol %}
 
 <div class="print-wrap">
     <div class="print-content">
@@ -241,14 +243,10 @@ td:nth-child(3), th:nth-child(3) {
                                 <span><b>Brand:</b> {{ item.custom_item_brand }}</span>
                             {% endif %}
                         </td>
-                        <td class="center">
-                            {{ item.gst_hsn_code or item.hsn_code or "" }}
-                        </td>
-                        <td>
-                            {{ item.description or "" }}
-                        </td>
-                        <td class="center">{{ item.qty }}</td>
-                        <td class="center">{{ item.uom }}</td>
+                        <td class="center"> {{ item.gst_hsn_code or item.hsn_code or "" }} </td>
+                        <td> {{ item.description or "" }} </td>
+                        <td class="center"> {{ item.qty }} </td>
+                        <td class="center"> {{ item.uom }} </td>
 
                         {# Rate Conditional calculations #}
                         {% if item.item_group == "Plates" or item.item_group == "Pipes" %}
@@ -259,14 +257,8 @@ td:nth-child(3), th:nth-child(3) {
                             {% set rate_unit = "" %}
                         {% endif %}
 
-                        <td class="right">
-                            {{ frappe.format_value(rate, {"fieldtype": "Currency"}) }}
-                            {% if rate_unit %} / {{ rate_unit }}{% endif %}
-                        </td>
-
-                        <td class="right">
-                            {{ frappe.format_value(item.amount, {"fieldtype": "Currency"}) }}
-                        </td>
+                        <td class="right"> {{ currency_symbol }} {{ "{:,.2f}".format(rate) }} {% if rate_unit %} / {{ rate_unit }}{% endif %} </td>
+                        <td class="right"> {{ currency_symbol }} {{ "{:,.2f}".format(item.amount) }} </td>
                     </tr>
                     {% endfor %}
                 {% endif %}
@@ -278,22 +270,21 @@ td:nth-child(3), th:nth-child(3) {
             <table>
                 <tr>
                     <td colspan="4" style="width:55%; vertical-align: middle; padding: 6px;">
-                        <b>IN WORDS:</b><br>
-                        <span>{{ doc.in_words or "" }}</span>
+                        <b>IN WORDS:</b><br> <span>{{ doc.in_words or "" }}</span>
                     </td>
                     <td colspan="4" style="width:45%; padding: 0;">
                         <table style="margin: 0; border: none;">
                             <tr>
                                 <td class="no-border" style="padding: 4px 6px;">Subtotal</td>
-                                <td class="no-border right" style="padding: 4px 6px;">{{ frappe.format_value(doc.total, {"fieldtype":"Currency"}) }}</td>
+                                <td class="no-border right" style="padding: 4px 6px;">{{ currency_symbol }} {{ "{:,.2f}".format(doc.total) }}</td>
                             </tr>
                             <tr>
                                 <td class="no-border" style="padding: 4px 6px;">Total Taxes</td>
-                                <td class="no-border right" style="padding: 4px 6px;">{{ frappe.format_value(doc.total_taxes_and_charges, {"fieldtype":"Currency"}) }}</td>
+                                <td class="no-border right" style="padding: 4px 6px;">{{ currency_symbol }} {{ "{:,.2f}".format(doc.total_taxes_and_charges) }}</td>
                             </tr>
                             <tr style="border-top: 1px solid #000;">
                                 <td class="no-border" style="padding: 6px 6px;"><b>Total</b></td>
-                                <td class="no-border right" style="padding: 6px 6px;"><b>{{ frappe.format_value(doc.grand_total, {"fieldtype":"Currency"}) }}</b></td>
+                                <td class="no-border right" style="padding: 6px 6px;"><b>{{ currency_symbol }} {{ "{:,.2f}".format(doc.grand_total) }}</b></td>
                             </tr>
                         </table>
                     </td>

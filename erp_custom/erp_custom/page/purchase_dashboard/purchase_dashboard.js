@@ -28,11 +28,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
             z-index: 2000 !important;
         }
 
-        #poChart {
-            width: 100% !important;
-            height: 100% !important;
-        }
-
         /* Overall Purchase Order Table Scroll */
         .full-po-table-wrapper {
             max-height: 500px;      /* Vertical scroll height */
@@ -54,6 +49,59 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
             top: 0;
             z-index: 10;
             background: #f8f9fa;
+        }
+
+        .dashboard-table-body table{
+            margin-bottom:0;
+        }
+
+        .dashboard-table-body thead th{
+            background:#f8fafc;
+            font-weight:700;
+            font-size:14px;
+            color:#374151;
+            border-bottom:2px solid #dee2e6;
+            white-space:nowrap;
+        }
+
+        .dashboard-table-body tbody td{
+            vertical-align:middle;
+            border-color:#f1f5f9;
+            font-size:14px;
+        }
+
+        .dashboard-table-body tbody tr:hover{
+            background:#f8fafc;
+            transition:.2s;
+        }
+
+        .dashboard-table-body tfoot{
+            font-weight:700;
+            font-size:14px;
+        }
+
+        .dashboard-table-body tfoot td{
+            padding:14px;
+            vertical-align:middle;
+        }
+
+        .table-card{
+            border-radius:15px;
+            overflow:hidden;
+        }
+
+        .card-header{
+            font-weight:600;
+            letter-spacing:.3px;
+            font-size:16px;
+        }
+        .dashboard-table-body tbody tr{
+            height: 52px;
+        }
+
+        .dashboard-table-body tbody td{
+            height: 52px;
+            vertical-align: middle;
         }
     </style>
 
@@ -93,19 +141,38 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                 <div class="row g-3" id="kpi_cards_row2"></div>
             </div>
 
-            <!-- CHART AREA -->
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold text-center text-dark mb-4"> 📊 Order Type Analytics</h5>
-                    <div style="max-width: 800px; height: 350px; margin: auto;">
-                        <canvas id="poChart" style="width:100%; height:100%;"></canvas>
+            <!-- TABLES GRID -->
+            <div class="row g-4 mb-4">
+                <!-- TOP PROJECTS -->
+                <div class="col-lg-12 col-12">
+                    <div class="card shadow-sm border-0 h-100 table-card">
+                        <div class="card-header bg-warning text-dark text-center">
+                            <i class="fa fa-sitemap me-2"></i> Top 10 Projects
+                        </div>
+                        <div class="card-body p-0 table-responsive dashboard-table-body">
+                            <table class="table table-hover text-center align-middle mb-0">
+                                <thead class="table-light text-muted">
+                                    <tr><th>Project</th> <th>Tag Name</th> <th>Basic Value (SO)</th> <th>GST Value (SO)</th> <th>PO Count</th> <th>Basic Value (PO)</th> <th>GST Amount (PO)</th></tr>
+                                </thead>
+                                <tbody id="project_table"></tbody>
+                                <tfoot style="background-color: #fef3c7; border-top:2px solid #f59e0b;">
+                                    <tr>
+                                        <td class="text-start ps-3">Overall Total</td>
+                                        <td></td>
+                                        <td id="project_total_so_amount">0.00</td>
+                                        <td id="project_total_so_gst">0.00</td>
+                                        <td id="project_total_count">0</td>
+                                        <td id="project_total_po_basic">0.00</td>
+                                        <td id="project_total_amount">0.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TABLES GRID -->
             <div class="row g-4 mb-4">
-
                 <!-- TOP SUPPLIERS -->
                 <div class="col-lg-6 col-12">
                     <div class="card shadow-sm border-0 h-100 table-card">
@@ -115,7 +182,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                         <div class="card-body p-0 table-responsive dashboard-table-body">
                             <table class="table table-hover text-center align-middle mb-0">
                                 <thead class="table-light text-muted">
-                                    <tr><th>Supplier</th><th>PO Count</th><th>Total Amount</th></tr>
+                                    <tr><th>Supplier</th><th>PO Count</th><th>Basic Value</th><th>GST Value</th></tr>
                                 </thead>
                                 <tbody id="supplier_table"></tbody>
                                 <tfoot style="background-color: #ede9fe; border-top: 2px solid #8b5cf6;">
@@ -123,57 +190,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                                         <td class="text-start ps-3">Overall Total</td>
                                         <td id="sup_total_count">0</td>
                                         <td id="sup_total_amount">0.00</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TOP ITEMS -->
-                <div class="col-lg-6 col-12">
-                    <div class="card shadow-sm border-0 h-100 table-card">
-                        <div class="card-header bg-success text-white text-center">
-                            <i class="fa fa-cube me-2"></i> Top 10 Items
-                        </div>
-                        <div class="card-body p-0 table-responsive dashboard-table-body">
-                            <table class="table table-hover text-center align-middle mb-0">
-                                <thead class="table-light text-muted">
-                                    <tr><th>Item</th><th>Qty</th><th>Total Amount</th></tr>
-                                </thead>
-                                <tbody id="item_table"></tbody>
-                                <tfoot class="table-success border-top border-success border-2">
-                                    <tr>
-                                        <td class="text-start ps-3">Overall Total</td>
-                                        <td id="item_total_qty">0</td>
-                                        <td id="item_total_amount">0.00</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div> 
-                </div>
-
-                <div class="row g-4 mb-4">
-                <!-- TOP PROJECTS -->
-                <div class="col-lg-6 col-12">
-                    <div class="card shadow-sm border-0 h-100 table-card">
-                        <div class="card-header bg-warning text-dark text-center">
-                            <i class="fa fa-sitemap me-2"></i> Top 10 Projects
-                        </div>
-                        <div class="card-body p-0 table-responsive dashboard-table-body">
-                            <table class="table table-hover text-center align-middle mb-0">
-                                <thead class="table-light text-muted">
-                                    <tr><th>Project</th><th>PO Count</th><th>Basic Value (SO)</th><th>Total Amount (Spend)</th></tr>
-                                </thead>
-                                <tbody id="project_table"></tbody>
-                                <tfoot class="table-warning text-dark border-top border-warning border-2">
-                                    <tr>
-                                        <td class="text-start ps-3">Overall Total</td>
-                                        <td id="project_total_count">0</td>
-                                        <td id="project_total_so_amount">0.00</td>
-                                        <td id="project_total_amount">0.00</td>
+                                        <td id="sup_total_gst">0.00</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -184,26 +201,30 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                 <!-- TOP ITEM GROUPS -->
                 <div class="col-lg-6 col-12">
                     <div class="card shadow-sm border-0 h-100 table-card">
-                        <div class="card-header bg-info text-dark text-center">
-                            <i class="fa fa-tags me-2"></i> Top 10 Item Groups
+                        <div class="card-header bg-success text-white text-center">
+                            <i class="fa fa-cube me-2"></i> Top 10 Item Group
                         </div>
                         <div class="card-body p-0 table-responsive dashboard-table-body">
                             <table class="table table-hover text-center align-middle mb-0">
                                 <thead class="table-light text-muted">
-                                    <tr><th>Item Group</th><th>PO Count</th><th>Total Amount</th></tr>
+                                    <tr> 
+                                        <th> Item </th> <th> Item Group </th> <th> Order Count </th> <th> Basic Value </th> <th> GST Value </th>
+                                    </tr>
                                 </thead>
-                                <tbody id="item_group_table"></tbody>
-                                <tfoot class="table-info text-dark border-top border-info border-2">
+                                <tbody id="item_table"></tbody>
+                                <tfoot style="background-color: #dcfce7; border-top: 2px solid #16a34a;">
                                     <tr>
                                         <td class="text-start ps-3">Overall Total</td>
-                                        <td id="ig_total_count">0</td>
-                                        <td id="ig_total_amount">0.00</td>
+                                        <td></td>
+                                        <td id="item_total_count">0</td>
+                                        <td id="item_total_amount">0.00</td>
+                                        <td id="item_total_gst">0.00</td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                     </div>
-                </div>
+                </div> 
             </div>
 
             <!-- REQUIRED BY - NEXT 7 DAYS -->
@@ -226,7 +247,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                             </tr>
                         </thead>
                         <tbody id="upcoming_po_table"></tbody>
-                        <tfoot class="table-danger border-top border-2">
+                        <tfoot style="background-color: #fee2e2; border-top: 2px solid #ef4444;">
                             <tr>
                                 <td class="text-start ps-3" colspan="7">Overall Total</td>
                                 <td id="upcoming_po_total_amount">0.00</td>
@@ -243,7 +264,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                     <i class="fa fa-list me-2"></i> Overall Purchase Order
                 </div>
                 <div class="card-body p-0 dashboard-table-body">
-    <div class="full-po-table-wrapper">
+                <div class="full-po-table-wrapper">
                     <table class="table table-hover text-center align-middle mb-0">
                         <thead class="table-light text-muted">
                             <tr>
@@ -258,7 +279,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                             </tr>
                         </thead>
                         <tbody id="full_po_table"></tbody>
-                        <tfoot class="table-success border-top border-2">
+                        <tfoot style="background-color: #dcfce7; border-top: 2px solid #22c55e;">
                             <tr>
                                 <td class="text-start ps-3" colspan="7">Overall Total</td>
                                 <td id="full_po_total_amount">0.00</td>
@@ -266,15 +287,12 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                         </tfoot>
                     </table>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center p-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <span>Show</span>
-                            <select id="page_size" class="form-select form-select-sm" style="width:90px">
-                                <option value="20" selected>20</option>
-                                <option value="100">100</option>
-                                <option value="500">500</option>
-                                <option value="2500">2500</option>
-                            </select>
+                    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light">
+                        <div class="btn-group" role="group" id="page_size_group">
+                            <button class="btn btn-outline-success active page-size-btn" data-size="20"> 20 </button>
+                            <button class="btn btn-outline-success page-size-btn" data-size="100"> 100 </button>
+                            <button class="btn btn-outline-success page-size-btn" data-size="500"> 500 </button>
+                            <button class="btn btn-outline-success page-size-btn" data-size="2500"> All </button>
                         </div>
 
                         <button class="btn btn-primary btn-sm" id="load_more"> Load More </button>
@@ -378,7 +396,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                 render_table(data.top_suppliers || []);
                 render_items(data.top_items || []);
                 render_projects(data.top_projects || []);
-                render_item_groups(data.top_item_groups || []);
+                // render_item_groups(data.top_item_groups || []);
                 render_full_po_table(data.full_po_list || [], load_more);
                 render_upcoming_table(data.upcoming_required_by || []);
                 setTimeout(() => {
@@ -493,87 +511,125 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
     // -------------------------
     function render_table(rows) {
         let html = "";
+
         let total_count = 0;
         let total_amount = 0;
+        let total_gst = 0;
 
-        rows = rows || [];
-        rows.forEach(r => {
+        (rows || []).forEach(r => {
 
             let count = Number(r.count || 0);
             let amount = Number(r.total_amount || 0);
+            let gst = Number(r.igst_amount || 0);
 
             total_count += count;
             total_amount += amount;
+            total_gst += gst;
+
             html += `
                 <tr>
                     <td>${r.supplier || "-"}</td>
                     <td>${count}</td>
                     <td>${frappe.format(amount,{fieldtype:"Currency"})}</td>
+                    <td>${frappe.format(gst,{fieldtype:"Currency"})}</td>
                 </tr>
             `;
         });
 
-        // Fill remaining rows upto 10
         for(let i = rows.length; i < 10; i++){
             html += `
-                <tr>
-                    <td>&nbsp;</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            `;
+            <tr>
+                <td>&nbsp;</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>`;
         }
 
         $("#supplier_table").html(html);
+
         $("#sup_total_count").text(total_count);
         $("#sup_total_amount").html(frappe.format(total_amount,{fieldtype:"Currency"}));
+        $("#sup_total_gst").html(frappe.format(total_gst,{fieldtype:"Currency"}));
     }
 
     function render_items(rows) {
         let html = "";
-        let total_qty = 0, total_amount = 0;
+
+        let total_order_count = 0;
+        let total_basic = 0;
+        let total_gst = 0;
+
         (rows || []).forEach(r => {
-            let qty = Number(r.qty || 0);
-            let amount = Number(r.total_amount || 0);
-            total_qty += qty; total_amount += amount;
-            html += `<tr><td>${r.item || "-"}</td><td>${qty}</td><td>${frappe.format(amount, { fieldtype: "Currency" })}</td></tr>`;
-        });
-        for(let i = rows.length; i < 10; i++){
+
+            let order_count = Number(r.order_count || 0);
+            let basic = Number(r.basic_value || 0);
+            let gst = Number(r.gst_value || 0);
+
+            total_order_count += order_count;
+            total_basic += basic;
+            total_gst += gst;
+
             html += `
                 <tr>
-                    <td>&nbsp;</td>
-                    <td></td>
-                    <td></td>
+                    <td>${r.item || "-"}</td>
+                    <td>${r.item_group || "-"}</td>
+                    <td>${order_count}</td>
+                    <td>${frappe.format(basic,{fieldtype:"Currency"})}</td>
+                    <td>${frappe.format(gst,{fieldtype:"Currency"})}</td>
                 </tr>
             `;
+        });
+
+        for(let i = rows.length; i < 10; i++){
+            html += `
+            <tr>
+                <td>&nbsp;</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>`;
         }
+
         $("#item_table").html(html);
-        $("#item_total_qty").text(total_qty.toFixed(2));
-        $("#item_total_amount").html(frappe.format(total_amount, { fieldtype: "Currency" }));
+        $("#item_total_count").text(total_order_count);
+        $("#item_total_amount").html(frappe.format(total_basic,{fieldtype:"Currency"}));
+        $("#item_total_gst").html(frappe.format(total_gst,{fieldtype:"Currency"}));
     }
 
     function render_projects(rows) {
         let html = "";
+
         let total_count = 0;
-        let total_so_amount = 0;
-        let total_amount = 0;
+        let total_so_basic = 0;
+        let total_so_gst = 0;
+        let total_po_basic = 0;
+        let total_spend = 0;
 
         (rows || []).forEach(r => {
 
             let count = Number(r.count || 0);
-            let so_amount = Number(r.so_grand_total || 0);
-            let amount = Number(r.total_amount || 0);
+            let so_basic = Number(r.so_basic_value || 0);
+            let so_gst = Number(r.so_gst_value || 0);
+            let po_basic = Number(r.po_basic_value || 0);
+            let spend = Number(r.total_amount || 0);
 
             total_count += count;
-            total_so_amount += so_amount;
-            total_amount += amount;
+            total_so_basic += so_basic;
+            total_so_gst += so_gst;
+            total_po_basic += po_basic;
+            total_spend += spend;
 
             html += `
                 <tr>
                     <td>${r.project || "-"}</td>
+                    <td>${r.tag_name || "-"}</td>
+                    <td>${frappe.format(so_basic,{fieldtype:"Currency"})}</td>
+                    <td>${frappe.format(so_gst,{fieldtype:"Currency"})}</td>
                     <td>${count}</td>
-                    <td>${frappe.format(so_amount, {fieldtype:"Currency"})}</td>
-                    <td>${frappe.format(amount, {fieldtype:"Currency"})}</td>
+                    <td>${frappe.format(po_basic,{fieldtype:"Currency"})}</td>
+                    <td>${frappe.format(spend,{fieldtype:"Currency"})}</td>
                 </tr>
             `;
         });
@@ -585,41 +641,19 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
             `;
         }
 
         $("#project_table").html(html);
         $("#project_total_count").text(total_count);
-        $("#project_total_so_amount").html(
-            frappe.format(total_so_amount, {fieldtype:"Currency"})
-        );
-        $("#project_total_amount").html(
-            frappe.format(total_amount, {fieldtype:"Currency"})
-        );
-    }
-
-    function render_item_groups(rows) {
-        let html = "";
-        let total_count = 0, total_qty = 0, total_amount = 0;
-        (rows || []).forEach(r => {
-            let count = Number(r.count || 0); let qty = Number(r.qty || 0); let amount = Number(r.total_amount || 0);
-            total_count += count; total_qty += qty; total_amount += amount;
-            html += `<tr><td>${r.item_group || "-"}</td><td>${count}</td><td>${frappe.format(amount, { fieldtype: "Currency" })}</td></tr>`;
-        });
-
-        for(let i = rows.length; i < 10; i++){
-            html += `
-                <tr>
-                    <td>&nbsp;</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            `;
-        }
-        $("#item_group_table").html(html);
-        $("#ig_total_count").text(total_count);
-        $("#ig_total_amount").html(frappe.format(total_amount, { fieldtype: "Currency" }));
+        $("#project_total_so_amount").html(frappe.format(total_so_basic,{fieldtype:"Currency"}));
+        $("#project_total_amount").html(frappe.format(total_spend,{fieldtype:"Currency"}));
+        $("#project_total_so_gst").html(frappe.format(total_so_gst,{fieldtype:"Currency"}));
+        $("#project_total_po_basic").html(frappe.format(total_po_basic,{fieldtype:"Currency"}));
     }
 
     let full_po_names = [];
@@ -705,51 +739,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
     }
 
     // -------------------------
-    // CHART VIEW
-    // -------------------------
-    let chart_instance = null;
-    function render_chart(rows) {
-    let labels = (rows || []).map(r => r.custom_order_type || "Unknown");
-    let values = (rows || []).map(r => r.count || 0);
-
-    function draw() {
-        let ctx = document.getElementById("poChart");
-        if (!ctx) {
-            console.error("Chart canvas not found");
-            return;
-        }
-
-        if (chart_instance) chart_instance.destroy();
-
-        chart_instance = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels,
-                datasets: [{
-                    label: "Purchase Orders",
-                    data: values,
-                    backgroundColor: ["#2563EB", "#16A34A", "#EA580C", "#64748B"],
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    }
-
-    if (typeof Chart === "undefined") {
-        let script = document.createElement("script");
-        script.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js";
-        script.onload = draw;
-        document.head.appendChild(script);
-    } else {
-        draw();
-    }
-}
-
-    // -------------------------
     // FILTER EVENTS
     // -------------------------
     $(document).on("click", "#refresh", function () {
@@ -757,11 +746,13 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
         btnIcon.addClass('fa-spin');
 
         load_data();
-        $(document).on("change", "#page_size", function () {
+        $(document).on("click", ".page-size-btn", function () {
 
-        page_size = parseInt($(this).val());
-        offset = 0;
-        load_data();
+    $(".page-size-btn") .removeClass("active btn-success") .addClass("btn-outline-success");
+    $(this) .removeClass("btn-outline-success") .addClass("btn-success active");
+    page_size = parseInt($(this).data("size"));
+    offset = 0;
+    load_data();
     });
 
     $(document).on("click", "#load_more", function () {
