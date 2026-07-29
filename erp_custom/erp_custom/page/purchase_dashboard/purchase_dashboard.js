@@ -95,14 +95,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
             letter-spacing:.3px;
             font-size:16px;
         }
-        .dashboard-table-body tbody tr{
-            height: 52px;
-        }
-
-        .dashboard-table-body tbody td{
-            height: 52px;
-            vertical-align: middle;
-        }
     </style>
 
     <div class="w-100 py-4">

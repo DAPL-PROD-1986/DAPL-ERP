@@ -248,16 +248,18 @@ td:nth-child(3), th:nth-child(3) {
                         <td class="center"> {{ item.qty }} </td>
                         <td class="center"> {{ item.uom }} </td>
 
-                        {# Rate Conditional calculations #}
+                        <!-- {# Rate Conditional calculations #}
                         {% if item.item_group == "Plates" or item.item_group == "Pipes" %}
                             {% set rate = item.custom_rate_per_kg or item.rate %}
                             {% set rate_unit = "Kg" if item.item_group == "Plates" else "Mtr" %}
                         {% else %}
                             {% set rate = item.rate %}
                             {% set rate_unit = "" %}
-                        {% endif %}
+                        {% endif %} -->
 
-                        <td class="right"> {{ currency_symbol }} {{ "{:,.2f}".format(rate) }} {% if rate_unit %} / {{ rate_unit }}{% endif %} </td>
+                        <td class="right"> {{ currency_symbol }} {{ "{:,.2f}".format(rate) }}
+                             <!-- {% if rate_unit %} / {{ rate_unit }}{% endif %}  -->
+                            </td>
                         <td class="right"> {{ currency_symbol }} {{ "{:,.2f}".format(item.amount) }} </td>
                     </tr>
                     {% endfor %}
