@@ -257,7 +257,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                 </div>
             </div>
 
-
             <!-- FULL PURCHASE ORDER DATA (based on current filters) -->
             <div class="card shadow-sm border-0 table-card mb-4">
                 <div class="card-header text-white text-center" style="background-color: #22c55e">
