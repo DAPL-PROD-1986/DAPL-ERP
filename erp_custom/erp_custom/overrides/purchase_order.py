@@ -136,28 +136,34 @@ def sent_po_supplier(doc):
         sender="purchase@dynatherm.co.in",
         reply_to="purchase@dynatherm.co.in", 
         recipients=[supplier_email],
-		# cc=["DAPL-team@dynatherm.co.in"],
+		cc=["dapl-team@dynatherm.co.in"],
         # bcc=["DAPL-team@dynatherm.co.in"],
         subject=subject,
         message=message,
+        expose_recipients="header",
+        reference_doctype="Purchase Order",
+        reference_name=doc.name,
         attachments=attachments
     )
 
-# Local
-    # frappe.sendmail(
-    #     sender="karthickarjunan08@gmail.com",
-    #     reply_to="karthickarjunan08@gmail.com", 
-    #     recipients=[supplier_email],
-	# 	# cc=["DAPL-team@dynatherm.co.in"],
-    #   # bcc=["DAPL-team@dynatherm.co.in"],
-    #     subject=subject,
-    #     message=message,
-    #     attachments=attachments
-    #     # attachments=[{
-    #     #     "fname": file_name,
-    #     #     "fcontent": pdf_data
-    #     # }]
-    # )
+# # Local
+#     frappe.sendmail(
+#         sender="karthickarjunan08@gmail.com",
+#         reply_to="karthickarjunan08@gmail.com", 
+#         recipients=[supplier_email],
+# 		cc=["karthiarjunan534@gmail.com"],
+#       # bcc=["DAPL-team@dynatherm.co.in"],
+#         subject=subject,
+#         message=message,
+#         expose_recipients="header",
+#         reference_doctype="Request for Quotation",
+#         reference_name=doc.name,
+#         attachments=attachments
+#         # attachments=[{
+#         #     "fname": file_name,
+#         #     "fcontent": pdf_data
+#         # }]
+#     )
 
     frappe.msgprint(f"✅ {order_type} sent to {supplier_email}")
 

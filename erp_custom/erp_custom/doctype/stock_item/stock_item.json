@@ -1,0 +1,174 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-07-30 15:55:45.757281",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "stock_item_id",
+  "category",
+  "remarks",
+  "plates_tab",
+  "plates",
+  "pipes_tab",
+  "pipes",
+  "tubes_tab",
+  "tubes",
+  "flanges_tab",
+  "flanges",
+  "rods_tab",
+  "rods",
+  "welding_tab",
+  "welding",
+  "disc_tab",
+  "table_bcqh",
+  "spares_tab",
+  "table_qwnu",
+  "machinery_tab",
+  "machinery"
+ ],
+ "fields": [
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "stock_item_id",
+   "fieldtype": "Data",
+   "label": "Stock Item ID"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "label": "Category",
+   "options": "Stock Item Category"
+  },
+  {
+   "fieldname": "tubes",
+   "fieldtype": "Table",
+   "label": "Tubes",
+   "options": "Stock Tube Details"
+  },
+  {
+   "fieldname": "pipes",
+   "fieldtype": "Table",
+   "label": "Pipes",
+   "options": "Stock Pipe Details"
+  },
+  {
+   "fieldname": "flanges",
+   "fieldtype": "Table",
+   "label": "Flanges",
+   "options": "Stock Flange Details"
+  },
+  {
+   "fieldname": "rods",
+   "fieldtype": "Table",
+   "label": "Rods",
+   "options": "Stock Rod Details"
+  },
+  {
+   "fieldname": "welding_tab",
+   "fieldtype": "Tab Break",
+   "label": "Welding"
+  },
+  {
+   "fieldname": "welding",
+   "fieldtype": "Table",
+   "label": "Welding",
+   "options": "Stock Consumable Welding Details"
+  },
+  {
+   "fieldname": "disc_tab",
+   "fieldtype": "Tab Break",
+   "label": "Disc"
+  },
+  {
+   "fieldname": "table_bcqh",
+   "fieldtype": "Table",
+   "label": "Disc",
+   "options": "Stock Consumable Disc Details"
+  },
+  {
+   "fieldname": "spares_tab",
+   "fieldtype": "Tab Break",
+   "label": "Spares"
+  },
+  {
+   "fieldname": "table_qwnu",
+   "fieldtype": "Table",
+   "label": "Spares",
+   "options": "Stock Consumable Spare Details"
+  },
+  {
+   "fieldname": "machinery_tab",
+   "fieldtype": "Tab Break",
+   "label": "Machinery"
+  },
+  {
+   "fieldname": "machinery",
+   "fieldtype": "Table",
+   "label": "Machinery",
+   "options": "Stock Consumable Machinery Details"
+  },
+  {
+   "fieldname": "plates_tab",
+   "fieldtype": "Tab Break",
+   "label": "Plates"
+  },
+  {
+   "fieldname": "plates",
+   "fieldtype": "Table",
+   "label": "Plates",
+   "options": "Stock Plate Details"
+  },
+  {
+   "fieldname": "pipes_tab",
+   "fieldtype": "Tab Break",
+   "label": "Pipes"
+  },
+  {
+   "fieldname": "tubes_tab",
+   "fieldtype": "Tab Break",
+   "label": "Tubes"
+  },
+  {
+   "fieldname": "flanges_tab",
+   "fieldtype": "Tab Break",
+   "label": "Flanges"
+  },
+  {
+   "fieldname": "rods_tab",
+   "fieldtype": "Tab Break",
+   "label": "Rods"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-07-30 18:00:09.420975",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Stock Item",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

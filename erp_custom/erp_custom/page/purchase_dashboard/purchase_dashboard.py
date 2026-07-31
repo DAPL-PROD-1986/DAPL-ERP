@@ -69,7 +69,7 @@ def get_dashboard_data(filters=None):
 		LEFT JOIN `tabSupplier` sup 
 			ON sup.name = po.supplier
 
-		{where_po_only}
+		{ where_po_only + (" AND " if where_po_only else "WHERE ") + "IFNULL(po.workflow_state,'Draft') != 'Cancelled'" }
 		GROUP BY 
 			CASE
 				WHEN po.custom_order_type IS NULL OR po.custom_order_type = '' THEN 'Others'
@@ -90,11 +90,10 @@ def get_dashboard_data(filters=None):
 	# 2. TOP Tables
 	# -----------------------------
 	top_suppliers = frappe.db.sql(f"""
-		SELECT
-			po.supplier AS supplier,
+		SELECT po.supplier AS supplier,
 			COUNT(DISTINCT po.name) AS count,
 			IFNULL(SUM(poi.amount),0) AS total_amount,
-			IFNULL(SUM(poi.igst_amount),0) AS igst_amount
+			IFNULL(SUM(po.total_taxes_and_charges),0) AS total_taxes_and_charges
 
 		FROM `tabPurchase Order` po
 
@@ -116,7 +115,7 @@ def get_dashboard_data(filters=None):
 		SELECT poi.item_code AS item, poi.item_group,
 			COUNT(DISTINCT po.name) AS order_count,
 			IFNULL(SUM(poi.amount),0) AS basic_value,
-			IFNULL(SUM(poi.igst_amount),0) AS gst_value
+			IFNULL(SUM(IFNULL(poi.igst_amount,0) + IFNULL(poi.cgst_amount,0) + IFNULL(poi.sgst_amount,0)),0) AS gst_value
 
 		FROM `tabPurchase Order Item` poi
 		INNER JOIN `tabPurchase Order` po ON po.name = poi.parent
@@ -129,8 +128,7 @@ def get_dashboard_data(filters=None):
 
 	# Top Projects
 	top_projects = frappe.db.sql(f"""
-		SELECT po.project,
-			COUNT(DISTINCT po.name) AS count,
+		SELECT po.project, COUNT(DISTINCT po.name) AS count,
 
 			/* Tag Name from Sales Order Item */
 			IFNULL((
@@ -152,7 +150,7 @@ def get_dashboard_data(filters=None):
 
 			/* SO GST */
 			IFNULL((
-				SELECT SUM(soi.igst_amount)
+				SELECT SUM(IFNULL(soi.igst_amount,0) + IFNULL(soi.cgst_amount,0) + IFNULL(soi.sgst_amount,0))
 				FROM `tabSales Order Item` soi
 				INNER JOIN `tabSales Order` so
 					ON so.name = soi.parent
@@ -163,7 +161,7 @@ def get_dashboard_data(filters=None):
 			IFNULL(SUM(po.total),0) AS po_basic_value,
 
 			/* PO Spend */
-			IFNULL(SUM(po.grand_total),0) AS total_amount
+			IFNULL(SUM(po.total_taxes_and_charges),0) AS total_amount
 
 		FROM `tabPurchase Order` po
 		LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
@@ -237,7 +235,6 @@ def get_dashboard_data(filters=None):
 		rfq_conditions.append("transaction_date = %(transaction_date)s")
 
 	where_rfq = "WHERE " + " AND ".join(rfq_conditions) if rfq_conditions else ""
-
 
 	rfq_result = frappe.db.sql(f"""
 		SELECT COUNT(name) AS count FROM `tabRequest for Quotation` {where_rfq} """, filters, as_dict=True)

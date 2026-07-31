@@ -96,6 +96,7 @@ def send_email_background(doc, method=None):
         <th>Total Weight</th>
         <th>Rate</th>
         <th>Amount</th>
+        <th>Remarks</th>
     """
 
     # -------------------------------------------------
@@ -122,6 +123,7 @@ def send_email_background(doc, method=None):
             <td>{flt(d.custom_total_weight, 3) if d.custom_total_weight else 0}</td>
             <td></td>
             <td></td>
+            <td>{d.custom_remarks or ""}</td>
         </tr>
         """
 
@@ -169,8 +171,7 @@ def send_email_background(doc, method=None):
         reference_file = item.get("custom_reference_file")
         if reference_file:
             try:
-                file_doc = frappe.get_doc(
-                    "File",
+                file_doc = frappe.get_doc("File",
                     {"file_url": reference_file}
                 )
                 attachments.append({
@@ -179,11 +180,8 @@ def send_email_background(doc, method=None):
                 })
 
             except Exception:
+                frappe.log_error(frappe.get_traceback(), f"RFQ Attachment Error : {reference_file}")
 
-                frappe.log_error(
-                    frappe.get_traceback(),
-                    f"RFQ Attachment Error : {reference_file}"
-                )
     # frappe.msgprint(f"Reference File : {reference_file}")
     # frappe.msgprint(f"Attachment Count : {len(attachments)}")
 
@@ -215,8 +213,8 @@ def send_email_background(doc, method=None):
     #         recipients=[recipient],
     #         subject=subject,
     #         message=message,
-    #         sender="purchase@dynatherm.co.in",
-    #         reply_to="purchase@dynatherm.co.in",
+    #         sender="msk312508@gmail.com",
+    #         reply_to="msk312508@gmail.com",
     #         # Removed CC from here to prevent cloud SMTP spam-blocking
     #         reference_doctype="Request for Quotation",
     #         reference_name=doc.name,
@@ -225,11 +223,12 @@ def send_email_background(doc, method=None):
 
     # # 2. Send ONE single master copy to your internal team so they have a record
     # frappe.sendmail(
-    #     recipients=["dapl-team@dynatherm.co.in"],
+    #     # recipients=["dapl-team@dynatherm.co.in"],
+    #     recipients=["karthiarjunan534@gmail.com"],
     #     subject=f"[Internal Copy] {subject}",
     #     message=f"<b>Note: The following mail was sent to vendors ({', '.join(recipients)}):</b><br><br>{message}",
-    #     sender="purchase@dynatherm.co.in",
-    #     reply_to="purchase@dynatherm.co.in",
+    #     sender="msk312508@gmail.com",
+    #     reply_to="msk312508@gmail.com",
     #     reference_doctype="Request for Quotation",
     #     reference_name=doc.name,
     #     attachments=attachments

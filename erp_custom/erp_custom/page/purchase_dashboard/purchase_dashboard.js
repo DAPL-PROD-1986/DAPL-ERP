@@ -95,6 +95,46 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
             letter-spacing:.3px;
             font-size:16px;
         }
+        
+        #filter_refresh_col {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #filter_row .control-label {
+            font-weight: 500 !important;
+            color: #212529;
+        }
+
+        #reset_dashboard i{
+            transition:transform .4s ease;
+        }
+
+        #reset_dashboard.rotating i{
+            transform:rotate(360deg);
+        }
+
+        /* Supplier & Item tables scroll */
+        .small-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .small-table-wrapper table {
+            width: max-content;
+            min-width: 100%;
+            white-space: nowrap;
+        }
+
+        .small-table-wrapper thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #f8f9fa;
+        }
     </style>
 
     <div class="w-100 py-4">
@@ -110,17 +150,19 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_order_type"></div>
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_project"></div>
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_supplier"></div>
-
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_item"></div>
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_item_group"></div>
-
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_status"></div>
-
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_transaction_date"></div>
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_schedule_date"></div>
-                        <div class="col-lg-1 col-md-2 col-sm-3 d-flex align-items-center justify-content-center" id="filter_refresh_col">
-                            <button class="btn btn-success w-100 h-100" id="refresh" title="Apply Filters">
+                        
+                        <div id="filter_refresh_col">
+                            <button class="btn btn-success btn-sm px-3" id="refresh" title="Apply Filters">
                                 <i class="fa fa-filter"></i>
+                            </button>
+
+                            <button class="btn btn-secondary btn-sm px-3" id="reset_dashboard" title="Refresh Dashboard">
+                                <i class="fa fa-refresh"></i>
                             </button>
                         </div>
                     </div>
@@ -144,7 +186,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                         <div class="card-body p-0 table-responsive dashboard-table-body">
                             <table class="table table-hover text-center align-middle mb-0">
                                 <thead class="table-light text-muted">
-                                    <tr><th>Project</th> <th>Tag Name</th> <th>Basic Value (SO)</th> <th>GST Value (SO)</th> <th>PO Count</th> <th>Basic Value (PO)</th> <th>GST Amount (PO)</th></tr>
+                                    <tr><th>Project</th> <th>Tag Name</th> <th>Basic Value (SO)</th> <th>GST 18% (SO)</th> <th>PO Count</th> <th>Basic Value (PO)</th> <th>GST 18% (PO)</th></tr>
                                 </thead>
                                 <tbody id="project_table"></tbody>
                                 <tfoot style="background-color: #fef3c7; border-top:2px solid #f59e0b;">
@@ -171,10 +213,11 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                         <div class="card-header text-white text-center" style="background-color: #8b5cf6;">
                             <i class="fa fa-truck me-2"></i> Top 10 Suppliers
                         </div>
-                        <div class="card-body p-0 table-responsive dashboard-table-body">
-                            <table class="table table-hover text-center align-middle mb-0">
-                                <thead class="table-light text-muted">
-                                    <tr><th>Supplier</th><th>PO Count</th><th>Basic Value</th><th>GST Value</th></tr>
+                        <div class="card-body p-0 dashboard-table-body">
+                        <div class="small-table-wrapper">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light text-muted text-center">
+                                    <tr><th>Supplier</th><th>Order Count</th><th>Basic Value</th><th>GST Value</th></tr>
                                 </thead>
                                 <tbody id="supplier_table"></tbody>
                                 <tfoot style="background-color: #ede9fe; border-top: 2px solid #8b5cf6;">
@@ -189,6 +232,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                         </div>
                     </div>
                 </div>
+            </div>
 
                 <!-- TOP ITEM GROUPS -->
                 <div class="col-lg-6 col-12">
@@ -196,9 +240,10 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                         <div class="card-header bg-success text-white text-center">
                             <i class="fa fa-cube me-2"></i> Top 10 Item Group
                         </div>
-                        <div class="card-body p-0 table-responsive dashboard-table-body">
-                            <table class="table table-hover text-center align-middle mb-0">
-                                <thead class="table-light text-muted">
+                        <div class="card-body p-0 dashboard-table-body">
+                            <div class="small-table-wrapper">
+                                <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light text-muted text-center">
                                     <tr> 
                                         <th> Item </th> <th> Item Group </th> <th> Order Count </th> <th> Basic Value </th> <th> GST Value </th>
                                     </tr>
@@ -218,6 +263,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                     </div>
                 </div> 
             </div>
+        </div>
 
             <!-- REQUIRED BY - NEXT 7 DAYS -->
             <div class="card shadow-sm border-0 table-card mb-4">
@@ -286,7 +332,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                             <button class="btn btn-outline-success page-size-btn" data-size="2500"> All </button>
                         </div>
 
-                        <button class="btn btn-primary btn-sm" id="load_more"> Load More </button>
+                        <button class="btn btn-success btn-sm" id="load_more"> Load More </button>
                     </div>
                 </div>
             </div>
@@ -294,6 +340,31 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
     </div>
     `);
 
+    $(document).on("click", "#reset_dashboard", function () {
+        let btn = $(this);
+        let icon = btn.find("i");
+
+        icon.addClass("fa-spin");
+
+        // Clear all filter values
+        Object.values(filters).forEach(field => {
+            if (field && field.set_value) {
+                field.set_value("");
+            }
+        });
+
+        // Force clear input values also
+        $("#filter_row input").val("");
+
+        // Reset pagination
+        offset = 0;
+
+        // Wait for frappe controls to update
+        setTimeout(() => {
+            load_data();
+            icon.removeClass("fa-spin");
+        }, 300);
+    });
     // -------------------------
     // FILTER CONTROLS (Link fields with proper search/autocomplete)
     // -------------------------
@@ -430,7 +501,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
             let key = order_type_map[r.custom_order_type] ? r.custom_order_type : "Others";
             order_type_map[key].count += Number(r.count || 0);
             order_type_map[key].amount += Number(r.total_amount || 0);
-
         });
 
         // Calculate total AFTER the loop
@@ -438,40 +508,50 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
         $("#kpi_cards_row1").html(`
             ${kpiCardTwoStat("Total (PO+WO+TO)", total_po, total_amount, "#4F46E5", "#E0E7FF", "🧾", "col-lg-2 col-md-4 col-sm-6")}
-            ${kpiCardTwoStat("Purchase Order", order_type_map["Purchase Order"].count, order_type_map["Purchase Order"].amount, "#2563EB", "#DBEAFE", "📦", "col-lg-2 col-md-4 col-sm-6")}
-            ${kpiCardTwoStat("Work Order", order_type_map["Work Order"].count, order_type_map["Work Order"].amount, "#16A34A", "#DCFCE7", "🏭", "col-lg-2 col-md-4 col-sm-6")}
-            ${kpiCardTwoStat("Transport Order", order_type_map["Transport Order"].count, order_type_map["Transport Order"].amount, "#EA580C", "#FFEDD5", "🚚", "col-lg-2 col-md-4 col-sm-6")}
+            ${kpiCardTwoStat("Purchase Order", order_type_map["Purchase Order"].count, order_type_map["Purchase Order"].amount, "#2563EB", "#DBEAFE", "📦", "col-lg-2 col-md-4 col-sm-6", "Purchase Order")}
+            ${kpiCardTwoStat("Work Order", order_type_map["Work Order"].count, order_type_map["Work Order"].amount, "#16A34A", "#DCFCE7", "🏭", "col-lg-2 col-md-4 col-sm-6", "Work Order")}
+            ${kpiCardTwoStat("Transport Order", order_type_map["Transport Order"].count, order_type_map["Transport Order"].amount, "#EA580C", "#FFEDD5", "🚚", "col-lg-2 col-md-4 col-sm-6", "Transport Order")}
             ${kpiCardTwoStat("Others", order_type_map["Others"].count, order_type_map["Others"].amount, "#64748B", "#F1F5F9", "📁", "col-lg-2 col-md-4 col-sm-6")}
         `);
 
         $("#kpi_cards_row2").html(`
-            ${kpiCard("Draft", status_map["Draft"], "#F59E0B", "#FEF3C7", "📝", "col-lg-2 col-md-4 col-sm-6")}
-            ${kpiCard("Tech Review", status_map["Technical Review"], "#3B82F6", "#DBEAFE", "🛠️", "col-lg-2 col-md-4 col-sm-6")}
-            ${kpiCard("Finance Review", status_map["Finance Review"], "#8B5CF6", "#EDE9FE", "💰", "col-lg-2 col-md-4 col-sm-6")}
-            ${kpiCard("Approved", status_map["Approved"], "#22C55E", "#DCFCE7", "✅", "col-lg-2 col-md-4 col-sm-6")}
-            ${kpiCard("Cancelled", status_map["Cancelled"], "#EF4444", "#FEE2E2", "❌", "col-lg-2 col-md-4 col-sm-6")}
-            ${kpiCard("RFQ Raised", data.rfq_count || 0, "#0EA5E9", "#E0F2FE", "📨", "col-lg-2 col-md-4 col-sm-6")}
+            ${kpiCard("Draft", status_map["Draft"], "#F59E0B", "#FEF3C7", "📝", "col-lg-2 col-md-4 col-sm-6", "Draft")}
+            ${kpiCard("Technical Review", status_map["Technical Review"], "#3B82F6", "#DBEAFE", "🛠️", "col-lg-2 col-md-4 col-sm-6", "Technical Review")}
+            ${kpiCard("Finance Review", status_map["Finance Review"], "#8B5CF6", "#EDE9FE", "💰", "col-lg-2 col-md-4 col-sm-6", "Finance Review")}
+            ${kpiCard("Approved", status_map["Approved"], "#22C55E", "#DCFCE7", "✅", "col-lg-2 col-md-4 col-sm-6", "Approved")}
+            ${kpiCard("Cancelled", status_map["Cancelled"], "#EF4444", "#FEE2E2", "❌", "col-lg-2 col-md-4 col-sm-6", "Cancelled")}
+            ${kpiCard("RFQ Raised", data.rfq_count || 0, "#0EA5E9", "#E0F2FE", "📨", "col-lg-2 col-md-4 col-sm-6", "RFQ")}
         `);
     }
 
-    function kpiCardTwoStat(title, count, amount, accentColor, bgColor, icon, colClass) {
+    function kpiCardTwoStat(title, count, amount, accentColor, bgColor, icon, colClass, orderType) {
         let accent = accentColor || "var(--bs-dark)";
         let cardBg = bgColor || "var(--bs-secondary-bg, #f1f3f5)";
+
         return `
-            <div class="${colClass || 'col-lg-2 col-md-4 col-sm-6'}">
-                <div class="card border-0 h-100" style="border-radius:14px;background-color:${cardBg};">
+            <div class="${colClass}">
+                <div class="card border-0 h-100" style="border-radius:14px;background-color:${cardBg};cursor:pointer;"
+                    onclick="open_purchase_order_list('${orderType}')">
+
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="small fw-semibold text-dark">${title}</div>
-                            <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;border-radius:9px;background-color:${accent};font-size:20px; margin:-20px -20px 0 0">${icon}</div>
+                            <div class="d-flex align-items-center justify-content-center flex-shrink-0"
+                                style="width:44px;height:44px;border-radius:9px;background-color:${accent};font-size:20px;margin:-20px -20px 0 0">
+                                ${icon}
+                            </div>
                         </div>
+
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <div class="small text-secondary">Count</div>
                             <div class="fw-bold text-dark">${count || 0}</div>
                         </div>
+
                         <div class="d-flex justify-content-between align-items-center mt-2">
-                            <div class="small text-secondary"></div>
-                            <div class="fw-bold text-nowrap" style="color:${accent};">${frappe.format(amount || 0, { fieldtype: "Currency" })}</div>
+                            <div></div>
+                            <div class="fw-bold text-nowrap" style="color:${accent};">
+                                ${frappe.format(amount || 0,{fieldtype:"Currency"})}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -479,39 +559,63 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
         `;
     }
 
-    function kpiCard(title, value, accentColor, bgColor, icon, colClass) {
+    function kpiCard(title, value, accentColor, bgColor, icon, colClass, status) {
         let accent = accentColor || "var(--bs-dark)";
         let cardBg = bgColor || "var(--bs-secondary-bg, #f1f3f5)";
+
         return `
-            <div class="${colClass || 'col-lg-2 col-md-4 col-sm-6'}">
-                <div class="card border-0 h-100" style="border-radius:14px;background-color:${cardBg};">
+            <div class="${colClass}">
+                <div class="card border-0 h-100"
+                    style="border-radius:14px;background-color:${cardBg};cursor:pointer;"
+                    onclick="open_status_list('${status}')">
+
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="small fw-semibold text-dark">${title}</div>
-                            <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;border-radius:9px;background-color:${accent};font-size:20px; margin:-20px -20px 0 0"">${icon}</div>
+
+                            <div class="d-flex align-items-center justify-content-center flex-shrink-0"
+                                style="width:44px;height:44px;border-radius:9px;background-color:${accent};font-size:20px;margin:-20px -20px 0 0">
+                                ${icon}
+                            </div>
                         </div>
-                        <div class="h4 fw-bold mt-3 mb-0" style="color:${accent};">${value || 0}</div>
+
+                        <div class="h4 fw-bold mt-3 mb-0" style="color:${accent};">
+                            ${value || 0}
+                        </div>
                     </div>
                 </div>
             </div>
         `;
     }
+
+    window.open_status_list = function(status) {
+        if (status === "RFQ") {
+            frappe.set_route("List", "Request for Quotation");
+            return;
+        }
+
+        frappe.route_options = { workflow_state: status };
+        frappe.set_route("List", "Purchase Order");
+    };
+
+    window.open_purchase_order_list = function(order_type) {
+        frappe.route_options = { custom_order_type: order_type };
+        frappe.set_route("List", "Purchase Order");
+    };
 
     // -------------------------
     // RENDER FUNCTIONS
     // -------------------------
     function render_table(rows) {
         let html = "";
-
         let total_count = 0;
         let total_amount = 0;
         let total_gst = 0;
 
         (rows || []).forEach(r => {
-
             let count = Number(r.count || 0);
             let amount = Number(r.total_amount || 0);
-            let gst = Number(r.igst_amount || 0);
+            let gst = Number(r.total_taxes_and_charges || 0);
 
             total_count += count;
             total_amount += amount;
@@ -519,7 +623,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
             html += `
                 <tr>
-                    <td>${r.supplier || "-"}</td>
+                    <td class="text-start">${r.supplier || "-"}</td>
                     <td>${count}</td>
                     <td>${frappe.format(amount,{fieldtype:"Currency"})}</td>
                     <td>${frappe.format(gst,{fieldtype:"Currency"})}</td>
@@ -546,13 +650,11 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
     function render_items(rows) {
         let html = "";
-
         let total_order_count = 0;
         let total_basic = 0;
         let total_gst = 0;
 
         (rows || []).forEach(r => {
-
             let order_count = Number(r.order_count || 0);
             let basic = Number(r.basic_value || 0);
             let gst = Number(r.gst_value || 0);
@@ -563,8 +665,8 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
             html += `
                 <tr>
-                    <td>${r.item || "-"}</td>
-                    <td>${r.item_group || "-"}</td>
+                    <td class="text-start">${r.item || "-"}</td>
+                    <td class="text-start">${r.item_group || "-"}</td>
                     <td>${order_count}</td>
                     <td>${frappe.format(basic,{fieldtype:"Currency"})}</td>
                     <td>${frappe.format(gst,{fieldtype:"Currency"})}</td>
@@ -591,7 +693,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
     function render_projects(rows) {
         let html = "";
-
         let total_count = 0;
         let total_so_basic = 0;
         let total_so_gst = 0;
@@ -599,7 +700,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
         let total_spend = 0;
 
         (rows || []).forEach(r => {
-
             let count = Number(r.count || 0);
             let so_basic = Number(r.so_basic_value || 0);
             let so_gst = Number(r.so_gst_value || 0);
