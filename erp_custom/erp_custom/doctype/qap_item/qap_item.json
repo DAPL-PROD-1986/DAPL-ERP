@@ -12,10 +12,12 @@
   "quantum_of_inspection",
   "column_break_szfa",
   "schedule",
-  "inspection_by",
   "record__documents",
   "applicable_documents",
+  "acceptance_criteria",
+  "format_of_record",
   "section_break_aylb",
+  "inspection_by",
   "company",
   "column_break_rdyh",
   "tpi",
@@ -133,7 +135,7 @@
   {
    "fieldname": "qap_no",
    "fieldtype": "Int",
-   "label": "QAP No"
+   "label": "QAP S.No"
   },
   {
    "fieldname": "section_break_aylb",
@@ -159,13 +161,23 @@
    "fieldname": "remark",
    "fieldtype": "Section Break",
    "label": "Remarks"
+  },
+  {
+   "fieldname": "acceptance_criteria",
+   "fieldtype": "Small Text",
+   "label": "Acceptance Criteria"
+  },
+  {
+   "fieldname": "format_of_record",
+   "fieldtype": "Small Text",
+   "label": "Format of Record"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-31 12:00:16.686782",
+ "modified": "2026-08-01 11:54:40.577905",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "QAP Item",
