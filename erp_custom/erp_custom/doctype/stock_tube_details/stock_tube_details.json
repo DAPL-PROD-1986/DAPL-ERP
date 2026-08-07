@@ -7,19 +7,37 @@
  "engine": "InnoDB",
  "field_order": [
   "category",
+  "moc",
   "description",
   "column_break_xlwq",
   "type",
-  "po_invoice",
-  "material_of_construction_moc",
+  "purchase_order_no",
   "vendor",
-  "section_break_gazz",
+  "status",
+  "section_break_tswu",
   "length",
+  "column_break_fnne",
   "thickness",
+  "column_break_gtel",
   "outer_diameter",
+  "column_break_kywj",
   "density",
+  "section_break_gazz",
+  "quantity",
+  "rate_per_mtr",
+  "used_quantity",
+  "used_weight",
   "column_break_rian",
-  "weight",
+  "balanced_quantity",
+  "actual_weight",
+  "available_weight",
+  "column_break_jzjo",
+  "actual_weight_amount",
+  "available_weight_amount",
+  "reference_section",
+  "reference_image",
+  "column_break_rjyp",
+  "reference_preview",
   "section_break_mlar",
   "remarks"
  ],
@@ -27,12 +45,14 @@
   {
    "fieldname": "category",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Category",
    "options": "Stock Item Category"
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
+   "in_list_view": 1,
    "label": "Description"
   },
   {
@@ -41,22 +61,15 @@
   },
   {
    "fieldname": "type",
-   "fieldtype": "Data",
-   "label": "Type"
-  },
-  {
-   "fieldname": "po_invoice",
-   "fieldtype": "Data",
-   "label": "PO Invoice"
-  },
-  {
-   "fieldname": "material_of_construction_moc",
-   "fieldtype": "Data",
-   "label": "Material of Construction (MoC)"
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Stock Type Details"
   },
   {
    "fieldname": "vendor",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Vendor",
    "options": "Supplier"
   },
@@ -67,31 +80,34 @@
   {
    "fieldname": "length",
    "fieldtype": "Float",
-   "label": "Length"
+   "in_list_view": 1,
+   "label": "Length",
+   "precision": "2"
   },
   {
    "fieldname": "thickness",
    "fieldtype": "Float",
-   "label": "Thickness"
+   "in_list_view": 1,
+   "label": "Thickness",
+   "precision": "2"
   },
   {
    "fieldname": "outer_diameter",
    "fieldtype": "Float",
-   "label": "Outer Diameter"
+   "in_list_view": 1,
+   "label": "Outer Diameter",
+   "precision": "2"
   },
   {
    "fieldname": "density",
    "fieldtype": "Float",
-   "label": "Density"
+   "in_list_view": 1,
+   "label": "Density",
+   "precision": "2"
   },
   {
    "fieldname": "column_break_rian",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "weight",
-   "fieldtype": "Float",
-   "label": "Weight"
   },
   {
    "fieldname": "section_break_mlar",
@@ -100,14 +116,137 @@
   {
    "fieldname": "remarks",
    "fieldtype": "Small Text",
+   "in_list_view": 1,
    "label": "Remarks"
+  },
+  {
+   "fieldname": "moc",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Material of Construction (MoC)",
+   "options": "Stock MoC Details"
+  },
+  {
+   "fieldname": "used_weight",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Used Weight",
+   "precision": "2"
+  },
+  {
+   "fieldname": "available_weight",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Available Weight",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "actual_weight",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Actual Weight",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "quantity",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "column_break_rjyp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "actual_weight_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Actual Weight Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "available_weight_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Available Weight Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "used_quantity",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Used Quantity"
+  },
+  {
+   "fieldname": "balanced_quantity",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Balanced Quantity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rate_per_mtr",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate (Per Mtr)"
+  },
+  {
+   "fieldname": "purchase_order_no",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Purchase Order No",
+   "options": "Purchase Order"
+  },
+  {
+   "fieldname": "section_break_tswu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_fnne",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_gtel",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_kywj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_jzjo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reference_section",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "reference_image",
+   "fieldtype": "Attach",
+   "label": "Reference Image"
+  },
+  {
+   "fieldname": "reference_preview",
+   "fieldtype": "HTML",
+   "label": "Reference Preview"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nIn Stock\nPartially Used\nFully Used\nScrap\nReserved\nRust\nDefect"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-30 17:32:23.808693",
+ "modified": "2026-08-06 14:36:38.516194",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock Tube Details",

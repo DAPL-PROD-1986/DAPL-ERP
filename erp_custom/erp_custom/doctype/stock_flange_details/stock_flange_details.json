@@ -7,18 +7,23 @@
  "engine": "InnoDB",
  "field_order": [
   "category",
+  "moc",
   "description",
   "column_break_xlwq",
   "type",
-  "po_invoice",
-  "material_of_construction_moc",
+  "purchase_order_no",
   "vendor",
+  "status",
   "section_break_gazz",
   "length",
   "outer_diameter",
   "column_break_rian",
   "density",
   "quantity",
+  "reference_section",
+  "reference_image",
+  "column_break_kldz",
+  "reference_preview",
   "section_break_mlar",
   "remarks"
  ],
@@ -26,12 +31,14 @@
   {
    "fieldname": "category",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Category",
    "options": "Stock Item Category"
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
+   "in_list_view": 1,
    "label": "Description"
   },
   {
@@ -40,22 +47,15 @@
   },
   {
    "fieldname": "type",
-   "fieldtype": "Data",
-   "label": "Type"
-  },
-  {
-   "fieldname": "po_invoice",
-   "fieldtype": "Data",
-   "label": "PO Invoice"
-  },
-  {
-   "fieldname": "material_of_construction_moc",
-   "fieldtype": "Data",
-   "label": "Material of Construction (MoC)"
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Stock Type Details"
   },
   {
    "fieldname": "vendor",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Vendor",
    "options": "Supplier"
   },
@@ -66,16 +66,19 @@
   {
    "fieldname": "length",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "NPS"
   },
   {
    "fieldname": "outer_diameter",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "SCH"
   },
   {
    "fieldname": "density",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Class"
   },
   {
@@ -85,6 +88,7 @@
   {
    "fieldname": "quantity",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Quantity"
   },
   {
@@ -94,14 +98,54 @@
   {
    "fieldname": "remarks",
    "fieldtype": "Small Text",
+   "in_list_view": 1,
    "label": "Remarks"
+  },
+  {
+   "fieldname": "moc",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Material of Construction (MoC)",
+   "options": "Stock MoC Details"
+  },
+  {
+   "fieldname": "purchase_order_no",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Purchase Order No",
+   "options": "Purchase Order"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nIn Stock\nPartially Used\nFully Used\nScrap\nReserved\nRust\nDefect"
+  },
+  {
+   "fieldname": "reference_section",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "reference_image",
+   "fieldtype": "Attach",
+   "label": "Reference Image"
+  },
+  {
+   "fieldname": "column_break_kldz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reference_preview",
+   "fieldtype": "HTML",
+   "label": "Reference Preview"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-30 17:36:38.065981",
+ "modified": "2026-08-06 14:42:23.757085",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock Flange Details",

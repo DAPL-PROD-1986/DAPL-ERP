@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:stock_item_id",
  "creation": "2026-07-30 15:55:45.757281",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -10,14 +11,22 @@
   "remarks",
   "plates_tab",
   "plates",
+  "overall_avail_wgt_plate",
+  "overall_avail_wgt_amt_plate",
   "pipes_tab",
   "pipes",
+  "overall_avail_wgt_pipe",
+  "overall_avail_wgt_amt_pipe",
   "tubes_tab",
   "tubes",
-  "flanges_tab",
-  "flanges",
+  "overall_avail_wgt_tube",
+  "overall_avail_wgt_amt_tube",
   "rods_tab",
   "rods",
+  "overall_avail_wgt_rod",
+  "overall_avail_wgt_amt_rod",
+  "flanges_tab",
+  "flanges",
   "welding_tab",
   "welding",
   "disc_tab",
@@ -36,7 +45,8 @@
   {
    "fieldname": "stock_item_id",
    "fieldtype": "Data",
-   "label": "Stock Item ID"
+   "label": "Stock Item ID",
+   "unique": 1
   },
   {
    "fieldname": "category",
@@ -142,15 +152,56 @@
    "fieldname": "rods_tab",
    "fieldtype": "Tab Break",
    "label": "Rods"
+  },
+  {
+   "fieldname": "overall_avail_wgt_pipe",
+   "fieldtype": "Float",
+   "label": "Overall Available Weight"
+  },
+  {
+   "fieldname": "overall_avail_wgt_amt_pipe",
+   "fieldtype": "Currency",
+   "label": "Overall Available Weight Amount"
+  },
+  {
+   "fieldname": "overall_avail_wgt_tube",
+   "fieldtype": "Float",
+   "label": "Overall Available Weight"
+  },
+  {
+   "fieldname": "overall_avail_wgt_amt_tube",
+   "fieldtype": "Currency",
+   "label": "Overall Available Weight Amount"
+  },
+  {
+   "fieldname": "overall_avail_wgt_rod",
+   "fieldtype": "Float",
+   "label": "Overall Available Weight"
+  },
+  {
+   "fieldname": "overall_avail_wgt_amt_rod",
+   "fieldtype": "Currency",
+   "label": "Overall Available Weight Amount"
+  },
+  {
+   "fieldname": "overall_avail_wgt_plate",
+   "fieldtype": "Float",
+   "label": "Overall Available Weight"
+  },
+  {
+   "fieldname": "overall_avail_wgt_amt_plate",
+   "fieldtype": "Currency",
+   "label": "Overall Available Weight Amount (\u20b9)"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-30 18:00:09.420975",
+ "modified": "2026-08-06 12:44:29.956742",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock Item",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
