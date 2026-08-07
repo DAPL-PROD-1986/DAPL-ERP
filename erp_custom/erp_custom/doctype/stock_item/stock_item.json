@@ -186,18 +186,22 @@
   {
    "fieldname": "overall_avail_wgt_plate",
    "fieldtype": "Float",
-   "label": "Overall Available Weight"
+   "in_list_view": 1,
+   "label": "Overall Available Weight",
+   "read_only": 1
   },
   {
    "fieldname": "overall_avail_wgt_amt_plate",
    "fieldtype": "Currency",
-   "label": "Overall Available Weight Amount (\u20b9)"
+   "in_list_view": 1,
+   "label": "Overall Available Weight Amount (\u20b9)",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-06 12:44:29.956742",
+ "modified": "2026-08-07 16:39:24.369414",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock Item",

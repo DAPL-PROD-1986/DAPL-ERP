@@ -45,16 +45,12 @@ function set_moc_filter(frm) {
 }
 
 function add_stock_button_style() {
-
     if ($("#stock-button-style").length) return;
-
     $("head").append(`
 
     <style id="stock-button-style">
-
     .stock-download-btn,
     .stock-upload-btn {
-
         border:none !important;
         border-radius:10px !important;
         padding:0 !important;
@@ -64,204 +60,78 @@ function add_stock_button_style() {
 
 
     .stock-btn-content {
-
         display:flex;
         align-items:center;
         gap:8px;
-
         padding:8px 18px;
-
         color:white;
-
         font-size:13px;
         font-weight:600;
-
     }
-
 
     .stock-btn-content svg {
-
         width:18px;
         height:18px;
-
         fill:none;
-
         stroke:white;
-
         stroke-width:2;
-
         stroke-linecap:round;
-
         stroke-linejoin:round;
-
     }
-
-
 
     /* Download Button */
-
     .stock-download-btn {
-
-        background:
-        linear-gradient(
-            135deg,
-            #2563eb,
-            #4f46e5
-        ) !important;
-
+        background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
     }
-
 
     .stock-download-btn:hover {
-
         transform:translateY(-2px);
-
-        background:
-        linear-gradient(
-            135deg,
-            #1d4ed8,
-            #3730a3
-        ) !important;
-
+        background: linear-gradient(135deg, #1d4ed8, #3730a3) !important;
     }
-
-
 
     /* Upload Button */
-
     .stock-upload-btn {
-
-        background:
-        linear-gradient(
-            135deg,
-            #059669,
-            #0f766e
-        ) !important;
-
+        background: linear-gradient(135deg, #059669, #0f766e) !important;
     }
-
 
     .stock-upload-btn:hover {
-
         transform:translateY(-2px);
-
-        background:
-        linear-gradient(
-            135deg,
-            #047857,
-            #115e59
-        ) !important;
-
+        background: linear-gradient(135deg, #047857, #115e59) !important;
     }
-
-
     </style>
-
     `);
 }
 
 function add_download_button(frm) {
-
     add_stock_button_style();
 
-
     let btn = frm.add_custom_button(`
-
         <span class="stock-btn-content">
-
             <svg viewBox="0 0 24 24">
-
                 <path d="M12 4v10"/>
                 <path d="M7 10l5 5 5-5"/>
                 <rect x="5" y="18" width="14" height="2"/>
-
-            </svg>
-
-            Download
-
-        </span>
-
-
-    `, () => {
-
+            </svg> Download </span>`, () => {
         show_download_dialog(frm);
-
     });
-
-
     btn.addClass("stock-download-btn");
-
 }
 
 function add_upload_button(frm) {
-
     add_stock_button_style();
 
-
     let btn = frm.add_custom_button(`
-
         <span class="stock-btn-content">
-
             <svg viewBox="0 0 24 24">
-
                 <path d="M12 15V3"/>
-
                 <path d="M7 8l5-5 5 5"/>
-
                 <path d="M5 21h14"/>
-
-            </svg>
-
-            Upload
-
-        </span>
-
-
-    `, () => {
-
+            </svg> Upload </span>`, () => {
         show_upload_dialog(frm);
-
     });
 
-
     btn.addClass("stock-upload-btn");
-
 }
-
-// function add_download_button(frm) {
-
-//     let btn = frm.add_custom_button(`
-//         <span class="stock-action-btn download-action">
-//             <svg viewBox="0 0 24 24">
-//                 <path d="M12 3v12"/>
-//                 <path d="M7 10l5 5 5-5"/>
-//                 <path d="M5 21h14"/>
-//             </svg>
-//             Download
-//         </span>
-//     `, () => {
-//         show_download_dialog(frm);
-//     });
-
-//     btn.removeClass("btn-default");
-//     btn.addClass("stock-download-btn");
-// }
-
-// function add_upload_button(frm) {
-
-//     frm.add_custom_button(`
-//         <span style="display:flex;align-items:center;gap:6px;">
-//             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-//                 fill="currentColor" viewBox="0 0 16 16">
-//                 <path d="M8 15V6.707L5.854 8.854l-.708-.708L8 5.293l2.854 2.853-.708.708L8 6.707V15z"/>
-//                 <path d="M1 2h14V1H1z"/>
-//             </svg>
-//             Upload
-//         </span>
-//     `, () => {
-//         show_upload_dialog(frm);
-//     }).addClass("btn-success");
-// }
 
 frappe.ui.form.on("Stock Plate Details", {
     form_render(frm, cdt, cdn) {
@@ -401,9 +271,7 @@ function show_download_dialog(frm) {
         ]
     });
 
-
     d.fields_dict.download_html.$wrapper.html(`
-
     <style>
         .template-grid {
             display: grid;
@@ -431,13 +299,11 @@ function show_download_dialog(frm) {
             border-color: #6366f1;
         }
 
-
         .template-icon {
             width: 32px;
             height: 32px;
             margin-bottom: 8px;
         }
-
 
         .template-name {
             font-size: 13px;
@@ -554,11 +420,10 @@ function show_download_dialog(frm) {
                 <path d="M8 12h8"/>
                 <path d="M8 16h5"/>
             </svg>
-    <div class="template-name"> Download Data </div>
-</div>
+            <div class="template-name"> Download Data </div>
+        </div>
     </div>`);
     d.show();
-
 
     d.$wrapper.find(".btn-download").on("click", function(){
         let type = $(this).data("type");
@@ -594,11 +459,9 @@ function show_upload_dialog(frm) {
                             <path d="M12 16V4"/>
                             <path d="M7 9l5-5 5 5"/>
                             <path d="M5 20h14"/>
-                        </svg> Upload Excel
-                    </span>`);
+                        </svg> Upload Excel </span>`);
             }, 100);
         d.fields_dict.upload_html.$wrapper.html(`
-
         <style>
         .upload-box {
             padding:20px;
@@ -828,16 +691,13 @@ function show_download_data_dialog(frm) {
         ],
 
         primary_action_label: "Download",
-
         primary_action(values) {
-
             if (!values.download_type) {
                 frappe.msgprint("Please select Download Type.");
                 return;
             }
             let type = values.download_type.toLowerCase();
             window.location.href = `/api/method/erp_custom.erp_custom.doctype.stock_item.stock_item.download_stock_data?stock_item=${frm.doc.name}&download_type=${type}`;
-
             d.hide();
         }
     });

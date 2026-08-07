@@ -344,23 +344,38 @@ def get_dashboard_data(filters=None):
 	# -----------------------------
 	# 2. TOP Tables
 	# -----------------------------
+	# top_suppliers = frappe.db.sql(f"""
+	# 	SELECT po.supplier AS supplier,
+	# 		COUNT(DISTINCT po.name) AS count,
+	# 		IFNULL(SUM(po.total),0) AS total_amount,
+	# 		IFNULL(SUM(po.base_total_taxes_and_charges),0) AS total_taxes_and_charges
+	# 	FROM `tabPurchase Order` po
+
+	# 	INNER JOIN `tabPurchase Order Item` poi ON poi.parent = po.name
+	# 	LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
+	# 	{ where_with_item + (" AND " if where_with_item else "WHERE ") + "IFNULL(po.workflow_state,'Draft') != 'Cancelled'" }
+
+	# 	GROUP BY po.supplier
+	# 	ORDER BY total_amount DESC
+	# 	LIMIT 10 """, filters, as_dict=True)
+
 	top_suppliers = frappe.db.sql(f"""
-		SELECT po.supplier AS supplier,
-			COUNT(DISTINCT po.name) AS count,
-			IFNULL(SUM(poi.base_amount),0) AS total_amount,                        -- was poi.amount
-			IFNULL(SUM(po.base_total_taxes_and_charges),0) AS total_taxes_and_charges  -- was po.total_taxes_and_charges
-
-		FROM `tabPurchase Order` po
-
-		INNER JOIN `tabPurchase Order Item` poi
-			ON poi.parent = po.name
-
-		LEFT JOIN `tabSupplier` sup
-			ON sup.name = po.supplier
-
-		{ where_with_item + (" AND " if where_with_item else "WHERE ") + "IFNULL(po.workflow_state,'Draft') != 'Cancelled'" }
-
-		GROUP BY po.supplier
+		SELECT t.supplier AS supplier,
+			COUNT(DISTINCT t.name) AS count,
+			IFNULL(SUM(t.total), 0) AS total_amount,
+			IFNULL(SUM(t.base_total_taxes_and_charges), 0) AS total_taxes_and_charges
+		FROM (
+			SELECT DISTINCT
+				po.name AS name,
+				po.supplier AS supplier,
+				po.total AS total,
+				po.base_total_taxes_and_charges AS base_total_taxes_and_charges
+			FROM `tabPurchase Order` po
+			INNER JOIN `tabPurchase Order Item` poi ON poi.parent = po.name
+			LEFT JOIN `tabSupplier` sup ON sup.name = po.supplier
+			{ where_with_item + (" AND " if where_with_item else "WHERE ") + "IFNULL(po.workflow_state,'Draft') != 'Cancelled'" }
+		) t
+		GROUP BY t.supplier
 		ORDER BY total_amount DESC
 		LIMIT 10
 	""", filters, as_dict=True)
@@ -372,8 +387,7 @@ def get_dashboard_data(filters=None):
 			IFNULL(SUM(poi.base_amount),0) AS basic_value,
 			IFNULL(SUM(
 				(IFNULL(poi.igst_amount,0) + IFNULL(poi.cgst_amount,0) + IFNULL(poi.sgst_amount,0))
-				* IFNULL(po.conversion_rate, 1)
-			),0) AS gst_value
+				* IFNULL(po.conversion_rate, 1)),0) AS gst_value
 
 		FROM `tabPurchase Order Item` poi
 		INNER JOIN `tabPurchase Order` po ON po.name = poi.parent

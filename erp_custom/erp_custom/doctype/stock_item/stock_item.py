@@ -200,7 +200,8 @@ def download_plate_template():
     # Remove default sheet
     wb.remove(wb.active)
     create_template_sheet(wb, "Plates",
-        ["Length", "Width", "Thickness"])
+        ["Category", "Type", "Material of Construction (MoC)", "Vendor", "Description", "Purchse Order No", "Status", "Length", "Width", "Thickness", "Density",
+        "Quantity", "Rate ₹ (Per Kg)", "Used Weight", "Weight Per Item", "Actual Weight", "Available Weight", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"])
 
     download_workbook(wb, "Stock_Plate_Template.xlsx")
 
@@ -234,7 +235,8 @@ def download_overall_template():
     wb.remove(wb.active)
     # Plates Sheet
     create_template_sheet(wb, "Plates",
-        ["Length", "Width", "Thickness"])
+        ["Category", "Type", "Material of Construction (MoC)", "Vendor", "Description", "Purchse Order No", "Status", "Length", "Width", "Thickness", "Density",
+        "Quantity", "Rate ₹ (Per Kg)", "Used Weight", "Weight Per Item", "Actual Weight", "Available Weight", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"])
 
     # Pipes Sheet
     create_template_sheet(wb, "Pipes",
@@ -269,9 +271,27 @@ def upload_stock_excel(file_url, upload_type, stock_item):
                     continue
 
                 doc.append("plates", {
-                        "length": row[0],
-                        "width": row[1],
-                        "thickness": row[2]
+                        "category":row[0],
+                        "type":row[1],
+                        "moc": row[2],
+                        "vendor": row[3],
+                        "description": row[4],
+                        "purchase_order_no": row[5],
+                        "status": row[6],
+                        "length": row[7],
+                        "width": row[8],
+                        "thickness": row[9],
+                        "density": row[10],
+
+                        "Quantity": row[11],
+                        "rate_per_kg": row[12],
+                        "used_weight": row[13],
+                        "weight_per_item": row[14],
+                        "actual_weight": row[15],
+                        "available_weight": row[16],
+                        "actual_weight_amount": row[17],
+                        "available_weight_amount": row[18],
+                        "remarks": row[19],
                     })
 
 
@@ -363,19 +383,14 @@ def upload_stock_excel(file_url, upload_type, stock_item):
 
 @frappe.whitelist()
 def download_stock_data(stock_item, download_type):
-
     frappe.msgprint(f"{download_type} Download Started")
-
     return download_excel_with_data(stock_item, download_type)
 
 
 def download_excel_with_data(stock_item, download_type):
-
     doc = frappe.get_doc("Stock Item", stock_item)
-
     wb = Workbook()
     ws = wb.active
-
     ws.title = download_type.title()
 
     if download_type == "plates":
@@ -406,40 +421,14 @@ def download_excel_with_data(stock_item, download_type):
         export_overall(ws, doc)
 
     output = io.BytesIO()
-
     wb.save(output)
-
     frappe.local.response.filename = f"{stock_item}_{download_type}.xlsx"
-
     frappe.local.response.filecontent = output.getvalue()
-
     frappe.local.response.type = "download"
 
 
 def export_plates(ws, doc):
-
-    ws.append([
-        "Type",
-        "MOC",
-        "Quantity",
-        "Length",
-        "Width",
-        "Thickness",
-        "Density",
-        "Weight"
-    ])
+    ws.append(["Type", "MOC", "Quantity", "Length", "Width", "Thickness", "Density", "Weight"])
 
     for d in doc.plates:
-
-        ws.append([
-
-            d.type,
-            d.moc,
-            d.quantity,
-            d.length,
-            d.width,
-            d.thickness,
-            d.density,
-            d.weight
-
-        ])
+        ws.append([d.type, d.moc, d.quantity, d.length, d.width, d.thickness, d.density, d.weight])
