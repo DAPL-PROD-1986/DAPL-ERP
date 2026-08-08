@@ -27,70 +27,147 @@ class StockItem(Document):
     def validate(self):
         self.calculate_stock_weights()
 
+    # def calculate_stock_weights(self):
+    #     # Plate Totals
+    #     self.overall_avail_wgt_plate = 0
+    #     self.overall_avail_wgt_amt_plate = 0
+
+    #     # Tube Totals
+    #     self.overall_avail_wgt_tube = 0
+    #     self.overall_avail_wgt_amt_tube = 0
+
+    #     # Pipe Totals
+    #     self.overall_avail_wgt_pipe = 0
+    #     self.overall_avail_wgt_amt_pipe = 0
+
+    #     # Rod Totals
+    #     self.overall_avail_wgt_rod = 0
+    #     self.overall_avail_wgt_amt_rod = 0
+
+    #     # ---------------- Plates ----------------
+    #     if hasattr(self, "plates"):
+    #         for row in self.plates:
+    #             self.calculate_plate(row)
+
+    #             self.overall_avail_wgt_plate += row.available_weight or 0
+    #             self.overall_avail_wgt_amt_plate += row.available_weight_amount or 0
+
+    #     # ---------------- Tubes ----------------
+    #     if hasattr(self, "tubes"):
+    #         for row in self.tubes:
+    #             self.calculate_tube(row)
+
+    #             self.overall_avail_wgt_tube += row.available_weight or 0
+    #             self.overall_avail_wgt_amt_tube += row.available_weight_amount or 0
+
+    #     # ---------------- Pipes ----------------
+    #     if hasattr(self, "pipes"):
+    #         for row in self.pipes:
+    #             self.calculate_pipe(row)
+
+    #             self.overall_avail_wgt_pipe += row.available_weight or 0
+    #             self.overall_avail_wgt_amt_pipe += row.available_weight_amount or 0
+
+    #     # ---------------- Rods ----------------
+    #     if hasattr(self, "rods"):
+    #         for row in self.rods:
+    #             self.calculate_rod(row)
+
+    #             self.overall_avail_wgt_rod += row.available_weight or 0
+    #             self.overall_avail_wgt_amt_rod += row.available_weight_amount or 0
+
     def calculate_stock_weights(self):
-        # Plate Totals
         self.overall_avail_wgt_plate = 0
         self.overall_avail_wgt_amt_plate = 0
 
-        # Tube Totals
         self.overall_avail_wgt_tube = 0
         self.overall_avail_wgt_amt_tube = 0
 
-        # Pipe Totals
         self.overall_avail_wgt_pipe = 0
         self.overall_avail_wgt_amt_pipe = 0
 
-        # Rod Totals
         self.overall_avail_wgt_rod = 0
         self.overall_avail_wgt_amt_rod = 0
 
-        # ---------------- Plates ----------------
-        if hasattr(self, "plates"):
-            for row in self.plates:
-                self.calculate_plate(row)
+        # Plates
+        for row in self.plates or []:
+            self.calculate_plate(row)
 
-                self.overall_avail_wgt_plate += row.available_weight or 0
-                self.overall_avail_wgt_amt_plate += row.available_weight_amount or 0
+            self.overall_avail_wgt_plate += row.available_weight or 0
+            self.overall_avail_wgt_amt_plate += row.available_weight_amount or 0
 
-        # ---------------- Tubes ----------------
-        if hasattr(self, "tubes"):
-            for row in self.tubes:
-                self.calculate_tube(row)
+        # Tubes
+        for row in self.tubes or []:
+            self.calculate_tube(row)
 
-                self.overall_avail_wgt_tube += row.available_weight or 0
-                self.overall_avail_wgt_amt_tube += row.available_weight_amount or 0
+            self.overall_avail_wgt_tube += row.available_weight or 0
+            self.overall_avail_wgt_amt_tube += row.available_weight_amount or 0
 
-        # ---------------- Pipes ----------------
-        if hasattr(self, "pipes"):
-            for row in self.pipes:
-                self.calculate_pipe(row)
+        # Pipes
+        for row in self.pipes or []:
+            self.calculate_pipe(row)
 
-                self.overall_avail_wgt_pipe += row.available_weight or 0
-                self.overall_avail_wgt_amt_pipe += row.available_weight_amount or 0
+            self.overall_avail_wgt_pipe += row.available_weight or 0
+            self.overall_avail_wgt_amt_pipe += row.available_weight_amount or 0
 
-        # ---------------- Rods ----------------
-        if hasattr(self, "rods"):
-            for row in self.rods:
-                self.calculate_rod(row)
+        # Rods
+        for row in self.rods or []:
+            self.calculate_rod(row)
 
-                self.overall_avail_wgt_rod += row.available_weight or 0
-                self.overall_avail_wgt_amt_rod += row.available_weight_amount or 0
+            self.overall_avail_wgt_rod += row.available_weight or 0
+            self.overall_avail_wgt_amt_rod += row.available_weight_amount or 0
 
+    # def calculate_plate(self, row):
+    #     if row.length and row.width and row.thickness and row.density:
+    #         row.weight_per_item = (row.length * row.width * row.thickness * row.density) / 1000000
+    #     else:
+    #         row.weight_per_item = 0
+
+    #     # Actual Weight
+    #     row.actual_weight = (row.quantity or 1) * (row.weight_per_item or 0)
+
+    #     # Available Weight
+    #     row.available_weight = ((row.actual_weight or 0) - (row.used_weight or 0))
+
+    #     # Amounts
+    #     row.actual_weight_amount = ((row.actual_weight or 0) * (row.rate_per_kg or 0))
+    #     row.available_weight_amount = ((row.available_weight or 0) * (row.rate_per_kg or 0))
+    
     def calculate_plate(self, row):
-        if row.length and row.width and row.thickness and row.density:
-            row.weight_per_item = (row.length * row.width * row.thickness * row.density) / 1000000
-        else:
-            row.weight_per_item = 0
+        length = row.length or 0
+        width = row.width or 0
+        thickness = row.thickness or 0
+        density = row.density or 0
+        quantity = row.quantity or 0
+        used_weight = row.used_weight or 0
+        rate_per_kg = row.rate_per_kg or 0
 
-        # Actual Weight
-        row.actual_weight = (row.quantity or 1) * (row.weight_per_item or 0)
+        row.weight_per_item = (
+            length
+            * width
+            * thickness
+            * density
+        ) / 1000000
 
-        # Available Weight
-        row.available_weight = ((row.actual_weight or 0) - (row.used_weight or 0))
+        row.actual_weight = (
+            quantity
+            * row.weight_per_item
+        )
 
-        # Amounts
-        row.actual_weight_amount = ((row.actual_weight or 0) * (row.rate_per_kg or 0))
-        row.available_weight_amount = ((row.available_weight or 0) * (row.rate_per_kg or 0))
+        row.available_weight = (
+            row.actual_weight
+            - used_weight
+        )
+
+        row.actual_weight_amount = (
+            row.actual_weight
+            * rate_per_kg
+        )
+
+        row.available_weight_amount = (
+            row.available_weight
+            * rate_per_kg
+        )
 
 
     def calculate_tube(self, row):
@@ -212,7 +289,8 @@ def download_pipe_template():
     # Remove default sheet
     wb.remove(wb.active)
     create_template_sheet(wb, "Pipes",
-        ["Length", "Thickness", "Outer Diameter"])
+        ["Category", "Type", "Material of Construction (MoC)", "Vendor", "Description", "Purchse Order No", "Status", "Length", "Thickness", "Outer Diameter", "Density",
+        "Quantity", "Used Quantity", "Rate ₹ (Per Kg)", "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"])
 
     download_workbook(wb, "Stock_Pipe_Template.xlsx")
 
@@ -223,9 +301,21 @@ def download_tube_template():
     # Remove default sheet
     wb.remove(wb.active)
     create_template_sheet(wb, "Tubes",
-        ["Length", "Thickness", "Outer Diameter"])
+        ["Category", "Type", "Material of Construction (MoC)", "Vendor", "Description", "Purchse Order No", "Status", "Length", "Thickness", "Outer Diameter", "Density",
+        "Quantity", "Used Quantity", "Rate ₹ (Per Kg)", "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"])
 
     download_workbook(wb, "Stock_Tube_Template.xlsx")
+
+@frappe.whitelist()
+def download_rod_template():
+    wb = Workbook()
+    # Remove default sheet
+    wb.remove(wb.active)
+    create_template_sheet(wb, "Rods",
+        ["Category", "Type", "Material of Construction (MoC)", "Vendor", "Description", "Purchse Order No", "Status", "Length", "Thickness", "Outer Diameter", "Density",
+        "Quantity", "Used Quantity", "Rate ₹ (Per Kg)", "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"])
+
+    download_workbook(wb, "Stock_Rod_Template.xlsx")
 
 
 @frappe.whitelist()
@@ -250,136 +340,331 @@ def download_overall_template():
 
 
 
+# @frappe.whitelist()
+# def upload_stock_excel(file_url, upload_type, stock_item):
+#     try:
+
+#         # Get uploaded file
+#         file_doc = get_file(file_url)
+#         file_content = file_doc[1]
+
+
+#         # Load workbook
+#         wb = openpyxl.load_workbook(filename=BytesIO(file_content))
+#         doc = frappe.get_doc("Stock Item", stock_item)
+
+#         # ---------------- Plates ----------------
+#         if upload_type == "Plate":
+#             ws = wb.active
+#             for row in ws.iter_rows(min_row=2, values_only=True):
+#                 if not any(row):
+#                     continue
+
+#                 doc.append("plates", {
+#                         "category":row[0],
+#                         "type":row[1],
+#                         "moc": row[2],
+#                         "vendor": row[3],
+#                         "description": row[4],
+#                         "purchase_order_no": row[5],
+#                         "status": row[6],
+#                         "length": row[7],
+#                         "width": row[8],
+#                         "thickness": row[9],
+#                         "density": row[10],
+
+#                         "Quantity": row[11],
+#                         "rate_per_kg": row[12],
+#                         "used_weight": row[13],
+#                         "weight_per_item": row[14],
+#                         "actual_weight": row[15],
+#                         "available_weight": row[16],
+#                         "actual_weight_amount": row[17],
+#                         "available_weight_amount": row[18],
+#                         "remarks": row[19],
+#                     })
+
+
+#         # ---------------- Pipes ----------------
+#         elif upload_type == "Pipe":
+#             ws = wb.active
+#             for row in ws.iter_rows(min_row=2, values_only=True):
+#                 if not any(row):
+#                     continue
+
+#                 doc.append("pipes", {
+#                         "length": row[0],
+#                         "thickness": row[1],
+#                         "outer_diameter": row[2]
+#                     })
+
+#         # ---------------- Tubes ----------------
+#         elif upload_type == "Tube":
+#             ws = wb.active
+#             for row in ws.iter_rows(min_row=2, values_only=True):
+#                 if not any(row):
+#                     continue
+
+#                 doc.append("tubes", {
+#                         "length": row[0],
+#                         "thickness": row[1],
+#                         "outer_diameter": row[2]
+#                     })
+
+#         # ---------------- Overall ----------------
+#         elif upload_type == "Overall":
+#             # -------- Plates Sheet --------
+
+#             if "Plates" in wb.sheetnames:
+#                 ws = wb["Plates"]
+#                 for row in ws.iter_rows(min_row=2, values_only=True):
+#                     if not any(row):
+#                         continue
+
+#                     doc.append("plates", {
+#                             "length": row[0],
+#                             "width": row[1],
+#                             "thickness": row[2]
+#                         })
+
+#             # -------- Pipes Sheet --------
+#             if "Pipes" in wb.sheetnames:
+#                 ws = wb["Pipes"]
+
+#                 for row in ws.iter_rows(min_row=2, values_only=True):
+#                     if not any(row):
+#                         continue
+
+#                     doc.append("pipes", {
+#                             "length": row[0],
+#                             "thickness": row[1],
+#                             "outer_diameter": row[2]
+#                         })
+
+#             # -------- Tubes Sheet --------
+#             if "Tubes" in wb.sheetnames:
+#                 ws = wb["Tubes"]
+
+#                 for row in ws.iter_rows(min_row=2, values_only=True):
+#                     if not any(row):
+#                         continue
+
+#                     doc.append("tubes", {
+#                             "length": row[0],
+#                             "thickness": row[1],
+#                             "outer_diameter": row[2]
+#                         })
+
+#         else:
+#             frappe.throw("Invalid Upload Type")
+
+#         # Save document
+#         doc.save()
+#         frappe.db.commit()
+#         return {
+#             "status": "success",
+#             "message": "Excel data appended successfully"
+#         }
+
+#     except Exception as e:
+#         frappe.log_error(frappe.get_traceback(), "Stock Item Excel Upload Error")
+#         frappe.throw(str(e))
+
+
 @frappe.whitelist()
 def upload_stock_excel(file_url, upload_type, stock_item):
     try:
-
-        # Get uploaded file
         file_doc = get_file(file_url)
         file_content = file_doc[1]
 
-
-        # Load workbook
-        wb = openpyxl.load_workbook(filename=BytesIO(file_content))
+        wb = openpyxl.load_workbook(filename=BytesIO(file_content), data_only=True)
         doc = frappe.get_doc("Stock Item", stock_item)
 
         # ---------------- Plates ----------------
-        if upload_type == "Plate":
+        if upload_type == "Plates":
             ws = wb.active
+
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if not any(row):
                     continue
 
                 doc.append("plates", {
-                        "category":row[0],
-                        "type":row[1],
-                        "moc": row[2],
-                        "vendor": row[3],
-                        "description": row[4],
-                        "purchase_order_no": row[5],
-                        "status": row[6],
-                        "length": row[7],
-                        "width": row[8],
-                        "thickness": row[9],
-                        "density": row[10],
-
-                        "Quantity": row[11],
-                        "rate_per_kg": row[12],
-                        "used_weight": row[13],
-                        "weight_per_item": row[14],
-                        "actual_weight": row[15],
-                        "available_weight": row[16],
-                        "actual_weight_amount": row[17],
-                        "available_weight_amount": row[18],
-                        "remarks": row[19],
-                    })
-
+                    "category": row[0],
+                    "type": row[1],
+                    "moc": row[2],
+                    "vendor": row[3],
+                    "description": row[4],
+                    "purchase_order_no": row[5],
+                    "status": row[6],
+                    "length": row[7] or 0,
+                    "width": row[8] or 0,
+                    "thickness": row[9] or 0,
+                    "density": row[10] or 0,
+                    "quantity": row[11] or 0,
+                    "rate_per_kg": row[12] or 0,
+                    "used_weight": row[13] or 0,
+                    "remarks": row[19]
+                })
 
         # ---------------- Pipes ----------------
-        elif upload_type == "Pipe":
+        elif upload_type == "Pipes":
             ws = wb.active
+
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if not any(row):
                     continue
 
                 doc.append("pipes", {
-                        "length": row[0],
-                        "thickness": row[1],
-                        "outer_diameter": row[2]
-                    })
+                    "category": row[0],
+                    "type": row[1],
+                    "moc": row[2],
+                    "vendor": row[3],
+                    "description": row[4],
+                    "purchase_order_no": row[5],
+                    "status": row[6],
+                    "length": row[7] or 0,
+                    "outer_diameter": row[8] or 0,
+                    "thickness": row[9] or 0,
+                    "density": row[10] or 0,
+                    "quantity": row[11] or 0,
+                    "rate_per_mtr": row[12] or 0,
+                    "used_weight": row[13] or 0,
+                    "remarks": row[19]
+                })
 
         # ---------------- Tubes ----------------
-        elif upload_type == "Tube":
+        elif upload_type == "Tubes":
             ws = wb.active
+
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if not any(row):
                     continue
 
                 doc.append("tubes", {
-                        "length": row[0],
-                        "thickness": row[1],
-                        "outer_diameter": row[2]
-                    })
+                    "category": row[0],
+                    "type": row[1],
+                    "moc": row[2],
+                    "vendor": row[3],
+                    "description": row[4],
+                    "purchase_order_no": row[5],
+                    "status": row[6],
+                    "length": row[7] or 0,
+                    "outer_diameter": row[8] or 0,
+                    "thickness": row[9] or 0,
+                    "density": row[10] or 0,
+                    "quantity": row[11] or 0,
+                    "rate_per_mtr": row[12] or 0,
+                    "used_weight": row[13] or 0,
+                    "remarks": row[19]
+                })
 
-        # ---------------- Overall ----------------
-        elif upload_type == "Overall":
-            # -------- Plates Sheet --------
+        # ---------------- Rods ----------------
+        elif upload_type == "Rods":
+            ws = wb.active
 
-            if "Plates" in wb.sheetnames:
-                ws = wb["Plates"]
-                for row in ws.iter_rows(min_row=2, values_only=True):
-                    if not any(row):
-                        continue
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not any(row):
+                    continue
 
-                    doc.append("plates", {
-                            "length": row[0],
-                            "width": row[1],
-                            "thickness": row[2]
-                        })
-
-            # -------- Pipes Sheet --------
-            if "Pipes" in wb.sheetnames:
-                ws = wb["Pipes"]
-
-                for row in ws.iter_rows(min_row=2, values_only=True):
-                    if not any(row):
-                        continue
-
-                    doc.append("pipes", {
-                            "length": row[0],
-                            "thickness": row[1],
-                            "outer_diameter": row[2]
-                        })
-
-            # -------- Tubes Sheet --------
-            if "Tubes" in wb.sheetnames:
-                ws = wb["Tubes"]
-
-                for row in ws.iter_rows(min_row=2, values_only=True):
-                    if not any(row):
-                        continue
-
-                    doc.append("tubes", {
-                            "length": row[0],
-                            "thickness": row[1],
-                            "outer_diameter": row[2]
-                        })
+                doc.append("rods", {
+                    "category": row[0],
+                    "type": row[1],
+                    "moc": row[2],
+                    "vendor": row[3],
+                    "description": row[4],
+                    "purchase_order_no": row[5],
+                    "status": row[6],
+                    "length": row[7] or 0,
+                    "outer_diameter": row[8] or 0,
+                    "density": row[9] or 0,
+                    "quantity": row[10] or 0,
+                    "rate_per_mtr": row[11] or 0,
+                    "used_weight": row[12] or 0,
+                    "remarks": row[19]
+                })
 
         else:
-            frappe.throw("Invalid Upload Type")
+            frappe.throw(f"Invalid Upload Type: {upload_type}")
 
-        # Save document
+        # Recalculate all calculated fields
+        doc.calculate_stock_weights()
+
+        # Save
         doc.save()
         frappe.db.commit()
         return {
             "status": "success",
-            "message": "Excel data appended successfully"
+            "message": f"{upload_type} Excel data uploaded successfully"
         }
 
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Stock Item Excel Upload Error")
         frappe.throw(str(e))
 
+# @frappe.whitelist()
+# def upload_stock_excel(file_url, upload_type, stock_item):
+#     try:
+#         file_doc = get_file(file_url)
+#         file_content = file_doc[1]
+
+#         wb = openpyxl.load_workbook(
+#             filename=BytesIO(file_content),
+#             data_only=True
+#         )
+
+#         doc = frappe.get_doc("Stock Item", stock_item)
+
+#         # ---------------- Plates ----------------
+#         if upload_type == "Plates":
+#             ws = wb.active
+
+#             for row in ws.iter_rows(min_row=2, values_only=True):
+#                 if not any(row):
+#                     continue
+
+#                 doc.append("plates", {
+#                     "category": row[0],
+#                     "type": row[1],
+#                     "moc": row[2],
+#                     "vendor": row[3],
+#                     "description": row[4],
+#                     "purchase_order_no": row[5],
+#                     "status": row[6],
+#                     "length": row[7] or 0,
+#                     "width": row[8] or 0,
+#                     "thickness": row[9] or 0,
+#                     "density": row[10] or 0,
+#                     "quantity": row[11] or 0,
+#                     "rate_per_kg": row[12] or 0,
+#                     "used_weight": row[13] or 0,
+#                     "remarks": row[19]
+#                 })
+
+#         else:
+#             frappe.throw(
+#                 f"Invalid Upload Type: {upload_type}"
+#             )
+
+#         # Recalculate calculated fields
+#         doc.calculate_stock_weights()
+
+#         # Save Stock Item
+#         doc.save()
+
+#         frappe.db.commit()
+
+#         return {
+#             "status": "success",
+#             "message": "Excel data appended successfully"
+#         }
+
+#     except Exception as e:
+#         frappe.log_error(
+#             frappe.get_traceback(),
+#             "Stock Item Excel Upload Error"
+#         )
+
+#         frappe.throw(str(e))
 
 @frappe.whitelist()
 def download_stock_data(stock_item, download_type):

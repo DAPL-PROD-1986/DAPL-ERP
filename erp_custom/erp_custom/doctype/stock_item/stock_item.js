@@ -635,45 +635,93 @@ function show_upload_dialog(frm) {
             </div>
         </div> `);
 
-        d.set_primary_action("Upload Excel", function(){
+    d.set_primary_action("Upload Excel", async function() {
+    const file = d.$wrapper.find("#excel_file")[0].files[0];
+    const type = d.$wrapper.find("#upload_type").val();
 
-    let file = d.$wrapper.find("#excel_file")[0].files[0];
-    let type = d.$wrapper.find("#upload_type").val();
-
-    if(!file){
-        frappe.msgprint("Please select Excel file");
+    if (!file) {
+        frappe.msgprint("Please select an Excel file.");
         return;
     }
 
-    frappe.upload_file(file, {
-        is_private: 0,
-        callback(upload_response){
-            if(upload_response.message){
-                frappe.call({
-                    method: "erp_custom.erp_custom.doctype.stock_item.stock_item.upload_stock_excel",
-                    args:{
-                        file_url: upload_response.message.file_url, upload_type:type,
-                        stock_item: frm.doc.name
-                    },
-                    freeze:true,
-                    freeze_message: "Uploading Excel...",
+    if (!file.name.toLowerCase().endsWith(".xlsx")) {
+        frappe.msgprint("Please select a valid .xlsx Excel file.");
+        return;
+    }
 
-                    callback(r){
-                        if(!r.exc){
-                            frm.reload_doc();
-                            frappe.show_alert({
-                                message: "Excel uploaded successfully",
-                                indicator: "green"
-                            });
-                            d.hide();
-                        }
-                    }
-                });
+    if (!type) {
+        frappe.msgprint("Please select Upload Type.");
+        return;
+    }
+
+    try {
+        frappe.dom.freeze("Uploading Excel...");
+
+        const form_data = new FormData();
+
+        form_data.append("file", file);
+        form_data.append("is_private", "0");
+
+        const upload_response = await fetch(
+            "/api/method/upload_file",
+            {
+                method: "POST",
+                headers: {
+                    "X-Frappe-CSRF-Token": frappe.csrf_token
+                },
+                body: form_data
             }
+        );
+
+        const upload_data = await upload_response.json();
+
+        if (!upload_response.ok || !upload_data.message) {
+            throw new Error(
+                upload_data?.message?.message ||
+                upload_data?.exc ||
+                "Excel file upload failed."
+            );
         }
-    });
+
+        const file_url = upload_data.message.file_url;
+
+        const process_response = await frappe.call({
+            method: "erp_custom.erp_custom.doctype.stock_item.stock_item.upload_stock_excel",
+            args: {
+                file_url: file_url,
+                upload_type: type,
+                stock_item: frm.doc.name
+            }
+        });
+
+        if (process_response.exc) {
+            throw new Error("Excel data processing failed.");
+        }
+
+        frappe.show_alert({
+            message: "Excel uploaded successfully.",
+            indicator: "green"
+        });
+
+        d.hide();
+
+        await frm.reload_doc();
+
+    } catch (error) {
+        console.error("Stock Excel Upload Error:", error);
+
+        frappe.msgprint({
+            title: "Excel Upload Failed",
+            message: error.message || "Unable to upload Excel file.",
+            indicator: "red"
+        });
+
+    } finally {
+        frappe.dom.unfreeze();
+    }
 });
-    d.show();
+
+d.show();
 }
 
 
