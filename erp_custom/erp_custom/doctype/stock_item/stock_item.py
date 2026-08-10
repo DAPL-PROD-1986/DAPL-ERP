@@ -11,6 +11,7 @@
 
 import frappe
 import io
+import json
 import openpyxl
 from frappe.model.document import Document
 from math import pi
@@ -26,55 +27,6 @@ class StockItem(Document):
 
     def validate(self):
         self.calculate_stock_weights()
-
-    # def calculate_stock_weights(self):
-    #     # Plate Totals
-    #     self.overall_avail_wgt_plate = 0
-    #     self.overall_avail_wgt_amt_plate = 0
-
-    #     # Tube Totals
-    #     self.overall_avail_wgt_tube = 0
-    #     self.overall_avail_wgt_amt_tube = 0
-
-    #     # Pipe Totals
-    #     self.overall_avail_wgt_pipe = 0
-    #     self.overall_avail_wgt_amt_pipe = 0
-
-    #     # Rod Totals
-    #     self.overall_avail_wgt_rod = 0
-    #     self.overall_avail_wgt_amt_rod = 0
-
-    #     # ---------------- Plates ----------------
-    #     if hasattr(self, "plates"):
-    #         for row in self.plates:
-    #             self.calculate_plate(row)
-
-    #             self.overall_avail_wgt_plate += row.available_weight or 0
-    #             self.overall_avail_wgt_amt_plate += row.available_weight_amount or 0
-
-    #     # ---------------- Tubes ----------------
-    #     if hasattr(self, "tubes"):
-    #         for row in self.tubes:
-    #             self.calculate_tube(row)
-
-    #             self.overall_avail_wgt_tube += row.available_weight or 0
-    #             self.overall_avail_wgt_amt_tube += row.available_weight_amount or 0
-
-    #     # ---------------- Pipes ----------------
-    #     if hasattr(self, "pipes"):
-    #         for row in self.pipes:
-    #             self.calculate_pipe(row)
-
-    #             self.overall_avail_wgt_pipe += row.available_weight or 0
-    #             self.overall_avail_wgt_amt_pipe += row.available_weight_amount or 0
-
-    #     # ---------------- Rods ----------------
-    #     if hasattr(self, "rods"):
-    #         for row in self.rods:
-    #             self.calculate_rod(row)
-
-    #             self.overall_avail_wgt_rod += row.available_weight or 0
-    #             self.overall_avail_wgt_amt_rod += row.available_weight_amount or 0
 
     def calculate_stock_weights(self):
         self.overall_avail_wgt_plate = 0
@@ -92,46 +44,26 @@ class StockItem(Document):
         # Plates
         for row in self.plates or []:
             self.calculate_plate(row)
-
             self.overall_avail_wgt_plate += row.available_weight or 0
             self.overall_avail_wgt_amt_plate += row.available_weight_amount or 0
 
         # Tubes
         for row in self.tubes or []:
             self.calculate_tube(row)
-
             self.overall_avail_wgt_tube += row.available_weight or 0
             self.overall_avail_wgt_amt_tube += row.available_weight_amount or 0
 
         # Pipes
         for row in self.pipes or []:
             self.calculate_pipe(row)
-
             self.overall_avail_wgt_pipe += row.available_weight or 0
             self.overall_avail_wgt_amt_pipe += row.available_weight_amount or 0
 
         # Rods
         for row in self.rods or []:
             self.calculate_rod(row)
-
             self.overall_avail_wgt_rod += row.available_weight or 0
             self.overall_avail_wgt_amt_rod += row.available_weight_amount or 0
-
-    # def calculate_plate(self, row):
-    #     if row.length and row.width and row.thickness and row.density:
-    #         row.weight_per_item = (row.length * row.width * row.thickness * row.density) / 1000000
-    #     else:
-    #         row.weight_per_item = 0
-
-    #     # Actual Weight
-    #     row.actual_weight = (row.quantity or 1) * (row.weight_per_item or 0)
-
-    #     # Available Weight
-    #     row.available_weight = ((row.actual_weight or 0) - (row.used_weight or 0))
-
-    #     # Amounts
-    #     row.actual_weight_amount = ((row.actual_weight or 0) * (row.rate_per_kg or 0))
-    #     row.available_weight_amount = ((row.available_weight or 0) * (row.rate_per_kg or 0))
     
     def calculate_plate(self, row):
         length = row.length or 0
@@ -142,32 +74,11 @@ class StockItem(Document):
         used_weight = row.used_weight or 0
         rate_per_kg = row.rate_per_kg or 0
 
-        row.weight_per_item = (
-            length
-            * width
-            * thickness
-            * density
-        ) / 1000000
-
-        row.actual_weight = (
-            quantity
-            * row.weight_per_item
-        )
-
-        row.available_weight = (
-            row.actual_weight
-            - used_weight
-        )
-
-        row.actual_weight_amount = (
-            row.actual_weight
-            * rate_per_kg
-        )
-
-        row.available_weight_amount = (
-            row.available_weight
-            * rate_per_kg
-        )
+        row.weight_per_item = (length * width * thickness * density) / 1000000
+        row.actual_weight = (quantity * row.weight_per_item)
+        row.available_weight = (row.actual_weight - used_weight)
+        row.actual_weight_amount = (row.actual_weight * rate_per_kg)
+        row.available_weight_amount = (row.available_weight * rate_per_kg)
 
 
     def calculate_tube(self, row):
@@ -272,448 +183,770 @@ def download_workbook(workbook, filename):
 
 
 @frappe.whitelist()
-def download_plate_template():
-    wb = Workbook()
-    # Remove default sheet
-    wb.remove(wb.active)
-    create_template_sheet(wb, "Plates",
-        ["Category", "Type", "Material of Construction (MoC)", "Vendor", "Description", "Purchse Order No", "Status", "Length", "Width", "Thickness", "Density",
-        "Quantity", "Rate ₹ (Per Kg)", "Used Weight", "Weight Per Item", "Actual Weight", "Available Weight", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"])
+def download_template():
+    template_type = frappe.form_dict.get("template_type")
+    templates = {
 
-    download_workbook(wb, "Stock_Plate_Template.xlsx")
+        "plate": {
+            "sheet": "Plates",
+            "filename": "Stock_Plate_Template.xlsx",
+            "headers": ["Category", "Type", "Material of Construction (MoC)",
+                "Vendor", "Description", "Purchase Order No", "Status",
+                "Length", "Width", "Thickness", "Density",
+                "Quantity", "Rate ₹ (Per Kg)", "Used Weight",
+                "Weight Per Item", "Actual Weight", "Available Weight",
+                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+        },
+
+        "pipe": {
+            "sheet": "Pipes",
+            "filename": "Stock_Pipe_Template.xlsx",
+            "headers": ["Category", "Type", "Material of Construction (MoC)",
+                "Vendor", "Description", "Purchase Order No", "Status",
+                "Length", "Thickness", "Outer Diameter", "Density",
+                "Quantity", "Used Quantity", "Rate ₹ (Per Mtr)",
+                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+        },
+
+        "tube": {
+            "sheet": "Tubes",
+            "filename": "Stock_Tube_Template.xlsx",
+            "headers": ["Category", "Type", "Material of Construction (MoC)",
+                "Vendor", "Description", "Purchase Order No", "Status",
+                "Length", "Thickness", "Outer Diameter", "Density",
+                "Quantity", "Used Quantity", "Rate ₹ (Per Mtr)",
+                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+        },
+
+        "rod": {
+            "sheet": "Rods",
+            "filename": "Stock_Rod_Template.xlsx",
+            "headers": ["Category", "Type", "Material of Construction (MoC)",
+                "Vendor", "Description", "Purchase Order No", "Status",
+                "Length", "Outer Diameter", "Density",
+                "Quantity", "Used Quantity", "Rate ₹ (Per Mtr)",
+                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+        },
+
+        "flange": {
+            "sheet": "Flanges",
+            "filename": "Stock_Flange_Template.xlsx",
+            "headers": ["Category", "Type", "Material of Construction (MoC)",
+                "Vendor", "Description", "Purchase Order No", "Status",
+                "NPS", "SCH", "Class",
+                "Quantity", "Used Quantity", "Rate ₹ (Per Kg)",
+                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+        },
+
+        "welding": {
+            "sheet": "Weldings",
+            "filename": "Stock_Welding_Template.xlsx",
+            "headers": ["Category", "Type", "Material of Construction (MoC)",
+                "Vendor", "Description", "Purchase Order No", "Status",
+                "Size (mm)", "Heat No", "Batch No", "Make / Brand",
+                "Quantity", "Used Quantity", "Rate ₹ (Per Kg)",
+                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+        },
+
+        "disc": {
+            "sheet": "Disc",
+            "filename": "Stock_Disc_Template.xlsx",
+            "headers": ["Category", "Type", "Material of Construction (MoC)",
+                "Vendor", "Description", "Purchase Order No", "Status",
+                "Size (mm)", "Heat No", "Batch No", "Make / Brand",
+                "Quantity", "Used Quantity", "Rate ₹ (Per Kg)",
+                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+        },
+
+        "spares": {
+            "sheet": "Spares",
+            "filename": "Stock_Spares_Template.xlsx",
+            "headers": ["Category", "Type", "Material of Construction (MoC)",
+                "Vendor", "Description", "Purchase Order No", "Status",
+                "Size (mm)", "Heat No", "Batch No", "Make / Brand",
+                "Quantity", "Used Quantity", "Rate ₹ (Per Kg)",
+                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+        },
+
+        "machinery": {
+            "sheet": "Machinery",
+            "filename": "Stock_Machinery_Template.xlsx",
+            "headers": ["Category", "Type", "Material of Construction (MoC)",
+                "Vendor", "Description", "Purchase Order No", "Status",
+                "Size (mm)", "Heat No", "Batch No", "Make / Brand",
+                "Quantity", "Used Quantity", "Rate ₹ (Per Kg)",
+                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+        }
+    }
+
+    # -----------------------------
+    # Overall Workbook
+    # -----------------------------
+    if template_type == "overall":
+        workbook = Workbook()
+        workbook.remove(workbook.active)
+
+        for item_type in ["plate", "pipe", "tube", "rod", "flange", "welding", "disc", "spares", "machinery"]:
+            template = templates[item_type]
+
+            create_template_sheet(workbook, template["sheet"], template["headers"])
+        download_workbook(workbook, "Stock_Overall_Template.xlsx")
+        return
+
+    # -----------------------------
+    # Individual Workbook
+    # -----------------------------
+    if template_type not in templates:
+        frappe.throw("Invalid template type")
+
+    template = templates[template_type]
+    workbook = Workbook()
+    workbook.remove(workbook.active)
+
+    create_template_sheet(workbook, template["sheet"], template["headers"])
+    download_workbook(workbook, template["filename"])
+
+
+DOWNLOAD_CONFIG = {
+    "plates": {
+        "sheet": "Plates",
+        "table": "plates",
+        "fields": [
+            ("Category", "category"),
+            ("Type", "type"),
+            ("Material of Construction (MoC)", "moc"),
+            ("Vendor", "vendor"),
+            ("Description", "description"),
+            ("Purchase Order No", "purchase_order_no"),
+            ("Status", "status"),
+            ("Length", "length"),
+            ("Width", "width"),
+            ("Thickness", "thickness"),
+            ("Density", "density"),
+            ("Quantity", "quantity"),
+            ("Rate ₹ (Per Kg)", "rate_per_kg"),
+            ("Used Weight", "used_weight"),
+            ("Weight Per Item", "weight_per_item"),
+            ("Actual Weight", "actual_weight"),
+            ("Available Weight", "available_weight"),
+            ("Actual Weight Amount (₹)", "actual_weight_amount"),
+            ("Available Weight Amount (₹)", "available_weight_amount"),
+            ("Remarks", "remarks")
+        ]
+    },
+
+    "pipes": {
+        "sheet": "Pipes",
+        "table": "pipes",
+        "fields": [
+            ("Category", "category"),
+            ("Type", "type"),
+            ("Material of Construction (MoC)", "moc"),
+            ("Vendor", "vendor"),
+            ("Description", "description"),
+            ("Purchase Order No", "purchase_order_no"),
+            ("Status", "status"),
+            ("Length", "length"),
+            ("Thickness", "thickness"),
+            ("Outer Diameter", "outer_diameter"),
+            ("Density", "density"),
+            ("Quantity", "quantity"),
+            ("Used Quantity", "used_quantity"),
+            ("Rate ₹ (Per Mtr)", "rate_per_mtr"),
+            ("Used Weight", "used_weight"),
+            ("Weight Per Item", "weight_per_item"),
+            ("Balanced Quantity", "balanced_quantity"),
+            ("Actual Weight", "actual_weight"),
+            ("Available Weight", "available_weight"),
+            ("Actual Weight Amount (₹)", "actual_weight_amount"),
+            ("Available Weight Amount (₹)", "available_weight_amount"),
+            ("Remarks", "remarks")
+        ]
+    },
+
+    "tubes": {
+        "sheet": "Tubes",
+        "table": "tubes",
+        "fields": [
+            ("Category", "category"),
+            ("Type", "type"),
+            ("Material of Construction (MoC)", "moc"),
+            ("Vendor", "vendor"),
+            ("Description", "description"),
+            ("Purchase Order No", "purchase_order_no"),
+            ("Status", "status"),
+            ("Length", "length"),
+            ("Thickness", "thickness"),
+            ("Outer Diameter", "outer_diameter"),
+            ("Density", "density"),
+            ("Quantity", "quantity"),
+            ("Used Quantity", "used_quantity"),
+            ("Rate ₹ (Per Mtr)", "rate_per_mtr"),
+            ("Used Weight", "used_weight"),
+            ("Weight Per Item", "weight_per_item"),
+            ("Balanced Quantity", "balanced_quantity"),
+            ("Actual Weight", "actual_weight"),
+            ("Available Weight", "available_weight"),
+            ("Actual Weight Amount (₹)", "actual_weight_amount"),
+            ("Available Weight Amount (₹)", "available_weight_amount"),
+            ("Remarks", "remarks")
+        ]
+    },
+
+    "rods": {
+        "sheet": "Rods",
+        "table": "rods",
+        "fields": [
+            ("Category", "category"),
+            ("Type", "type"),
+            ("Material of Construction (MoC)", "moc"),
+            ("Vendor", "vendor"),
+            ("Description", "description"),
+            ("Purchase Order No", "purchase_order_no"),
+            ("Status", "status"),
+            ("Length", "length"),
+            ("Outer Diameter", "outer_diameter"),
+            ("Density", "density"),
+            ("Quantity", "quantity"),
+            ("Used Quantity", "used_quantity"),
+            ("Rate ₹ (Per Mtr)", "rate_per_mtr"),
+            ("Used Weight", "used_weight"),
+            ("Weight Per Item", "weight_per_item"),
+            ("Balanced Quantity", "balanced_quantity"),
+            ("Actual Weight", "actual_weight"),
+            ("Available Weight", "available_weight"),
+            ("Actual Weight Amount (₹)", "actual_weight_amount"),
+            ("Available Weight Amount (₹)", "available_weight_amount"),
+            ("Remarks", "remarks")
+        ]
+    },
+
+    "flanges": {
+        "sheet": "Flanges",
+        "table": "flanges",
+        "fields": [
+            ("Category", "category"),
+            ("Type", "type"),
+            ("Material of Construction (MoC)", "moc"),
+            ("Vendor", "vendor"),
+            ("Description", "description"),
+            ("Purchase Order No", "purchase_order_no"),
+            ("Status", "status"),
+            ("NPS", "nps"),
+            ("SCH", "sch"),
+            ("Class", "class"),
+            ("Quantity", "quantity"),
+            ("Used Quantity", "used_quantity"),
+            ("Rate ₹ (Per Kg)", "rate_per_kg"),
+            ("Used Weight", "used_weight"),
+            ("Weight Per Item", "weight_per_item"),
+            ("Balanced Quantity", "balanced_quantity"),
+            ("Actual Weight", "actual_weight"),
+            ("Available Weight", "available_weight"),
+            ("Actual Weight Amount (₹)", "actual_weight_amount"),
+            ("Available Weight Amount (₹)", "available_weight_amount"),
+            ("Remarks", "remarks")
+        ]
+    },
+
+    "welding": {
+        "sheet": "Weldings",
+        "table": "welding",
+        "fields": [
+            ("Category", "category"),
+            ("Type", "type"),
+            ("Material of Construction (MoC)", "moc"),
+            ("Vendor", "vendor"),
+            ("Description", "description"),
+            ("Purchase Order No", "purchase_order_no"),
+            ("Status", "status"),
+            ("Size (mm)", "size"),
+            ("Heat No", "heat_no"),
+            ("Batch No", "batch_no"),
+            ("Make / Brand", "make_brand"),
+            ("Quantity", "quantity"),
+            ("Used Quantity", "used_quantity"),
+            ("Rate ₹ (Per Kg)", "rate_per_kg"),
+            ("Used Weight", "used_weight"),
+            ("Weight Per Item", "weight_per_item"),
+            ("Balanced Quantity", "balanced_quantity"),
+            ("Actual Weight", "actual_weight"),
+            ("Available Weight", "available_weight"),
+            ("Actual Weight Amount (₹)", "actual_weight_amount"),
+            ("Available Weight Amount (₹)", "available_weight_amount"),
+            ("Remarks", "remarks")
+        ]
+    },
+
+    "disc": {
+        "sheet": "Disc",
+        "table": "disc",
+        "fields": [
+            ("Category", "category"),
+            ("Type", "type"),
+            ("Material of Construction (MoC)", "moc"),
+            ("Vendor", "vendor"),
+            ("Description", "description"),
+            ("Purchase Order No", "purchase_order_no"),
+            ("Status", "status"),
+            ("NPS", "nps"),
+            ("SCH", "sch"),
+            ("Class", "class"),
+            ("Quantity", "quantity"),
+            ("Used Quantity", "used_quantity"),
+            ("Rate ₹ (Per Kg)", "rate_per_kg"),
+            ("Used Weight", "used_weight"),
+            ("Weight Per Item", "weight_per_item"),
+            ("Balanced Quantity", "balanced_quantity"),
+            ("Actual Weight", "actual_weight"),
+            ("Available Weight", "available_weight"),
+            ("Actual Weight Amount (₹)", "actual_weight_amount"),
+            ("Available Weight Amount (₹)", "available_weight_amount"),
+            ("Remarks", "remarks")
+        ]
+    },
+
+    "spares": {
+        "sheet": "Spares",
+        "table": "spares",
+        "fields": [
+            ("Category", "category"),
+            ("Type", "type"),
+            ("Material of Construction (MoC)", "moc"),
+            ("Vendor", "vendor"),
+            ("Description", "description"),
+            ("Purchase Order No", "purchase_order_no"),
+            ("Status", "status"),
+            ("NPS", "nps"),
+            ("SCH", "sch"),
+            ("Class", "class"),
+            ("Quantity", "quantity"),
+            ("Used Quantity", "used_quantity"),
+            ("Rate ₹ (Per Kg)", "rate_per_kg"),
+            ("Used Weight", "used_weight"),
+            ("Weight Per Item", "weight_per_item"),
+            ("Balanced Quantity", "balanced_quantity"),
+            ("Actual Weight", "actual_weight"),
+            ("Available Weight", "available_weight"),
+            ("Actual Weight Amount (₹)", "actual_weight_amount"),
+            ("Available Weight Amount (₹)", "available_weight_amount"),
+            ("Remarks", "remarks")
+        ]
+    },
+
+    "machinery": {
+        "sheet": "Machinery",
+        "table": "machinery",
+        "fields": [
+            ("Category", "category"),
+            ("Type", "type"),
+            ("Material of Construction (MoC)", "moc"),
+            ("Vendor", "vendor"),
+            ("Description", "description"),
+            ("Purchase Order No", "purchase_order_no"),
+            ("Status", "status"),
+            ("NPS", "nps"),
+            ("SCH", "sch"),
+            ("Class", "class"),
+            ("Quantity", "quantity"),
+            ("Used Quantity", "used_quantity"),
+            ("Rate ₹ (Per Kg)", "rate_per_kg"),
+            ("Used Weight", "used_weight"),
+            ("Weight Per Item", "weight_per_item"),
+            ("Balanced Quantity", "balanced_quantity"),
+            ("Actual Weight", "actual_weight"),
+            ("Available Weight", "available_weight"),
+            ("Actual Weight Amount (₹)", "actual_weight_amount"),
+            ("Available Weight Amount (₹)", "available_weight_amount"),
+            ("Remarks", "remarks")
+        ]
+    }
+}
 
 
 @frappe.whitelist()
-def download_pipe_template():
-    wb = Workbook()
-    # Remove default sheet
-    wb.remove(wb.active)
-    create_template_sheet(wb, "Pipes",
-        ["Category", "Type", "Material of Construction (MoC)", "Vendor", "Description", "Purchse Order No", "Status", "Length", "Thickness", "Outer Diameter", "Density",
-        "Quantity", "Used Quantity", "Rate ₹ (Per Kg)", "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"])
+def download_stock_data(stock_item, download_type):
+    try:
+        # Convert JSON string from JS into Python list
+        if isinstance(download_type, str):
+            try:
+                download_types = json.loads(download_type)
+            except json.JSONDecodeError:
+                download_types = [download_type]
+        else:
+            download_types = download_type
 
-    download_workbook(wb, "Stock_Pipe_Template.xlsx")
+        # Make sure it is a list
+        if not isinstance(download_types, list):
+            download_types = [download_types]
 
+        # Remove empty values and duplicates
+        download_types = list(dict.fromkeys(str(item).lower().strip()
+            for item in download_types if item))
 
-@frappe.whitelist()
-def download_tube_template():
-    wb = Workbook()
-    # Remove default sheet
-    wb.remove(wb.active)
-    create_template_sheet(wb, "Tubes",
-        ["Category", "Type", "Material of Construction (MoC)", "Vendor", "Description", "Purchse Order No", "Status", "Length", "Thickness", "Outer Diameter", "Density",
-        "Quantity", "Used Quantity", "Rate ₹ (Per Kg)", "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"])
+        # Overall = all stock types
+        if "overall" in download_types:
+            download_types = ["plates", "pipes", "tubes", "rods", "flanges", "welding", "disc", "spares", "machinery"]
 
-    download_workbook(wb, "Stock_Tube_Template.xlsx")
+        if not download_types:
+            frappe.throw("Please select at least one Download Type.")
 
-@frappe.whitelist()
-def download_rod_template():
-    wb = Workbook()
-    # Remove default sheet
-    wb.remove(wb.active)
-    create_template_sheet(wb, "Rods",
-        ["Category", "Type", "Material of Construction (MoC)", "Vendor", "Description", "Purchse Order No", "Status", "Length", "Thickness", "Outer Diameter", "Density",
-        "Quantity", "Used Quantity", "Rate ₹ (Per Kg)", "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"])
+        doc = frappe.get_doc("Stock Item", stock_item)
+        wb = Workbook()
 
-    download_workbook(wb, "Stock_Rod_Template.xlsx")
+        # Remove default sheet
+        default_ws = wb.active
+        wb.remove(default_ws)
 
+        for download_type in download_types:
+            config = DOWNLOAD_CONFIG.get(download_type)
 
-@frappe.whitelist()
-def download_overall_template():
-    wb = Workbook()
-    # Remove default sheet
-    wb.remove(wb.active)
-    # Plates Sheet
-    create_template_sheet(wb, "Plates",
-        ["Category", "Type", "Material of Construction (MoC)", "Vendor", "Description", "Purchse Order No", "Status", "Length", "Width", "Thickness", "Density",
-        "Quantity", "Rate ₹ (Per Kg)", "Used Weight", "Weight Per Item", "Actual Weight", "Available Weight", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"])
+            if not config:
+                frappe.throw(f"Invalid Download Type: {download_type}")
 
-    # Pipes Sheet
-    create_template_sheet(wb, "Pipes",
-        ["Length", "Thickness", "Outer Diameter"])
+            ws = wb.create_sheet(title=config["sheet"])
+            export_data(ws, doc, download_type)
 
-    # Tubes Sheet
-    create_template_sheet(wb, "Tubes",
-        ["Length", "Thickness", "Outer Diameter"])
+        # Create Excel file
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
 
-    download_workbook(wb, "Stock_Overall_Template.xlsx")
+        if len(download_types) == 1:
+            filename = (f"{stock_item}_{download_types[0]}.xlsx")
+        else:
+            filename = (f"{stock_item}_Stock_Data.xlsx")
 
+        frappe.local.response.filename = filename
+        frappe.local.response.filecontent = output.getvalue()
+        frappe.local.response.type = "download"
 
-
-# @frappe.whitelist()
-# def upload_stock_excel(file_url, upload_type, stock_item):
-#     try:
-
-#         # Get uploaded file
-#         file_doc = get_file(file_url)
-#         file_content = file_doc[1]
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Stock Data Download Error")
+        frappe.throw(str(e))
 
 
-#         # Load workbook
-#         wb = openpyxl.load_workbook(filename=BytesIO(file_content))
-#         doc = frappe.get_doc("Stock Item", stock_item)
+def export_data(ws, doc, download_type):
+    config = DOWNLOAD_CONFIG.get(download_type)
 
-#         # ---------------- Plates ----------------
-#         if upload_type == "Plate":
-#             ws = wb.active
-#             for row in ws.iter_rows(min_row=2, values_only=True):
-#                 if not any(row):
-#                     continue
+    if not config:
+        frappe.throw(f"Invalid Download Type: {download_type}")
 
-#                 doc.append("plates", {
-#                         "category":row[0],
-#                         "type":row[1],
-#                         "moc": row[2],
-#                         "vendor": row[3],
-#                         "description": row[4],
-#                         "purchase_order_no": row[5],
-#                         "status": row[6],
-#                         "length": row[7],
-#                         "width": row[8],
-#                         "thickness": row[9],
-#                         "density": row[10],
+    fields = config["fields"]
 
-#                         "Quantity": row[11],
-#                         "rate_per_kg": row[12],
-#                         "used_weight": row[13],
-#                         "weight_per_item": row[14],
-#                         "actual_weight": row[15],
-#                         "available_weight": row[16],
-#                         "actual_weight_amount": row[17],
-#                         "available_weight_amount": row[18],
-#                         "remarks": row[19],
-#                     })
+    # Header row
+    ws.append([label for label, fieldname in fields])
 
+    # Apply same header style as template
+    format_header(ws)
 
-#         # ---------------- Pipes ----------------
-#         elif upload_type == "Pipe":
-#             ws = wb.active
-#             for row in ws.iter_rows(min_row=2, values_only=True):
-#                 if not any(row):
-#                     continue
+    # Data rows
+    for row in getattr(doc, config["table"], []):
+        ws.append([getattr(row, fieldname, "")
+            for label, fieldname in fields])
 
-#                 doc.append("pipes", {
-#                         "length": row[0],
-#                         "thickness": row[1],
-#                         "outer_diameter": row[2]
-#                     })
-
-#         # ---------------- Tubes ----------------
-#         elif upload_type == "Tube":
-#             ws = wb.active
-#             for row in ws.iter_rows(min_row=2, values_only=True):
-#                 if not any(row):
-#                     continue
-
-#                 doc.append("tubes", {
-#                         "length": row[0],
-#                         "thickness": row[1],
-#                         "outer_diameter": row[2]
-#                     })
-
-#         # ---------------- Overall ----------------
-#         elif upload_type == "Overall":
-#             # -------- Plates Sheet --------
-
-#             if "Plates" in wb.sheetnames:
-#                 ws = wb["Plates"]
-#                 for row in ws.iter_rows(min_row=2, values_only=True):
-#                     if not any(row):
-#                         continue
-
-#                     doc.append("plates", {
-#                             "length": row[0],
-#                             "width": row[1],
-#                             "thickness": row[2]
-#                         })
-
-#             # -------- Pipes Sheet --------
-#             if "Pipes" in wb.sheetnames:
-#                 ws = wb["Pipes"]
-
-#                 for row in ws.iter_rows(min_row=2, values_only=True):
-#                     if not any(row):
-#                         continue
-
-#                     doc.append("pipes", {
-#                             "length": row[0],
-#                             "thickness": row[1],
-#                             "outer_diameter": row[2]
-#                         })
-
-#             # -------- Tubes Sheet --------
-#             if "Tubes" in wb.sheetnames:
-#                 ws = wb["Tubes"]
-
-#                 for row in ws.iter_rows(min_row=2, values_only=True):
-#                     if not any(row):
-#                         continue
-
-#                     doc.append("tubes", {
-#                             "length": row[0],
-#                             "thickness": row[1],
-#                             "outer_diameter": row[2]
-#                         })
-
-#         else:
-#             frappe.throw("Invalid Upload Type")
-
-#         # Save document
-#         doc.save()
-#         frappe.db.commit()
-#         return {
-#             "status": "success",
-#             "message": "Excel data appended successfully"
-#         }
-
-#     except Exception as e:
-#         frappe.log_error(frappe.get_traceback(), "Stock Item Excel Upload Error")
-#         frappe.throw(str(e))
+    # Auto adjust column width
+    auto_width(ws)
 
 
 @frappe.whitelist()
 def upload_stock_excel(file_url, upload_type, stock_item):
     try:
-        file_doc = get_file(file_url)
-        file_content = file_doc[1]
-
-        wb = openpyxl.load_workbook(filename=BytesIO(file_content), data_only=True)
         doc = frappe.get_doc("Stock Item", stock_item)
+        upload_type = (upload_type or "").strip().lower()
 
-        # ---------------- Plates ----------------
-        if upload_type == "Plates":
-            ws = wb.active
+        valid_types = ["plates", "pipes", "tubes", "rods", "flanges", "welding", "disc", "spares", "machinery", "overall"]
 
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not any(row):
-                    continue
-
-                doc.append("plates", {
-                    "category": row[0],
-                    "type": row[1],
-                    "moc": row[2],
-                    "vendor": row[3],
-                    "description": row[4],
-                    "purchase_order_no": row[5],
-                    "status": row[6],
-                    "length": row[7] or 0,
-                    "width": row[8] or 0,
-                    "thickness": row[9] or 0,
-                    "density": row[10] or 0,
-                    "quantity": row[11] or 0,
-                    "rate_per_kg": row[12] or 0,
-                    "used_weight": row[13] or 0,
-                    "remarks": row[19]
-                })
-
-        # ---------------- Pipes ----------------
-        elif upload_type == "Pipes":
-            ws = wb.active
-
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not any(row):
-                    continue
-
-                doc.append("pipes", {
-                    "category": row[0],
-                    "type": row[1],
-                    "moc": row[2],
-                    "vendor": row[3],
-                    "description": row[4],
-                    "purchase_order_no": row[5],
-                    "status": row[6],
-                    "length": row[7] or 0,
-                    "outer_diameter": row[8] or 0,
-                    "thickness": row[9] or 0,
-                    "density": row[10] or 0,
-                    "quantity": row[11] or 0,
-                    "rate_per_mtr": row[12] or 0,
-                    "used_weight": row[13] or 0,
-                    "remarks": row[19]
-                })
-
-        # ---------------- Tubes ----------------
-        elif upload_type == "Tubes":
-            ws = wb.active
-
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not any(row):
-                    continue
-
-                doc.append("tubes", {
-                    "category": row[0],
-                    "type": row[1],
-                    "moc": row[2],
-                    "vendor": row[3],
-                    "description": row[4],
-                    "purchase_order_no": row[5],
-                    "status": row[6],
-                    "length": row[7] or 0,
-                    "outer_diameter": row[8] or 0,
-                    "thickness": row[9] or 0,
-                    "density": row[10] or 0,
-                    "quantity": row[11] or 0,
-                    "rate_per_mtr": row[12] or 0,
-                    "used_weight": row[13] or 0,
-                    "remarks": row[19]
-                })
-
-        # ---------------- Rods ----------------
-        elif upload_type == "Rods":
-            ws = wb.active
-
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not any(row):
-                    continue
-
-                doc.append("rods", {
-                    "category": row[0],
-                    "type": row[1],
-                    "moc": row[2],
-                    "vendor": row[3],
-                    "description": row[4],
-                    "purchase_order_no": row[5],
-                    "status": row[6],
-                    "length": row[7] or 0,
-                    "outer_diameter": row[8] or 0,
-                    "density": row[9] or 0,
-                    "quantity": row[10] or 0,
-                    "rate_per_mtr": row[11] or 0,
-                    "used_weight": row[12] or 0,
-                    "remarks": row[19]
-                })
-
-        else:
+        if upload_type not in valid_types:
             frappe.throw(f"Invalid Upload Type: {upload_type}")
 
-        # Recalculate all calculated fields
-        doc.calculate_stock_weights()
+        file_doc = frappe.get_doc("File", {"file_url": file_url})
+        file_path = file_doc.get_full_path()
 
-        # Save
-        doc.save()
+        if upload_type == "overall":
+            upload_overall_excel(file_path, doc)
+        else:
+            upload_single_excel(file_path, doc, upload_type)
+
+        doc.save(ignore_permissions=True)
         frappe.db.commit()
+
         return {
-            "status": "success",
-            "message": f"{upload_type} Excel data uploaded successfully"
+            "success": True,
+            "message": "Excel uploaded successfully."
         }
 
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Stock Item Excel Upload Error")
+        frappe.log_error(frappe.get_traceback(), "Stock Excel Upload Error")
         frappe.throw(str(e))
 
-# @frappe.whitelist()
-# def upload_stock_excel(file_url, upload_type, stock_item):
-#     try:
-#         file_doc = get_file(file_url)
-#         file_content = file_doc[1]
+def upload_overall_excel(file_path, doc):
+    workbook = openpyxl.load_workbook(file_path, data_only=True)
+    sheet_map = {
+        "Plates": "plates",
+        "Pipes": "pipes",
+        "Tubes": "tubes",
+        "Rods": "rods",
+        "Flanges": "flanges",
+        "Weldings": "welding",
+        "Welding": "welding",
+        "Disc": "disc",
+        "Spares": "spares",
+        "Machinery": "machinery"
+    }
 
-#         wb = openpyxl.load_workbook(
-#             filename=BytesIO(file_content),
-#             data_only=True
-#         )
+    found_sheet = False
+    for sheet_name in workbook.sheetnames:
 
-#         doc = frappe.get_doc("Stock Item", stock_item)
+        if sheet_name not in sheet_map:
+            continue
 
-#         # ---------------- Plates ----------------
-#         if upload_type == "Plates":
-#             ws = wb.active
+        upload_type = sheet_map[sheet_name]
+        found_sheet = True
+        upload_single_excel(file_path, doc, upload_type, sheet_name=sheet_name)
 
-#             for row in ws.iter_rows(min_row=2, values_only=True):
-#                 if not any(row):
-#                     continue
+    if not found_sheet:
+        frappe.throw("No valid stock sheets found in Overall Excel file.")
+        
 
-#                 doc.append("plates", {
-#                     "category": row[0],
-#                     "type": row[1],
-#                     "moc": row[2],
-#                     "vendor": row[3],
-#                     "description": row[4],
-#                     "purchase_order_no": row[5],
-#                     "status": row[6],
-#                     "length": row[7] or 0,
-#                     "width": row[8] or 0,
-#                     "thickness": row[9] or 0,
-#                     "density": row[10] or 0,
-#                     "quantity": row[11] or 0,
-#                     "rate_per_kg": row[12] or 0,
-#                     "used_weight": row[13] or 0,
-#                     "remarks": row[19]
-#                 })
+def upload_single_excel(file_path, doc, upload_type, sheet_name=None):
+    workbook = openpyxl.load_workbook(file_path, data_only=True)
+    sheet_map = {
+        "plates": "Plates",
+        "pipes": "Pipes",
+        "tubes": "Tubes",
+        "rods": "Rods",
+        "flanges": "Flanges",
+        "welding": "Weldings",
+        "disc": "Disc",
+        "spares": "Spares",
+        "machinery": "Machinery"
+    }
 
-#         else:
-#             frappe.throw(
-#                 f"Invalid Upload Type: {upload_type}"
-#             )
+    if not sheet_name:
+        sheet_name = sheet_map.get(upload_type)
 
-#         # Recalculate calculated fields
-#         doc.calculate_stock_weights()
+    if not sheet_name:
+        frappe.throw(f"Invalid Upload Type: {upload_type}")
 
-#         # Save Stock Item
-#         doc.save()
+    if sheet_name not in workbook.sheetnames:
+        frappe.throw(f"'{sheet_name}' sheet not found in Excel file.")
 
-#         frappe.db.commit()
-
-#         return {
-#             "status": "success",
-#             "message": "Excel data appended successfully"
-#         }
-
-#     except Exception as e:
-#         frappe.log_error(
-#             frappe.get_traceback(),
-#             "Stock Item Excel Upload Error"
-#         )
-
-#         frappe.throw(str(e))
-
-@frappe.whitelist()
-def download_stock_data(stock_item, download_type):
-    frappe.msgprint(f"{download_type} Download Started")
-    return download_excel_with_data(stock_item, download_type)
+    ws = workbook[sheet_name]
+    upload_sheet_data(ws, doc, upload_type)
 
 
-def download_excel_with_data(stock_item, download_type):
-    doc = frappe.get_doc("Stock Item", stock_item)
-    wb = Workbook()
-    ws = wb.active
-    ws.title = download_type.title()
+def upload_sheet_data(ws, doc, upload_type):
+    table_map = {
+        "plates": "plates",
+        "pipes": "pipes",
+        "tubes": "tubes",
+        "rods": "rods",
+        "flanges": "flanges",
+        "welding": "welding",
+        "disc": "disc",
+        "spares": "spares",
+        "machinery": "machinery"
+    }
 
-    if download_type == "plates":
-        export_plates(ws, doc)
+    table_field = table_map.get(upload_type)
 
-    elif download_type == "pipes":
-        export_pipes(ws, doc)
+    if not table_field:
+        frappe.throw(f"Invalid Upload Type: {upload_type}")
 
-    elif download_type == "tubes":
-        export_tubes(ws, doc)
+    # -----------------------------------------
+    # Read Excel headers
+    # -----------------------------------------
+    headers = []
+    for cell in ws[1]:
+        if cell.value is None:
+            headers.append("")
+        else:
+            headers.append(str(cell.value).strip())
 
-    elif download_type == "rods":
-        export_rods(ws, doc)
+    # -----------------------------------------
+    # Excel header -> child field
+    # -----------------------------------------
+    field_map = {
+        "Category": "category",
+        "Type": "type",
+        "Material of Construction (MoC)": "moc",
+        "Vendor": "vendor",
+        "Description": "description",
+        "Purchase Order No": "purchase_order_no",
+        "Purchase Order No": "purchase_order_no",
+        "Status": "status",
 
-    elif download_type == "flanges":
-        export_flanges(ws, doc)
+        "Length": "length",
+        "Width": "width",
+        "Thickness": "thickness",
+        "Outer Diameter": "outer_diameter",
+        "Density": "density",
 
-    elif download_type == "welding":
-        export_welding(ws, doc)
+        "NPS": "nps",
+        "SCH": "sch",
+        "Class": "class",
 
-    elif download_type == "disc":
-        export_disc(ws, doc)
+        "Size (mm)": "size",
+        "Heat No": "heat_no",
+        "Batch No": "batch_no",
+        "Make / Brand": "make_brand",
 
-    elif download_type == "spares":
-        export_spares(ws, doc)
+        "Quantity": "quantity",
+        "Used Quantity": "used_quantity",
 
-    elif download_type == "overall":
-        export_overall(ws, doc)
+        "Rate ₹ (Per Kg)": "rate_per_kg",
 
-    output = io.BytesIO()
-    wb.save(output)
-    frappe.local.response.filename = f"{stock_item}_{download_type}.xlsx"
-    frappe.local.response.filecontent = output.getvalue()
-    frappe.local.response.type = "download"
+        "Used Weight": "used_weight",
+        "Weight Per Item": "weight_per_item",
+        "Balanced Quantity": "balanced_quantity",
+
+        "Actual Weight": "actual_weight",
+        "Available Weight": "available_weight",
+
+        "Actual Weight Amount (₹)": "actual_weight_amount",
+        "Available Weight Amount (₹)": "available_weight_amount",
+
+        "Remarks": "remarks"
+    }
+
+    # -----------------------------------------
+    # Process Excel rows
+    # -----------------------------------------
+    for row in ws.iter_rows(min_row=2, values_only=True):
+
+        # Skip completely empty rows
+        if not any(value is not None for value in row):
+            continue
+
+        child = doc.append(table_field, {})
+
+        # -------------------------------------
+        # Fill child table fields
+        # -------------------------------------
+        for index, header in enumerate(headers):
+
+            if not header:
+                continue
+
+            if index >= len(row):
+                continue
+
+            value = row[index]
+
+            if value is None:
+                continue
+
+            frappe_field = field_map.get(header)
+
+            if not frappe_field:
+                continue
+
+            # Only set field if it exists
+            if frappe.get_meta(child.doctype).has_field(frappe_field):
+                setattr(child, frappe_field, value)
+
+        # -------------------------------------
+        # Calculate values
+        # -------------------------------------
+        calculate_uploaded_row(child, upload_type)
 
 
-def export_plates(ws, doc):
-    ws.append(["Type", "MOC", "Quantity", "Length", "Width", "Thickness", "Density", "Weight"])
+def calculate_uploaded_row(child, upload_type):
+    import math
 
-    for d in doc.plates:
-        ws.append([d.type, d.moc, d.quantity, d.length, d.width, d.thickness, d.density, d.weight])
+    quantity = float(child.quantity or 0)
+    used_quantity = float(getattr(child, "used_quantity", 0) or 0)
+    rate = float(getattr(child, "rate_per_kg", 0) or 0)
+    density = float(getattr(child, "density", 0) or 0)
+    length = float(getattr(child, "length", 0) or 0)
+    thickness = float(getattr(child, "thickness", 0) or 0)
+    width = float(getattr(child, "width", 0) or 0)
+    outer_diameter = float(getattr(child, "outer_diameter", 0) or 0)
+
+    # -----------------------------------------
+    # PLATES
+    # -----------------------------------------
+    if upload_type == "plates":
+        weight_per_item = (length * width * thickness * density) / 1000000
+
+    # -----------------------------------------
+    # PIPES / TUBES
+    # -----------------------------------------
+    elif upload_type in ["pipes", "tubes"]:
+        outer_radius = outer_diameter / 2
+        inner_diameter = (outer_diameter - (2 * thickness))
+        inner_radius = inner_diameter / 2
+        weight_per_item = (math.pi * ((outer_radius ** 2) - (inner_radius ** 2)) * length * density) / 1000000
+
+    # -----------------------------------------
+    # RODS
+    # -----------------------------------------
+    elif upload_type == "rods":
+        radius = outer_diameter / 2
+        weight_per_item = (math.pi * (radius ** 2) * length * density) / 1000000
+
+    else:
+        return
+
+    # -----------------------------------------
+    # Weight Per Item
+    # -----------------------------------------
+    child.weight_per_item = weight_per_item
+
+    # -----------------------------------------
+    # Actual Weight
+    # -----------------------------------------
+    actual_weight = (weight_per_item * quantity)
+    child.actual_weight = actual_weight
+
+    # -----------------------------------------
+    # Used Weight
+    # -----------------------------------------
+    if hasattr(child, "used_weight"):
+        used_weight = (weight_per_item * used_quantity)
+        child.used_weight = used_weight
+
+    else:
+        used_weight = 0
+
+    # -----------------------------------------
+    # Available Weight
+    # -----------------------------------------
+    available_weight = (actual_weight - used_weight)
+
+    if hasattr(child, "available_weight"):
+        child.available_weight = (available_weight)
+
+    # -----------------------------------------
+    # Balanced Quantity
+    # -----------------------------------------
+    if hasattr(child, "balanced_quantity"):
+        child.balanced_quantity = (quantity - used_quantity)
+
+    # -----------------------------------------
+    # Actual Weight Amount
+    # -----------------------------------------
+    if hasattr(child, "actual_weight_amount"):
+        child.actual_weight_amount = (actual_weight * rate)
+
+    # -----------------------------------------
+    # Available Weight Amount
+    # -----------------------------------------
+    if hasattr(child, "available_weight_amount"):
+        child.available_weight_amount = (available_weight * rate)
+
+def set_excel_value(child, row_data, excel_field, frappe_field):
+    if excel_field in row_data:
+        value = row_data[excel_field]
+
+        if value is not None:
+            setattr(child, frappe_field, value)

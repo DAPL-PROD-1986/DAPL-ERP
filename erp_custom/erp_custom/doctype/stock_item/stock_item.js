@@ -47,7 +47,6 @@ function set_moc_filter(frm) {
 function add_stock_button_style() {
     if ($("#stock-button-style").length) return;
     $("head").append(`
-
     <style id="stock-button-style">
     .stock-download-btn,
     .stock-upload-btn {
@@ -57,7 +56,6 @@ function add_stock_button_style() {
         overflow:hidden;
         transition:0.3s;
     }
-
 
     .stock-btn-content {
         display:flex;
@@ -98,6 +96,9 @@ function add_stock_button_style() {
         transform:translateY(-2px);
         background: linear-gradient(135deg, #047857, #115e59) !important;
     }
+    
+    @media (max-width: 768px) {
+    .stock-btn-content{background-color: green;}}
     </style>
     `);
 }
@@ -427,7 +428,7 @@ function show_download_dialog(frm) {
 
     d.$wrapper.find(".btn-download").on("click", function(){
         let type = $(this).data("type");
-        window.location.href = `/api/method/erp_custom.erp_custom.doctype.stock_item.stock_item.download_${type}_template`;
+        window.location.href = `/api/method/erp_custom.erp_custom.doctype.stock_item.stock_item.download_template?template_type=${type}`;
         d.hide();
     });
 
@@ -658,13 +659,10 @@ function show_upload_dialog(frm) {
         frappe.dom.freeze("Uploading Excel...");
 
         const form_data = new FormData();
-
         form_data.append("file", file);
         form_data.append("is_private", "0");
 
-        const upload_response = await fetch(
-            "/api/method/upload_file",
-            {
+        const upload_response = await fetch("/api/method/upload_file", {
                 method: "POST",
                 headers: {
                     "X-Frappe-CSRF-Token": frappe.csrf_token
@@ -676,11 +674,7 @@ function show_upload_dialog(frm) {
         const upload_data = await upload_response.json();
 
         if (!upload_response.ok || !upload_data.message) {
-            throw new Error(
-                upload_data?.message?.message ||
-                upload_data?.exc ||
-                "Excel file upload failed."
-            );
+            throw new Error(upload_data?.message?.message || upload_data?.exc || "Excel file upload failed.");
         }
 
         const file_url = upload_data.message.file_url;
@@ -704,7 +698,6 @@ function show_upload_dialog(frm) {
         });
 
         d.hide();
-
         await frm.reload_doc();
 
     } catch (error) {
@@ -731,23 +724,149 @@ function show_download_data_dialog(frm) {
         size: "small",
         fields: [
             {
-                fieldtype: "Select",
-                label: "Download Type",
-                fieldname: "download_type",
-                options: "Plates\nPipes\nTubes\nRods\nFlanges\nWelding\nDisc\nSpares\nOverall"
+                fieldtype: "HTML",
+                fieldname: "download_options",
+                options: `
+                    <div style="padding: 10px 5px 5px 5px;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr);
+                            gap: 12px 10px; align-items: center;">
+
+                            <label style="cursor:pointer; margin:0;">
+                                <input type="checkbox" class="download-type" value="plates">
+                                <span style="margin-left:6px;">Plates</span>
+                            </label>
+
+                            <label style="cursor:pointer; margin:0;">
+                                <input type="checkbox" class="download-type" value="pipes">
+                                <span style="margin-left:6px;">Pipes</span>
+                            </label>
+
+                            <label style="cursor:pointer; margin:0;">
+                                <input type="checkbox" class="download-type" value="tubes">
+                                <span style="margin-left:6px;">Tubes</span>
+                            </label>
+
+                            <label style="cursor:pointer; margin:0;">
+                                <input type="checkbox" class="download-type" value="rods">
+                                <span style="margin-left:6px;">Rods</span>
+                            </label>
+
+                            <label style="cursor:pointer; margin:0;">
+                                <input type="checkbox" class="download-type" value="flanges">
+                                <span style="margin-left:6px;">Flanges</span>
+                            </label>
+
+                            <label style="cursor:pointer; margin:0;">
+                                <input type="checkbox" class="download-type" value="welding">
+                                <span style="margin-left:6px;">Welding</span>
+                            </label>
+
+                            <label style="cursor:pointer; margin:0;">
+                                <input type="checkbox" class="download-type" value="disc">
+                                <span style="margin-left:6px;">Disc</span>
+                            </label>
+
+                            <label style="cursor:pointer; margin:0;">
+                                <input type="checkbox" class="download-type" value="spares">
+                                <span style="margin-left:6px;">Spares</span>
+                            </label>
+
+                            <label style="cursor:pointer; margin:0;">
+                                <input type="checkbox" class="download-type" value="machinery">
+                                <span style="margin-left:6px;">Machinery</span>
+                            </label>
+
+                            <div></div>
+
+                            <label style="cursor:pointer; margin:0; text-align:center;">
+                                <input type="checkbox" class="download-type overall-checkbox" value="overall">
+                                <span style="margin-left:6px;">Overall</span>
+                            </label>
+
+                            <div></div>
+
+                        </div>
+                    </div>
+                `
             }
         ],
 
         primary_action_label: "Download",
-        primary_action(values) {
-            if (!values.download_type) {
-                frappe.msgprint("Please select Download Type.");
+
+        primary_action() {
+            let selected_types = [];
+
+            d.$wrapper
+                .find(".download-type:checked")
+                .each(function () {
+                    selected_types.push(this.value);
+                });
+
+            if (!selected_types.length) {
+                frappe.msgprint("Please select at least one Download Type.");
                 return;
             }
-            let type = values.download_type.toLowerCase();
-            window.location.href = `/api/method/erp_custom.erp_custom.doctype.stock_item.stock_item.download_stock_data?stock_item=${frm.doc.name}&download_type=${type}`;
+
+            /*
+             * If Overall is selected,
+             * download all stock types.
+             */
+            if (selected_types.includes("overall")) {
+                selected_types = ["plates", "pipes", "tubes", "rods", "flanges", "welding", "disc", "spares", "machinery"];
+            }
+
+            let types = encodeURIComponent(
+                JSON.stringify(selected_types)
+            );
+
+            window.location.href =
+                `/api/method/erp_custom.erp_custom.doctype.stock_item.stock_item.download_stock_data` +
+                `?stock_item=${encodeURIComponent(frm.doc.name)}` +
+                `&download_type=${types}`;
+
             d.hide();
         }
     });
+
     d.show();
+
+    /*
+     * Overall checkbox handling
+     */
+    d.$wrapper.on("change", ".overall-checkbox",
+        function () {
+            let checked = $(this).is(":checked");
+            d.$wrapper
+                .find(".download-type:not(.overall-checkbox)")
+                .prop("checked", checked);
+        }
+    );
+
+    /*
+     * If any individual option is unchecked,
+     * automatically uncheck Overall.
+     *
+     * If all individual options are checked,
+     * automatically check Overall.
+     */
+    d.$wrapper.on("change", ".download-type:not(.overall-checkbox)",
+        function () {
+            let total = d.$wrapper
+                .find(".download-type:not(.overall-checkbox)")
+                .length;
+
+            let checked = d.$wrapper
+                .find(".download-type:not(.overall-checkbox):checked")
+                .length;
+
+            let overall = d.$wrapper
+                .find(".overall-checkbox");
+
+            if (checked === total) {
+                overall.prop("checked", true);
+            } else {
+                overall.prop("checked", false);
+            }
+        }
+    );
 }
