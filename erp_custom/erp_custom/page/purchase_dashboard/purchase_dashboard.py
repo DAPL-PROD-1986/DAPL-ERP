@@ -530,3 +530,416 @@ def get_dashboard_data(filters=None):
 		"upcoming_required_by": upcoming_required_by or [],
 		"rfq_count": rfq_count
 	}
+
+
+@frappe.whitelist()
+def download_purchase_excel(filters=None):
+
+	import io
+	import openpyxl
+
+	from openpyxl import Workbook
+	from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+	from openpyxl.utils import get_column_letter
+
+	# -------------------------------------------------
+	# SAFE FILTER PARSING
+	# -------------------------------------------------
+
+	if not filters:
+		filters = {}
+
+	elif isinstance(filters, str):
+		filters = frappe.parse_json(filters)
+
+	# -------------------------------------------------
+	# BUILD CONDITIONS
+	# -------------------------------------------------
+
+	conditions = []
+
+	if filters.get("supplier"):
+		conditions.append("po.supplier = %(supplier)s")
+
+	if filters.get("project"):
+		conditions.append("po.project = %(project)s")
+
+	if filters.get("order_type"):
+		conditions.append(
+			"IFNULL(po.custom_order_type, 'Purchase Order') = %(order_type)s"
+		)
+
+	if filters.get("status"):
+		conditions.append(
+			"IFNULL(po.workflow_state, 'Draft') = %(status)s"
+		)
+
+	if filters.get("transaction_date"):
+		conditions.append(
+			"po.transaction_date = %(transaction_date)s"
+		)
+
+	if filters.get("schedule_date"):
+		conditions.append(
+			"po.schedule_date = %(schedule_date)s"
+		)
+
+	if filters.get("item"):
+		conditions.append(
+			"poi.item_code = %(item)s"
+		)
+
+	if filters.get("item_group"):
+		conditions.append(
+			"poi.item_group = %(item_group)s"
+		)
+
+	where_clause = ""
+
+	if conditions:
+		where_clause = "WHERE " + " AND ".join(conditions)
+
+	# -------------------------------------------------
+	# GET PURCHASE ORDER + ITEM DATA
+	# -------------------------------------------------
+
+	data = frappe.db.sql(
+		f"""
+		SELECT
+
+			/* =========================
+			   PURCHASE ORDER
+			   ========================= */
+
+			po.name AS purchase_order_no,
+			po.supplier,
+			po.project,
+
+			IFNULL(
+				po.custom_order_type,
+				'Purchase Order'
+			) AS custom_order_type,
+
+			/* =========================
+			   PURCHASE ORDER ITEM
+			   ========================= */
+
+			poi.item_code,
+			poi.item_group,
+			poi.description,
+
+			poi.custom_material_type,
+			poi.custom_length,
+			poi.custom_width,
+			poi.custom_thickness,
+			poi.custom_outer_diameter,
+			poi.custom_inner_diameter,
+			poi.custom_density,
+
+			poi.qty,
+			poi.uom,
+			poi.rate,
+			poi.amount
+
+		FROM `tabPurchase Order` po
+
+		INNER JOIN `tabPurchase Order Item` poi
+			ON poi.parent = po.name
+
+		{where_clause}
+
+		ORDER BY
+			po.transaction_date DESC,
+			po.name DESC,
+			poi.idx ASC
+		""",
+		filters,
+		as_dict=True
+	)
+
+	# -------------------------------------------------
+	# NO DATA
+	# -------------------------------------------------
+
+	if not data:
+		frappe.throw(
+			"No Purchase Order data found for the selected filters."
+		)
+
+	# -------------------------------------------------
+	# CREATE WORKBOOK
+	# -------------------------------------------------
+
+	wb = Workbook()
+
+	ws = wb.active
+	ws.title = "Purchase Orders"
+
+	# -------------------------------------------------
+	# HEADER
+	# -------------------------------------------------
+
+	headers = [
+		"Purchase Order No",
+		"Supplier",
+		"Project",
+		"Order Type",
+
+		"Item Code",
+		"Item Group",
+		"Description",
+
+		"Material Type",
+		"Length",
+		"Width",
+		"Thickness",
+		"Outer Diameter",
+		"Inner Diameter",
+		"Density",
+
+		"Qty",
+		"UOM",
+		"Rate",
+		"Amount"
+	]
+
+	ws.append(headers)
+
+	# -------------------------------------------------
+	# HEADER STYLE
+	# -------------------------------------------------
+
+	header_fill = PatternFill(
+		fill_type="solid",
+		fgColor="22C55E"
+	)
+
+	header_font = Font(
+		bold=True,
+		color="FFFFFF",
+		size=11
+	)
+
+	header_alignment = Alignment(
+		horizontal="center",
+		vertical="center",
+		wrap_text=True
+	)
+
+	thin_border = Border(
+		left=Side(style="thin", color="D1D5DB"),
+		right=Side(style="thin", color="D1D5DB"),
+		top=Side(style="thin", color="D1D5DB"),
+		bottom=Side(style="thin", color="D1D5DB")
+	)
+
+	for cell in ws[1]:
+
+		cell.fill = header_fill
+		cell.font = header_font
+		cell.alignment = header_alignment
+		cell.border = thin_border
+
+	# Header height
+	ws.row_dimensions[1].height = 30
+
+	# Freeze header
+	ws.freeze_panes = "A2"
+
+	# -------------------------------------------------
+	# WRITE DATA
+	# -------------------------------------------------
+
+	previous_po = None
+
+	for row in data:
+
+		current_po = row.get("purchase_order_no")
+
+		# -------------------------------------------------
+		# IMPORTANT:
+		# PO details only on first item row.
+		# Following item rows leave PO columns blank.
+		# -------------------------------------------------
+
+		if current_po == previous_po:
+
+			po_no = ""
+			supplier = ""
+			project = ""
+			order_type = ""
+
+		else:
+
+			po_no = row.get("purchase_order_no") or ""
+			supplier = row.get("supplier") or ""
+			project = row.get("project") or ""
+			order_type = row.get("custom_order_type") or "Purchase Order"
+
+		excel_row = [
+			po_no,
+			supplier,
+			project,
+			order_type,
+
+			row.get("item_code") or "",
+			row.get("item_group") or "",
+			row.get("description") or "",
+
+			row.get("custom_material_type") or "",
+			row.get("custom_length"),
+			row.get("custom_width"),
+			row.get("custom_thickness"),
+			row.get("custom_outer_diameter"),
+			row.get("custom_inner_diameter"),
+			row.get("custom_density"),
+
+			row.get("qty"),
+			row.get("uom") or "",
+			row.get("rate"),
+			row.get("amount")
+		]
+
+		ws.append(excel_row)
+
+		previous_po = current_po
+
+	# -------------------------------------------------
+	# FORMAT DATA CELLS
+	# -------------------------------------------------
+
+	for row in ws.iter_rows(
+		min_row=2,
+		max_row=ws.max_row
+	):
+
+		for cell in row:
+
+			cell.border = thin_border
+			cell.alignment = Alignment(
+				vertical="center"
+			)
+
+	# -------------------------------------------------
+	# NUMBER FORMATTING
+	# -------------------------------------------------
+
+	# Length
+	for row in range(2, ws.max_row + 1):
+
+		for col in [
+			9,   # Length
+			10,  # Width
+			11,  # Thickness
+			12,  # Outer Diameter
+			13,  # Inner Diameter
+			14   # Density
+		]:
+
+			ws.cell(row=row, column=col).number_format = "0.000"
+
+		# Qty
+		ws.cell(
+			row=row,
+			column=15
+		).number_format = "0.000"
+
+		# Rate
+		ws.cell(
+			row=row,
+			column=17
+		).number_format = '#,##0.00'
+
+		# Amount
+		ws.cell(
+			row=row,
+			column=18
+		).number_format = '#,##0.00'
+
+	# -------------------------------------------------
+	# COLUMN WIDTHS
+	# -------------------------------------------------
+
+	column_widths = {
+
+		"A": 20,
+		"B": 28,
+		"C": 25,
+		"D": 20,
+
+		"E": 20,
+		"F": 25,
+		"G": 45,
+
+		"H": 22,
+
+		"I": 14,
+		"J": 14,
+		"K": 14,
+		"L": 18,
+		"M": 18,
+		"N": 14,
+
+		"O": 12,
+		"P": 12,
+		"Q": 15,
+		"R": 18
+	}
+
+	for column, width in column_widths.items():
+
+		ws.column_dimensions[column].width = width
+
+	# -------------------------------------------------
+	# ALTERNATE ROW STYLE
+	# -------------------------------------------------
+
+	alternate_fill = PatternFill(
+		fill_type="solid",
+		fgColor="F0FDF4"
+	)
+
+	for row_number in range(2, ws.max_row + 1):
+
+		if row_number % 2 == 0:
+
+			for cell in ws[row_number]:
+
+				cell.fill = alternate_fill
+
+	# -------------------------------------------------
+	# AUTO FILTER
+	# -------------------------------------------------
+
+	ws.auto_filter.ref = ws.dimensions
+
+	# -------------------------------------------------
+	# SAVE FILE
+	# -------------------------------------------------
+
+	output = io.BytesIO()
+
+	wb.save(output)
+
+	output.seek(0)
+
+	# -------------------------------------------------
+	# CREATE FILE IN FRAPPE
+	# -------------------------------------------------
+
+	filename = (
+		"Purchase_Order_Details_"
+		+ frappe.utils.now_datetime().strftime("%Y%m%d_%H%M%S")
+		+ ".xlsx"
+	)
+
+	file_doc = frappe.get_doc({
+		"doctype": "File",
+		"file_name": filename,
+		"content": output.getvalue(),
+		"is_private": 1
+	})
+
+	file_doc.save(ignore_permissions=True)
+
+	return file_doc.file_url

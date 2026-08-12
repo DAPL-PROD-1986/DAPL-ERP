@@ -297,9 +297,39 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
             <!-- FULL PURCHASE ORDER DATA (based on current filters) -->
             <div class="card shadow-sm border-0 table-card mb-4">
-                <div class="card-header text-white text-center" style="background-color: #22c55e">
-                    <i class="fa fa-list me-2"></i> Overall Purchase Order
-                </div>
+                <div class="card-header text-white d-flex justify-content-between align-items-center"
+     style="background-color: #22c55e">
+
+    <div class="text-center flex-grow-1">
+        <i class="fa fa-list me-2"></i>
+        Overall Purchase Order
+    </div>
+
+    <button
+        type="button"
+        id="download_purchase_excel"
+        class="btn btn-light btn-sm d-flex align-items-center gap-2"
+        title="Download Purchase Order Excel"
+        style="font-weight:600; border-radius:7px;">
+
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="17"
+             height="17"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round">
+            <path d="M12 3v12"></path>
+            <path d="m7 10 5 5 5-5"></path>
+            <path d="M5 21h14"></path>
+        </svg>
+
+        Download Excel
+    </button>
+
+</div>
                 <div class="card-body p-0 dashboard-table-body">
                 <div class="full-po-table-wrapper">
                     <table class="table table-hover text-center align-middle mb-0">
@@ -855,4 +885,97 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
     });
 
     load_data();
+
+
+
+// =====================================================
+// DOWNLOAD PURCHASE ORDER EXCEL
+// =====================================================
+
+$(document).on("click", "#download_purchase_excel", function () {
+
+    const btn = $(this);
+
+    // Prevent multiple clicks
+    if (btn.data("downloading")) {
+        return;
+    }
+
+    btn.data("downloading", true);
+
+    const original_html = btn.html();
+
+    // Loading state
+    btn.html(`
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="17"
+             height="17"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             style="animation: spin 1s linear infinite;">
+            <circle cx="12" cy="12" r="9"
+                    stroke-dasharray="45"
+                    stroke-dashoffset="10">
+            </circle>
+        </svg>
+        Preparing...
+    `);
+
+    // Current dashboard filters
+    const dashboard_filters = {
+        supplier: filters.supplier.get_value(),
+        project: filters.project.get_value(),
+        item: filters.item.get_value(),
+        item_group: filters.item_group.get_value(),
+        order_type: filters.order_type.get_value(),
+        status: filters.status.get_value(),
+        transaction_date: filters.transaction_date.get_value(),
+        schedule_date: filters.schedule_date.get_value()
+    };
+
+    frappe.call({
+        method: "erp_custom.erp_custom.page.purchase_dashboard.purchase_dashboard.download_purchase_excel",
+        args: {
+            filters: dashboard_filters
+        },
+
+        callback: function (r) {
+
+            if (!r.message) {
+                frappe.msgprint({
+                    title: "Download Failed",
+                    message: "No Excel file was generated.",
+                    indicator: "red"
+                });
+                return;
+            }
+
+            // Open generated file
+            window.open(r.message, "_blank");
+
+        },
+
+        error: function () {
+
+            frappe.msgprint({
+                title: "Download Failed",
+                message: "Unable to generate Purchase Order Excel.",
+                indicator: "red"
+            });
+
+        },
+
+        always: function () {
+
+            btn.html(original_html);
+            btn.data("downloading", false);
+
+        }
+    });
+});
+
 };
