@@ -784,7 +784,8 @@ def download_purchase_excel(filters=None):
 
 			row.get("item_code") or "",
 			row.get("item_group") or "",
-			row.get("description") or "",
+			 # Description - remove HTML tags
+			frappe.utils.strip_html(row.get("description") or "").strip(),
 
 			row.get("custom_material_type") or "",
 			row.get("custom_length"),
@@ -927,11 +928,7 @@ def download_purchase_excel(filters=None):
 	# CREATE FILE IN FRAPPE
 	# -------------------------------------------------
 
-	filename = (
-		"Purchase_Order_Details_"
-		+ frappe.utils.now_datetime().strftime("%Y%m%d_%H%M%S")
-		+ ".xlsx"
-	)
+	filename = ("Purchase_Order_Details_" + frappe.utils.now_datetime().strftime("%Y%m%d_%H%M%S") + ".xlsx")
 
 	file_doc = frappe.get_doc({
 		"doctype": "File",
