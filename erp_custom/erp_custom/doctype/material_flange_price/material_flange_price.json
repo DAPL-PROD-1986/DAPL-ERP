@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-13 12:13:23.844178",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "category",
+  "column_break_jzmp",
+  "type",
+  "column_break_zqus",
+  "moc",
+  "section_break_kqyr",
+  "nps",
+  "column_break_rovl",
+  "sch",
+  "column_break_eatm",
+  "class",
+  "section_break_boum",
+  "rate",
+  "column_break_fqyl",
+  "uom"
+ ],
+ "fields": [
+  {
+   "default": "Flanges",
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Category",
+   "options": "Stock Item Category"
+  },
+  {
+   "fieldname": "column_break_jzmp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Stock Type Details"
+  },
+  {
+   "fieldname": "column_break_zqus",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "moc",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "MoC",
+   "options": "Stock MoC Details"
+  },
+  {
+   "fieldname": "section_break_kqyr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_rovl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_eatm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_boum",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate"
+  },
+  {
+   "fieldname": "column_break_fqyl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "UOM",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "nps",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "NPS"
+  },
+  {
+   "fieldname": "sch",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "SCH"
+  },
+  {
+   "fieldname": "class",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Class"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-13 12:17:28.804904",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Material Flange Price",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

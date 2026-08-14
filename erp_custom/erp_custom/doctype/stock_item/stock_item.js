@@ -17,6 +17,15 @@ frappe.ui.form.on("Stock Item", {
 
         show_reference_preview(frm);
 
+        setTimeout(() => {
+            init_child_table_first_row_filters(frm);
+        }, 500);
+    },
+
+    onload_post_render(frm) {
+        setTimeout(() => {
+            init_child_table_first_row_filters(frm);
+        }, 500);
     },
 
     reference_image(frm) {
@@ -836,9 +845,7 @@ function show_download_data_dialog(frm) {
     d.$wrapper.on("change", ".overall-checkbox",
         function () {
             let checked = $(this).is(":checked");
-            d.$wrapper
-                .find(".download-type:not(.overall-checkbox)")
-                .prop("checked", checked);
+            d.$wrapper.find(".download-type:not(.overall-checkbox)").prop("checked", checked);
         }
     );
 
@@ -851,16 +858,9 @@ function show_download_data_dialog(frm) {
      */
     d.$wrapper.on("change", ".download-type:not(.overall-checkbox)",
         function () {
-            let total = d.$wrapper
-                .find(".download-type:not(.overall-checkbox)")
-                .length;
-
-            let checked = d.$wrapper
-                .find(".download-type:not(.overall-checkbox):checked")
-                .length;
-
-            let overall = d.$wrapper
-                .find(".overall-checkbox");
+            let total = d.$wrapper.find(".download-type:not(.overall-checkbox)").length;
+            let checked = d.$wrapper.find(".download-type:not(.overall-checkbox):checked").length;
+            let overall = d.$wrapper.find(".overall-checkbox");
 
             if (checked === total) {
                 overall.prop("checked", true);
@@ -870,3 +870,281 @@ function show_download_data_dialog(frm) {
         }
     );
 }
+
+
+// FILTER
+
+/* ============================================================
+   STOCK ITEM - CHILD TABLE FIRST ROW FILTER
+   UI ONLY - DOES NOT CREATE CHILD TABLE RECORDS
+   ============================================================ */
+
+
+function init_child_table_first_row_filters(frm) {
+    const tables = ["plates", "pipes", "tubes", "flanges", "rods"];
+    tables.forEach(table_name => {
+        const field = frm.fields_dict[table_name];
+        if (!field || !field.grid) {
+            return;
+        }
+        create_first_row_filter(frm, table_name);
+    });
+}
+
+function create_first_row_filter(frm, table_name) {
+    const field = frm.fields_dict[table_name];
+    if (!field || !field.grid) {
+        return;
+    }
+
+    const grid = field.grid;
+    const wrapper = $(grid.wrapper);
+
+    // Prevent duplicate
+    if (wrapper.find(".stock-first-row-filter").length) {
+        return;
+    }
+
+    const heading = wrapper.find(".grid-heading-row").first();
+    if (!heading.length) {
+        return;
+    }
+
+    const filter_row = $(`
+        <div class="stock-first-row-filter">
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="category" placeholder="Filter Category">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="type" placeholder="Filter Type">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="moc" placeholder="Filter MoC">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="vendor" placeholder="Filter Vendor">
+            </div>
+
+             <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="purchase_order_no" placeholder="Filter PO">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="description" placeholder="Description">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="status" placeholder="Filter Status">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="length" placeholder="Length">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="width" placeholder="Width">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="thickness" placeholder="Thickness">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="outer_diameter" placeholder="Outer Diameter">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="inner_diameter" placeholder="Inner Diameter">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="nps" placeholder="NPS">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="sch" placeholder="SCH">
+            </div>
+
+            <div class="stock-filter-cell">
+                <input type="text" class="form-control input-xs" data-field="class" placeholder="Class">
+            </div>
+
+            <div class="stock-filter-clear">
+                <button type="button" class="btn btn-xs btn-default" title="Clear Filter">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+        </div>
+    `);
+
+    heading.after(filter_row);
+
+    filter_row.on("input", ".stock-filter-cell input",
+        function () {
+            apply_first_row_filter(frm, table_name, filter_row);
+        }
+    );
+
+
+    /*
+     * Clear filter
+     */
+    filter_row.on("click", ".stock-filter-clear button",
+        function () {
+            filter_row.find("input").val("");
+            show_all_child_rows(frm, table_name);
+        }
+    );
+}
+
+
+/* ============================================================
+   APPLY FILTER
+   ============================================================ */
+
+function apply_first_row_filter(frm, table_name, filter_row) {
+    const field = frm.fields_dict[table_name];
+    if (!field || !field.grid) {
+        return;
+    }
+
+    const grid = field.grid;
+    const filters = {};
+    filter_row
+        .find("input")
+        .each(function () {
+
+            const fieldname = $(this).data("field");
+            const value = $(this).val().trim().toLowerCase();
+
+            if (value) {
+                filters[fieldname] = value;
+            }
+        });
+
+
+    /*
+     * Filter existing rows only
+     */
+    grid.grid_rows.forEach(grid_row => {
+        const row = grid_row.doc;
+        let matched = true;
+
+        Object.keys(filters).forEach(fieldname => {
+            if (!matched) {
+                return;
+            }
+
+            let row_value = row[fieldname];
+            if (
+                row_value === undefined ||
+                row_value === null
+            ) {
+                row_value = "";
+            }
+
+            row_value = String(row_value).toLowerCase();
+            const filter_value = filters[fieldname];
+            if (!row_value.includes(filter_value)) {
+                matched = false;
+            }
+        });
+
+        if (matched) {
+            $(grid_row.row).show();
+        } else {
+            $(grid_row.row).hide();
+        }
+    });
+}
+
+
+/* ============================================================
+   SHOW ALL
+   ============================================================ */
+
+function show_all_child_rows(frm, table_name) {
+    const field = frm.fields_dict[table_name];
+    if (!field || !field.grid) {
+        return;
+    }
+
+    field.grid.grid_rows.forEach(grid_row => {
+        $(grid_row.row).show();
+    });
+}
+
+function add_stock_first_row_filter_css() {
+    if ($("#stock-first-row-filter-css").length) {
+        return;
+    }
+
+    $("head").append(`
+        <style id="stock-first-row-filter-css">
+
+            .stock-first-row-filter {
+                display: flex;
+                width: 100%;
+                padding: 5px 0;
+                background: #f8fafc;
+                border-bottom: 1px solid #d1d5db;
+                box-sizing: border-box;
+                overflow-x: auto;
+            }
+
+            .stock-first-row-filter
+            .stock-filter-cell {
+                flex: 0 0 120px;
+                width: 120px;
+                padding: 0 3px;
+                min-width: 0;
+            }
+
+            .stock-first-row-filter
+            input {
+                width: 100% !important;
+                height: 28px !important;
+                min-height: 28px !important;
+                padding: 3px 7px !important;
+                font-size: 12px !important;
+                border: 1px solid #d1d5db !important;
+                border-radius: 4px !important;
+                background: #ffffff !important;
+                box-sizing: border-box;
+            }
+
+            .stock-first-row-filter
+            input:focus {
+                border-color: #2490ef !important;
+                box-shadow: 0 0 0 1px rgba(36,144,239,.15) !important;
+            }
+
+            .stock-first-row-filter
+            input::placeholder {
+                color: #9ca3af;
+                font-size: 11px;
+            }
+
+            .stock-filter-clear {
+                flex: 0 0 38px;
+                width: 38px;
+                padding: 0 3px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .stock-filter-clear button {
+                height: 28px;
+                width: 30px;
+                padding: 0;
+            }
+
+        </style>
+    `);
+}
+
+add_stock_first_row_filter_css();

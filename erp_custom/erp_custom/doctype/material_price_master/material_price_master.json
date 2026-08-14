@@ -1,0 +1,144 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-12 15:04:21.831872",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "price_list",
+  "column_break_vsdy",
+  "currency",
+  "section_break_busp",
+  "valid_from",
+  "column_break_tulq",
+  "valid_to",
+  "plate_tab",
+  "plate_price_list",
+  "pipes_tab",
+  "pipe_price_list",
+  "tubes_tab",
+  "tube_price_list",
+  "rods_tab",
+  "rod_price_list",
+  "flanges_tab",
+  "flange_price_list"
+ ],
+ "fields": [
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Select",
+   "label": "Price List",
+   "options": "\nEIL\nDAPL"
+  },
+  {
+   "fieldname": "column_break_vsdy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "section_break_busp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "valid_from",
+   "fieldtype": "Date",
+   "label": "Valid From"
+  },
+  {
+   "fieldname": "column_break_tulq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "valid_to",
+   "fieldtype": "Date",
+   "label": "Valid To"
+  },
+  {
+   "fieldname": "plate_tab",
+   "fieldtype": "Tab Break",
+   "label": "Plates"
+  },
+  {
+   "fieldname": "plate_price_list",
+   "fieldtype": "Table",
+   "label": "Plate Price List",
+   "options": "Material Plate Price"
+  },
+  {
+   "fieldname": "pipes_tab",
+   "fieldtype": "Tab Break",
+   "label": "Pipes"
+  },
+  {
+   "fieldname": "tubes_tab",
+   "fieldtype": "Tab Break",
+   "label": "Tubes"
+  },
+  {
+   "fieldname": "rods_tab",
+   "fieldtype": "Tab Break",
+   "label": "Rods"
+  },
+  {
+   "fieldname": "flanges_tab",
+   "fieldtype": "Tab Break",
+   "label": "Flanges"
+  },
+  {
+   "fieldname": "pipe_price_list",
+   "fieldtype": "Table",
+   "label": "Pipe Price List",
+   "options": "Material Pipe Price"
+  },
+  {
+   "fieldname": "tube_price_list",
+   "fieldtype": "Table",
+   "label": "Tube Price List",
+   "options": "Material Tube Price"
+  },
+  {
+   "fieldname": "rod_price_list",
+   "fieldtype": "Table",
+   "label": "Rod Price List",
+   "options": "Material Rod Price"
+  },
+  {
+   "fieldname": "flange_price_list",
+   "fieldtype": "Table",
+   "label": "Flange Price List",
+   "options": "Material Flange Price"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-13 12:21:43.832627",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Material Price Master",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

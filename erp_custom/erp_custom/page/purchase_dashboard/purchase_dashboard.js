@@ -147,6 +147,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                 </div>
                 <div class="card-body">
                     <div class="row g-3 align-items-center" id="filter_row">
+                        <div class="col-lg-2 col-md-4 col-sm-6" id="filter_id"></div>
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_order_type"></div>
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_project"></div>
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_supplier"></div>
@@ -399,6 +400,16 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
     // FILTER CONTROLS (Link fields with proper search/autocomplete)
     // -------------------------
     let filters = {
+        id: frappe.ui.form.make_control({
+            parent: $(wrapper).find("#filter_id"),
+            df: {
+                fieldtype: "Data",
+                fieldname: "id",
+                label: "ID / Order Number",
+                placeholder: "Enter Order Number..."
+            },
+            render_input: true
+        }),
         order_type: frappe.ui.form.make_control({
             parent: $(wrapper).find('#filter_order_type'),
             df: {
@@ -470,6 +481,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
             method: "erp_custom.erp_custom.page.purchase_dashboard.purchase_dashboard.get_dashboard_data",
             args: {
                 filters: {
+                    id: filters.id.get_value(),
                     supplier: filters.supplier.get_value(),
                     project: filters.project.get_value(),
                     item: filters.item.get_value(),
@@ -893,7 +905,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 // =====================================================
 
 $(document).on("click", "#download_purchase_excel", function () {
-
     const btn = $(this);
 
     // Prevent multiple clicks
@@ -902,7 +913,6 @@ $(document).on("click", "#download_purchase_excel", function () {
     }
 
     btn.data("downloading", true);
-
     const original_html = btn.html();
 
     // Loading state
@@ -921,12 +931,11 @@ $(document).on("click", "#download_purchase_excel", function () {
                     stroke-dasharray="45"
                     stroke-dashoffset="10">
             </circle>
-        </svg>
-        Preparing...
-    `);
+        </svg> Preparing... `);
 
     // Current dashboard filters
     const dashboard_filters = {
+        id: filters.id.get_value(),
         supplier: filters.supplier.get_value(),
         project: filters.project.get_value(),
         item: filters.item.get_value(),
@@ -956,24 +965,19 @@ $(document).on("click", "#download_purchase_excel", function () {
 
             // Open generated file
             window.open(r.message, "_blank");
-
         },
 
         error: function () {
-
             frappe.msgprint({
                 title: "Download Failed",
                 message: "Unable to generate Purchase Order Excel.",
                 indicator: "red"
             });
-
         },
 
         always: function () {
-
             btn.html(original_html);
             btn.data("downloading", false);
-
         }
     });
 });

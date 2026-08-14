@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-13 12:12:35.785522",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "category",
+  "column_break_jzmp",
+  "type",
+  "column_break_zqus",
+  "moc",
+  "section_break_kqyr",
+  "length",
+  "column_break_rovl",
+  "outer_diameter",
+  "column_break_eatm",
+  "density",
+  "section_break_boum",
+  "rate",
+  "column_break_fqyl",
+  "uom"
+ ],
+ "fields": [
+  {
+   "default": "Rods",
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Category",
+   "options": "Stock Item Category"
+  },
+  {
+   "fieldname": "column_break_jzmp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Stock Type Details"
+  },
+  {
+   "fieldname": "column_break_zqus",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "moc",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "MoC",
+   "options": "Stock MoC Details"
+  },
+  {
+   "fieldname": "section_break_kqyr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "length",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Length"
+  },
+  {
+   "fieldname": "column_break_rovl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "outer_diameter",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Outer Diameter"
+  },
+  {
+   "fieldname": "column_break_eatm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "density",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Density"
+  },
+  {
+   "fieldname": "section_break_boum",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate"
+  },
+  {
+   "fieldname": "column_break_fqyl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "UOM",
+   "options": "UOM"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-13 12:17:40.239820",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Material Rod Price",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

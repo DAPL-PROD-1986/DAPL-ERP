@@ -279,6 +279,9 @@ def get_dashboard_data(filters=None):
 	# -----------------------------
 	def build_conditions(with_item=True, with_schedule_date=True):
 		conditions = []
+		if filters.get("id"):
+			filters["id_like"] = f"%{filters.get('id')}%"
+			conditions.append("LOWER(po.name) LIKE LOWER(%(id_like)s)")
 		if filters.get("supplier"):
 			conditions.append("po.supplier = %(supplier)s")
 		if filters.get("project"):
@@ -557,7 +560,10 @@ def download_purchase_excel(filters=None):
 	# -------------------------------------------------
 
 	conditions = []
-
+	if filters.get("id"):
+		filters["id_like"] = f"%{filters.get('id')}%"
+		conditions.append("LOWER(po.name) LIKE LOWER(%(id_like)s)")
+			
 	if filters.get("supplier"):
 		conditions.append("po.supplier = %(supplier)s")
 
@@ -565,34 +571,22 @@ def download_purchase_excel(filters=None):
 		conditions.append("po.project = %(project)s")
 
 	if filters.get("order_type"):
-		conditions.append(
-			"IFNULL(po.custom_order_type, 'Purchase Order') = %(order_type)s"
-		)
+		conditions.append("IFNULL(po.custom_order_type, 'Purchase Order') = %(order_type)s")
 
 	if filters.get("status"):
-		conditions.append(
-			"IFNULL(po.workflow_state, 'Draft') = %(status)s"
-		)
+		conditions.append("IFNULL(po.workflow_state, 'Draft') = %(status)s")
 
 	if filters.get("transaction_date"):
-		conditions.append(
-			"po.transaction_date = %(transaction_date)s"
-		)
+		conditions.append("po.transaction_date = %(transaction_date)s")
 
 	if filters.get("schedule_date"):
-		conditions.append(
-			"po.schedule_date = %(schedule_date)s"
-		)
+		conditions.append("po.schedule_date = %(schedule_date)s")
 
 	if filters.get("item"):
-		conditions.append(
-			"poi.item_code = %(item)s"
-		)
+		conditions.append("poi.item_code = %(item)s")
 
 	if filters.get("item_group"):
-		conditions.append(
-			"poi.item_group = %(item_group)s"
-		)
+		conditions.append("poi.item_group = %(item_group)s")
 
 	where_clause = ""
 
@@ -606,23 +600,10 @@ def download_purchase_excel(filters=None):
 	data = frappe.db.sql(
 		f"""
 		SELECT
-
-			/* =========================
-			   PURCHASE ORDER
-			   ========================= */
-
 			po.name AS purchase_order_no,
 			po.supplier,
 			po.project,
-
-			IFNULL(
-				po.custom_order_type,
-				'Purchase Order'
-			) AS custom_order_type,
-
-			/* =========================
-			   PURCHASE ORDER ITEM
-			   ========================= */
+			IFNULL(po.custom_order_type, 'Purchase Order') AS custom_order_type,
 
 			poi.item_code,
 			poi.item_group,
@@ -652,26 +633,20 @@ def download_purchase_excel(filters=None):
 			po.transaction_date DESC,
 			po.name DESC,
 			poi.idx ASC
-		""",
-		filters,
-		as_dict=True
-	)
+		""", filters, as_dict=True)
 
 	# -------------------------------------------------
 	# NO DATA
 	# -------------------------------------------------
 
 	if not data:
-		frappe.throw(
-			"No Purchase Order data found for the selected filters."
-		)
+		frappe.throw("No Purchase Order data found for the selected filters.")
 
 	# -------------------------------------------------
 	# CREATE WORKBOOK
 	# -------------------------------------------------
 
 	wb = Workbook()
-
 	ws = wb.active
 	ws.title = "Purchase Orders"
 
@@ -679,29 +654,10 @@ def download_purchase_excel(filters=None):
 	# HEADER
 	# -------------------------------------------------
 
-	headers = [
-		"Purchase Order No",
-		"Supplier",
-		"Project",
-		"Order Type",
-
-		"Item Code",
-		"Item Group",
-		"Description",
-
-		"Material Type",
-		"Length",
-		"Width",
-		"Thickness",
-		"Outer Diameter",
-		"Inner Diameter",
-		"Density",
-
-		"Qty",
-		"UOM",
-		"Rate",
-		"Amount"
-	]
+	headers = ["Purchase Order No", "Supplier", "Project", "Order Type",
+		"Item Code", "Item Group", "Description", "Material Type",
+		"Length", "Width", "Thickness", "Outer Diameter", "Inner Diameter", "Density",
+		"Qty", "UOM", "Rate", "Amount"]
 
 	ws.append(headers)
 
@@ -709,23 +665,9 @@ def download_purchase_excel(filters=None):
 	# HEADER STYLE
 	# -------------------------------------------------
 
-	header_fill = PatternFill(
-		fill_type="solid",
-		fgColor="22C55E"
-	)
-
-	header_font = Font(
-		bold=True,
-		color="FFFFFF",
-		size=11
-	)
-
-	header_alignment = Alignment(
-		horizontal="center",
-		vertical="center",
-		wrap_text=True
-	)
-
+	header_fill = PatternFill(fill_type="solid", fgColor="22C55E")
+	header_font = Font(bold=True, color="FFFFFF", size=11)
+	header_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 	thin_border = Border(
 		left=Side(style="thin", color="D1D5DB"),
 		right=Side(style="thin", color="D1D5DB"),
@@ -734,7 +676,6 @@ def download_purchase_excel(filters=None):
 	)
 
 	for cell in ws[1]:
-
 		cell.fill = header_fill
 		cell.font = header_font
 		cell.alignment = header_alignment
@@ -742,8 +683,6 @@ def download_purchase_excel(filters=None):
 
 	# Header height
 	ws.row_dimensions[1].height = 30
-
-	# Freeze header
 	ws.freeze_panes = "A2"
 
 	# -------------------------------------------------
@@ -751,30 +690,14 @@ def download_purchase_excel(filters=None):
 	# -------------------------------------------------
 
 	previous_po = None
-
 	for row in data:
-
 		current_po = row.get("purchase_order_no")
 
-		# -------------------------------------------------
-		# IMPORTANT:
-		# PO details only on first item row.
-		# Following item rows leave PO columns blank.
-		# -------------------------------------------------
-
-		if current_po == previous_po:
-
-			po_no = ""
-			supplier = ""
-			project = ""
-			order_type = ""
-
-		else:
-
-			po_no = row.get("purchase_order_no") or ""
-			supplier = row.get("supplier") or ""
-			project = row.get("project") or ""
-			order_type = row.get("custom_order_type") or "Purchase Order"
+		# Repeat Purchase Order parent details for EVERY item row
+		po_no = row.get("purchase_order_no") or ""
+		supplier = row.get("supplier") or ""
+		project = row.get("project") or ""
+		order_type = row.get("custom_order_type") or "Purchase Order"
 
 		excel_row = [
 			po_no,
@@ -784,8 +707,9 @@ def download_purchase_excel(filters=None):
 
 			row.get("item_code") or "",
 			row.get("item_group") or "",
-			 # Description - remove HTML tags
-			frappe.utils.strip_html(row.get("description") or "").strip(),
+			# Description - remove HTML tags
+			# frappe.utils.strip_html(row.get("description") or "").strip(),
+			frappe.utils.strip_html((row.get("description") or "").replace("<br>", "\n").replace("<br/>", "\n").replace("<br />", "\n")).strip(),
 
 			row.get("custom_material_type") or "",
 			row.get("custom_length"),
@@ -802,24 +726,16 @@ def download_purchase_excel(filters=None):
 		]
 
 		ws.append(excel_row)
-
 		previous_po = current_po
 
 	# -------------------------------------------------
 	# FORMAT DATA CELLS
 	# -------------------------------------------------
 
-	for row in ws.iter_rows(
-		min_row=2,
-		max_row=ws.max_row
-	):
-
+	for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
 		for cell in row:
-
 			cell.border = thin_border
-			cell.alignment = Alignment(
-				vertical="center"
-			)
+			cell.alignment = Alignment(vertical="center")
 
 	# -------------------------------------------------
 	# NUMBER FORMATTING
@@ -827,7 +743,6 @@ def download_purchase_excel(filters=None):
 
 	# Length
 	for row in range(2, ws.max_row + 1):
-
 		for col in [
 			9,   # Length
 			10,  # Width
@@ -840,29 +755,19 @@ def download_purchase_excel(filters=None):
 			ws.cell(row=row, column=col).number_format = "0.000"
 
 		# Qty
-		ws.cell(
-			row=row,
-			column=15
-		).number_format = "0.000"
+		ws.cell(row=row, column=15).number_format = "0.000"
 
 		# Rate
-		ws.cell(
-			row=row,
-			column=17
-		).number_format = '#,##0.00'
+		ws.cell(row=row, column=17).number_format = '#,##0.00'
 
 		# Amount
-		ws.cell(
-			row=row,
-			column=18
-		).number_format = '#,##0.00'
+		ws.cell(row=row, column=18).number_format = '#,##0.00'
 
 	# -------------------------------------------------
 	# COLUMN WIDTHS
 	# -------------------------------------------------
 
 	column_widths = {
-
 		"A": 20,
 		"B": 28,
 		"C": 25,
@@ -888,40 +793,21 @@ def download_purchase_excel(filters=None):
 	}
 
 	for column, width in column_widths.items():
-
 		ws.column_dimensions[column].width = width
 
 	# -------------------------------------------------
 	# ALTERNATE ROW STYLE
 	# -------------------------------------------------
 
-	alternate_fill = PatternFill(
-		fill_type="solid",
-		fgColor="F0FDF4"
-	)
-
+	alternate_fill = PatternFill(fill_type="solid", fgColor="F0FDF4")
 	for row_number in range(2, ws.max_row + 1):
-
 		if row_number % 2 == 0:
-
 			for cell in ws[row_number]:
-
 				cell.fill = alternate_fill
 
-	# -------------------------------------------------
-	# AUTO FILTER
-	# -------------------------------------------------
-
 	ws.auto_filter.ref = ws.dimensions
-
-	# -------------------------------------------------
-	# SAVE FILE
-	# -------------------------------------------------
-
 	output = io.BytesIO()
-
 	wb.save(output)
-
 	output.seek(0)
 
 	# -------------------------------------------------
@@ -938,5 +824,4 @@ def download_purchase_excel(filters=None):
 	})
 
 	file_doc.save(ignore_permissions=True)
-
 	return file_doc.file_url
