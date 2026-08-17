@@ -6,8 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "moc",
-  "type"
+  "moc"
  ],
  "fields": [
   {
@@ -15,18 +14,12 @@
    "fieldtype": "Data",
    "label": "MoC (Material of Construction)",
    "unique": 1
-  },
-  {
-   "fieldname": "type",
-   "fieldtype": "Link",
-   "label": "Type",
-   "options": "Stock Type Details"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-03 11:52:06.128129",
+ "modified": "2026-08-17 12:12:38.378109",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock MoC Details",

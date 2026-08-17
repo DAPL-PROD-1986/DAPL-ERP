@@ -27,8 +27,12 @@ required_apps = ["frappe/erpnext"]
 # app_include_css = "/assets/erp_custom/css/erp_custom.css"
 # app_include_js = "/assets/erp_custom/js/erp_custom.js"
 
+app_include_css = [
+    "/assets/your_app/css/custom_dashboard.css"
+]
+
 app_include_js = [
-    "/assets/erp_custom/js/stock_entry.js", "/assets/erp_custom/js/purchase_order_preview.js"
+    "/assets/erp_custom/js/stock_entry.js", "/assets/erp_custom/js/purchase_order_preview.js", "/assets/erp_custom/js/custom_dashboard.js"
 ]
 
 
@@ -343,7 +347,7 @@ fixtures = [
     "doctype": "Dashboard Chart",
     "filters": [
         ["name", "in", [
-            "Project (PO)",
+            "INR Value - PO vs WO vs TO",
             "Suppliers (PO)",
             "Purchase Orders by Status",
             "Quality Assurance Plan"

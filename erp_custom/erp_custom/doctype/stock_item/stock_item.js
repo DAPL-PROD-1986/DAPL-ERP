@@ -10,7 +10,7 @@
 frappe.ui.form.on("Stock Item", {
     refresh(frm) {
         calculate_weights(frm);
-        set_moc_filter(frm);
+        // set_moc_filter(frm);
 
         add_download_button(frm);
         add_upload_button(frm);
@@ -37,21 +37,21 @@ frappe.ui.form.on("Stock Item", {
     }
 });
 
-function set_moc_filter(frm) {
-    let tables = ["plates", "pipes", "tubes", "flanges", "rods"];
-    tables.forEach(table => {
-        if (frm.fields_dict[table]) {
-            frm.fields_dict[table].grid.get_field("moc").get_query = function(doc, cdt, cdn) {
-                let row = locals[cdt][cdn];
-                return {
-                    filters: {
-                        type: row.type
-                    }
-                };
-            };
-        }
-    });
-}
+// function set_moc_filter(frm) {
+//     let tables = ["plates", "pipes", "tubes", "flanges", "rods"];
+//     tables.forEach(table => {
+//         if (frm.fields_dict[table]) {
+//             frm.fields_dict[table].grid.get_field("moc").get_query = function(doc, cdt, cdn) {
+//                 let row = locals[cdt][cdn];
+//                 return {
+//                     filters: {
+//                         type: row.type
+//                     }
+//                 };
+//             };
+//         }
+//     });
+// }
 
 function add_stock_button_style() {
     if ($("#stock-button-style").length) return;

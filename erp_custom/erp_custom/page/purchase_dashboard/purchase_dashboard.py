@@ -619,21 +619,15 @@ def download_purchase_excel(filters=None):
 
 			poi.qty,
 			poi.uom,
-			poi.rate,
+			poi.rate, poi.custom_rate_per_kg,
 			poi.amount
 
 		FROM `tabPurchase Order` po
 
-		INNER JOIN `tabPurchase Order Item` poi
-			ON poi.parent = po.name
-
+		INNER JOIN `tabPurchase Order Item` poi ON poi.parent = po.name
 		{where_clause}
 
-		ORDER BY
-			po.transaction_date DESC,
-			po.name DESC,
-			poi.idx ASC
-		""", filters, as_dict=True)
+		ORDER BY po.transaction_date DESC, po.name DESC, poi.idx ASC""", filters, as_dict=True)
 
 	# -------------------------------------------------
 	# NO DATA
@@ -657,7 +651,7 @@ def download_purchase_excel(filters=None):
 	headers = ["Purchase Order No", "Supplier", "Project", "Order Type",
 		"Item Code", "Item Group", "Description", "Material Type",
 		"Length", "Width", "Thickness", "Outer Diameter", "Inner Diameter", "Density",
-		"Qty", "UOM", "Rate", "Amount"]
+		"Qty", "UOM", "Rate", "Rate (Per Kg / Per Mtr)", "Amount"]
 
 	ws.append(headers)
 
@@ -722,6 +716,7 @@ def download_purchase_excel(filters=None):
 			row.get("qty"),
 			row.get("uom") or "",
 			row.get("rate"),
+			row.get("custom_rate_per_kg"),
 			row.get("amount")
 		]
 
@@ -760,8 +755,11 @@ def download_purchase_excel(filters=None):
 		# Rate
 		ws.cell(row=row, column=17).number_format = '#,##0.00'
 
-		# Amount
+		# Rate (Per Kg / Per Mtr)
 		ws.cell(row=row, column=18).number_format = '#,##0.00'
+
+		# Amount
+		ws.cell(row=row, column=19).number_format = '#,##0.00'
 
 	# -------------------------------------------------
 	# COLUMN WIDTHS
@@ -789,7 +787,8 @@ def download_purchase_excel(filters=None):
 		"O": 12,
 		"P": 12,
 		"Q": 15,
-		"R": 18
+		"R": 18,
+		"S": 24
 	}
 
 	for column, width in column_widths.items():
