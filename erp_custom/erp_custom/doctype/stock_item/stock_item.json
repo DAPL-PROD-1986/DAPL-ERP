@@ -7,7 +7,6 @@
  "engine": "InnoDB",
  "field_order": [
   "stock_item_id",
-  "category",
   "remarks",
   "plates_tab",
   "plates",
@@ -47,12 +46,6 @@
    "fieldtype": "Data",
    "label": "Stock Item ID",
    "unique": 1
-  },
-  {
-   "fieldname": "category",
-   "fieldtype": "Link",
-   "label": "Category",
-   "options": "Stock Item Category"
   },
   {
    "fieldname": "tubes",
@@ -156,52 +149,52 @@
   {
    "fieldname": "overall_avail_wgt_pipe",
    "fieldtype": "Float",
-   "label": "Overall Available Weight"
+   "label": "Overall Available Weight (Mtr)"
   },
   {
    "fieldname": "overall_avail_wgt_amt_pipe",
    "fieldtype": "Currency",
-   "label": "Overall Available Weight Amount"
+   "label": "Overall Amount (\u20b9)"
   },
   {
    "fieldname": "overall_avail_wgt_tube",
    "fieldtype": "Float",
-   "label": "Overall Available Weight"
+   "label": "Overall Available Weight (Mtr)"
   },
   {
    "fieldname": "overall_avail_wgt_amt_tube",
    "fieldtype": "Currency",
-   "label": "Overall Available Weight Amount"
+   "label": "Overall Amount (\u20b9)"
   },
   {
    "fieldname": "overall_avail_wgt_rod",
    "fieldtype": "Float",
-   "label": "Overall Available Weight"
+   "label": "Overall Available Weight (Mtr)"
   },
   {
    "fieldname": "overall_avail_wgt_amt_rod",
    "fieldtype": "Currency",
-   "label": "Overall Available Weight Amount"
+   "label": "Overall Amount (\u20b9)"
   },
   {
    "fieldname": "overall_avail_wgt_plate",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Overall Available Weight",
+   "label": "Overall Available Weight (Kgs)",
    "read_only": 1
   },
   {
    "fieldname": "overall_avail_wgt_amt_plate",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Overall Available Weight Amount (\u20b9)",
+   "label": "Overall Amount (\u20b9)",
    "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-07 16:39:24.369414",
+ "modified": "2026-08-18 10:38:45.391171",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock Item",

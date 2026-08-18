@@ -1144,7 +1144,7 @@ function add_stock_first_row_filter_css() {
             }
 
         </style>
-    `);
+    `)
 }
 
 add_stock_first_row_filter_css();

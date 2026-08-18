@@ -77,6 +77,7 @@ class StockItem(Document):
         row.weight_per_item = (length * width * thickness * density) / 1000000
         row.actual_weight = (quantity * row.weight_per_item)
         row.available_weight = (row.actual_weight - used_weight)
+        row.used_weight_percentage = ((row.actual_weight - row.available_weight) / row.actual_weight * 100) if row.actual_weight else 0
         row.actual_weight_amount = (row.actual_weight * rate_per_kg)
         row.available_weight_amount = (row.available_weight * rate_per_kg)
 
@@ -96,6 +97,7 @@ class StockItem(Document):
         row.balanced_quantity = ((row.quantity or 0) - (row.used_quantity or 0))
         row.actual_weight = (row.quantity or 1) * (row.weight_per_item or 0)
         row.available_weight = (row.actual_weight or 0) - (row.used_weight or 0)
+        row.used_weight_percentage = (((row.actual_weight or 0) - (row.available_weight or 0)) / row.actual_weight * 100) if row.actual_weight else 0
         row.actual_weight_amount = (row.actual_weight or 0) * (row.rate_per_mtr or 0)
         row.available_weight_amount = (row.available_weight or 0) * (row.rate_per_mtr or 0)
 
@@ -115,6 +117,7 @@ class StockItem(Document):
         row.balanced_quantity = ((row.quantity or 0) - (row.used_quantity or 0))
         row.actual_weight = (row.quantity or 1) * (row.weight_per_item or 0)
         row.available_weight = (row.actual_weight or 0) - (row.used_weight or 0)
+        row.used_weight_percentage = (((row.actual_weight or 0) - (row.available_weight or 0)) / row.actual_weight * 100) if row.actual_weight else 0
         row.actual_weight_amount = (row.actual_weight or 0) * (row.rate_per_mtr or 0)
         row.available_weight_amount = (row.available_weight or 0) * (row.rate_per_mtr or 0)
 
@@ -128,6 +131,7 @@ class StockItem(Document):
         row.balanced_quantity = ((row.quantity or 0) - (row.used_quantity or 0))
         row.actual_weight = (row.quantity or 1) * (row.weight_per_item or 0)
         row.available_weight = (row.actual_weight or 0) - (row.used_weight or 0)
+        row.used_weight_percentage = (((row.actual_weight or 0) - (row.available_weight or 0)) / row.actual_weight * 100) if row.actual_weight else 0
         row.actual_weight_amount = (row.actual_weight or 0) * (row.rate_per_mtr or 0)
         row.available_weight_amount = (row.available_weight or 0) * (row.rate_per_mtr or 0)
 
@@ -337,6 +341,7 @@ DOWNLOAD_CONFIG = {
             ("Weight Per Item", "weight_per_item"),
             ("Actual Weight", "actual_weight"),
             ("Available Weight", "available_weight"),
+            ("Used Weight Percentage", "used_weight_percentage"),
             ("Actual Weight Amount (₹)", "actual_weight_amount"),
             ("Available Weight Amount (₹)", "available_weight_amount"),
             ("Remarks", "remarks")
@@ -366,6 +371,7 @@ DOWNLOAD_CONFIG = {
             ("Balanced Quantity", "balanced_quantity"),
             ("Actual Weight", "actual_weight"),
             ("Available Weight", "available_weight"),
+            ("Used Weight Percentage", "used_weight_percentage"),
             ("Actual Weight Amount (₹)", "actual_weight_amount"),
             ("Available Weight Amount (₹)", "available_weight_amount"),
             ("Remarks", "remarks")
@@ -395,6 +401,7 @@ DOWNLOAD_CONFIG = {
             ("Balanced Quantity", "balanced_quantity"),
             ("Actual Weight", "actual_weight"),
             ("Available Weight", "available_weight"),
+            ("Used Weight Percentage", "used_weight_percentage"),
             ("Actual Weight Amount (₹)", "actual_weight_amount"),
             ("Available Weight Amount (₹)", "available_weight_amount"),
             ("Remarks", "remarks")
@@ -423,6 +430,7 @@ DOWNLOAD_CONFIG = {
             ("Balanced Quantity", "balanced_quantity"),
             ("Actual Weight", "actual_weight"),
             ("Available Weight", "available_weight"),
+            ("Used Weight Percentage", "used_weight_percentage"),
             ("Actual Weight Amount (₹)", "actual_weight_amount"),
             ("Available Weight Amount (₹)", "available_weight_amount"),
             ("Remarks", "remarks")
@@ -811,6 +819,7 @@ def upload_sheet_data(ws, doc, upload_type):
 
         "Actual Weight": "actual_weight",
         "Available Weight": "available_weight",
+        "Used Weight Percentage": "used_weight_percentage",
 
         "Actual Weight Amount (₹)": "actual_weight_amount",
         "Available Weight Amount (₹)": "available_weight_amount",

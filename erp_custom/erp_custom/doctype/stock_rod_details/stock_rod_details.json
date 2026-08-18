@@ -13,7 +13,6 @@
   "type",
   "purchase_order_no",
   "vendor",
-  "status",
   "section_break_vjwd",
   "outer_diameter",
   "column_break_aolw",
@@ -32,6 +31,8 @@
   "column_break_udnx",
   "actual_weight_amount",
   "available_weight_amount",
+  "used_weight_percentage",
+  "status",
   "reference_section",
   "reference_image",
   "column_break_oozz",
@@ -235,6 +236,7 @@
   {
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
    "options": "\nIn Stock\nPartially Used\nFully Used\nScrap\nReserved\nRust\nDefect"
   },
@@ -260,13 +262,20 @@
    "fieldname": "reference_preview",
    "fieldtype": "HTML",
    "label": "Reference Preview"
+  },
+  {
+   "fieldname": "used_weight_percentage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Used Weight Percentage",
+   "precision": "2"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-08-10 13:00:30.801895",
+ "modified": "2026-08-18 10:40:00.360121",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock Rod Details",
