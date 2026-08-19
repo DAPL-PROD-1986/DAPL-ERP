@@ -156,6 +156,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_status"></div>
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_transaction_date"></div>
                         <div class="col-lg-2 col-md-4 col-sm-6" id="filter_schedule_date"></div>
+                        <div class="col-lg-2 col-md-4 col-sm-6" id="filter_fiscal_year"></div>
                         
                         <div id="filter_refresh_col">
                             <button class="btn btn-success btn-sm px-3" id="refresh" title="Apply Filters">
@@ -471,6 +472,16 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                 placeholder: 'Select Date...'
             },
             render_input: true
+        }),
+        fiscal_year: frappe.ui.form.make_control({          // NEW
+            parent: $(wrapper).find('#filter_fiscal_year'),
+            df: {
+                fieldtype: 'Link',
+                options: 'Fiscal Year',
+                label: 'Fiscal Year',
+                placeholder: 'Select Fiscal Year...'
+            },
+            render_input: true
         })
     };
 
@@ -490,6 +501,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                     status: filters.status.get_value(),
                     transaction_date: filters.transaction_date.get_value(),
                     schedule_date: filters.schedule_date.get_value(),
+                    fiscal_year: filters.fiscal_year.get_value(), 
                     limit: page_size,
                     offset: offset
                 }
@@ -943,7 +955,8 @@ $(document).on("click", "#download_purchase_excel", function () {
         order_type: filters.order_type.get_value(),
         status: filters.status.get_value(),
         transaction_date: filters.transaction_date.get_value(),
-        schedule_date: filters.schedule_date.get_value()
+        schedule_date: filters.schedule_date.get_value(),
+        fiscal_year: filters.fiscal_year.get_value()
     };
 
     frappe.call({

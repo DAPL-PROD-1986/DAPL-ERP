@@ -348,7 +348,7 @@ fixtures = [
     "filters": [
         ["name", "in", [
             "INR Value - PO vs WO vs TO",
-            "Suppliers (PO)",
+            "PO Value Wise Suppliers",
             "Purchase Orders by Status",
             "Quality Assurance Plan"
         ]]
@@ -369,6 +369,7 @@ fixtures = [
             "Purchase Order (PO)",
             "Work Order (PO)",
             "Transport Order (PO)",
+            "Others (Old)",
             "Overall BOM",
             "Overall Cutting Plan",
             "Overall Material Request"

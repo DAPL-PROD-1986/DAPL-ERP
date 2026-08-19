@@ -274,6 +274,21 @@ def get_dashboard_data(filters=None):
 	elif isinstance(filters, str):
 		filters = frappe.parse_json(filters)
 
+
+	# -----------------------------
+	# FISCAL YEAR RESOLUTION (NEW)
+	# -----------------------------
+	if filters.get("fiscal_year"):
+		fy = frappe.db.get_value(
+			"Fiscal Year",
+			filters.get("fiscal_year"),
+			["year_start_date", "year_end_date"],
+			as_dict=True
+		)
+		if fy:
+			filters["fy_start"] = fy.year_start_date
+			filters["fy_end"] = fy.year_end_date
+
 	# -----------------------------
 	# CONDITION BUILDERS
 	# -----------------------------
@@ -292,6 +307,10 @@ def get_dashboard_data(filters=None):
 			conditions.append("IFNULL(po.workflow_state, 'Draft') = %(status)s")
 		if filters.get("transaction_date"):
 			conditions.append("po.transaction_date = %(transaction_date)s")
+
+		if filters.get("fy_start") and filters.get("fy_end"):          # NEW
+			conditions.append("po.transaction_date BETWEEN %(fy_start)s AND %(fy_end)s")
+			
 		if with_schedule_date and filters.get("schedule_date"):
 			conditions.append("po.schedule_date = %(schedule_date)s")
 		if with_item:
@@ -307,10 +326,22 @@ def get_dashboard_data(filters=None):
 	where_po_only = build_where(build_conditions(with_item=False))
 	where_with_item = build_where(build_conditions(with_item=True))
 
-	where_upcoming = build_where(
-		build_conditions(with_item=True, with_schedule_date=False)
-		+ ["po.schedule_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)", "IFNULL(po.status, '') != 'Closed'"]
-	)
+	# where_upcoming = build_where(
+	# 	build_conditions(with_item=True, with_schedule_date=False)
+	# 	+ ["po.schedule_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)", "IFNULL(po.status, '') != 'Closed'"]
+	# )
+
+	# where_upcoming = build_where(
+	# 	build_conditions(with_item=True, with_schedule_date=True)   # same conditions as full PO list
+	# 	+ ["IFNULL(po.status, '') != 'Closed'"]                     # just exclude Closed orders
+	# )
+
+	where_upcoming = build_where(build_conditions(with_item=True, with_schedule_date=True) + [
+			"IFNULL(po.status, '') != 'Closed'",                     # exclude Closed orders
+			"IFNULL(po.workflow_state,'Draft') != 'Cancelled'",      # exclude Cancelled orders
+			"IFNULL(po.workflow_state,'Draft') != 'Draft'"           # exclude Draft orders
+		])
+		
 
 	# -----------------------------
 	# 1. ORDER TYPE COUNTS  (po only)
@@ -512,6 +543,9 @@ def get_dashboard_data(filters=None):
 	if filters.get("transaction_date"):
 		rfq_conditions.append("transaction_date = %(transaction_date)s")
 
+	if filters.get("fy_start") and filters.get("fy_end"):    # NEW
+		rfq_conditions.append("transaction_date BETWEEN %(fy_start)s AND %(fy_end)s")
+
 	where_rfq = "WHERE " + " AND ".join(rfq_conditions) if rfq_conditions else ""
 
 	rfq_result = frappe.db.sql(f"""
@@ -581,6 +615,13 @@ def download_purchase_excel(filters=None):
 
 	if filters.get("schedule_date"):
 		conditions.append("po.schedule_date = %(schedule_date)s")
+
+	if filters.get("fiscal_year"):                     # NEW
+		fy = frappe.db.get_value("Fiscal Year", filters.get("fiscal_year"), ["year_start_date", "year_end_date"], as_dict=True)
+		if fy:
+			filters["fy_start"] = fy.year_start_date
+			filters["fy_end"] = fy.year_end_date
+			conditions.append("po.transaction_date BETWEEN %(fy_start)s AND %(fy_end)s")
 
 	if filters.get("item"):
 		conditions.append("poi.item_code = %(item)s")
