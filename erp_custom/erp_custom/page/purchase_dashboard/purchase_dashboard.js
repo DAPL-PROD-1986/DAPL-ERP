@@ -270,7 +270,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
             <!-- REQUIRED BY - NEXT 7 DAYS -->
             <div class="card shadow-sm border-0 table-card mb-4">
                 <div class="card-header bg-danger text-white text-center">
-                    <i class="fa fa-clock me-2"></i> Required By - Next 7 Days
+                    <i class="fa fa-clock me-2"></i> Required By
                 </div>
                 <div class="card-body p-0 table-responsive dashboard-table-body">
                     <table class="table table-hover text-center align-middle mb-0">
