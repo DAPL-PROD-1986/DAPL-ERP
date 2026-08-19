@@ -8,33 +8,47 @@
 // });
 
 frappe.ui.form.on("Stock Item", {
+
     refresh(frm) {
+
         calculate_weights(frm);
+
         // set_moc_filter(frm);
 
         add_download_button(frm);
         add_upload_button(frm);
 
-        show_reference_preview(frm);
-
+        // New child table filter
         setTimeout(() => {
-            init_child_table_first_row_filters(frm);
-        }, 500);
+            init_stock_child_filters(frm);
+        }, 300);
+
+        show_reference_preview(frm);
     },
+
 
     onload_post_render(frm) {
+
         setTimeout(() => {
-            init_child_table_first_row_filters(frm);
-        }, 500);
+            init_stock_child_filters(frm);
+        }, 300);
+
     },
 
+
     reference_image(frm) {
+
         show_reference_preview(frm);
+
     },
-    
+
+
     validate(frm) {
+
         calculate_weights(frm);
+
     }
+
 });
 
 // function set_moc_filter(frm) {
@@ -343,7 +357,6 @@ function show_download_dialog(frm) {
         .overall-card .template-name {
             color:white;
         }
-
     </style>
 
     <div class="template-grid">
@@ -681,13 +694,11 @@ function show_upload_dialog(frm) {
         );
 
         const upload_data = await upload_response.json();
-
         if (!upload_response.ok || !upload_data.message) {
             throw new Error(upload_data?.message?.message || upload_data?.exc || "Excel file upload failed.");
         }
 
         const file_url = upload_data.message.file_url;
-
         const process_response = await frappe.call({
             method: "erp_custom.erp_custom.doctype.stock_item.stock_item.upload_stock_excel",
             args: {
@@ -799,9 +810,7 @@ function show_download_data_dialog(frm) {
                 `
             }
         ],
-
         primary_action_label: "Download",
-
         primary_action() {
             let selected_types = [];
 
@@ -816,17 +825,12 @@ function show_download_data_dialog(frm) {
                 return;
             }
 
-            /*
-             * If Overall is selected,
-             * download all stock types.
-             */
+            /** If Overall is selected, download all stock types. */
             if (selected_types.includes("overall")) {
                 selected_types = ["plates", "pipes", "tubes", "rods", "flanges", "welding", "disc", "spares", "machinery"];
             }
 
-            let types = encodeURIComponent(
-                JSON.stringify(selected_types)
-            );
+            let types = encodeURIComponent(JSON.stringify(selected_types));
 
             window.location.href =
                 `/api/method/erp_custom.erp_custom.doctype.stock_item.stock_item.download_stock_data` +
@@ -839,9 +843,7 @@ function show_download_data_dialog(frm) {
 
     d.show();
 
-    /*
-     * Overall checkbox handling
-     */
+    /* * Overall checkbox handling */
     d.$wrapper.on("change", ".overall-checkbox",
         function () {
             let checked = $(this).is(":checked");
@@ -874,277 +876,959 @@ function show_download_data_dialog(frm) {
 
 // FILTER
 
+// /* ============================================================
+//    STOCK ITEM - CHILD TABLE FIRST ROW FILTER
+//    UI ONLY - DOES NOT CREATE CHILD TABLE RECORDS
+//    ============================================================ */
+
+// function init_child_table_first_row_filters(frm) {
+//     const tables = ["plates", "pipes", "tubes", "flanges", "rods"];
+//     tables.forEach(table_name => {
+//         const field = frm.fields_dict[table_name];
+//         if (!field || !field.grid) {
+//             return;
+//         }
+//         create_first_row_filter(frm, table_name);
+//     });
+// }
+
+// function create_first_row_filter(frm, table_name) {
+//     const field = frm.fields_dict[table_name];
+//     if (!field || !field.grid) {
+//         return;
+//     }
+
+//     const grid = field.grid;
+//     const wrapper = $(grid.wrapper);
+
+//     // Prevent duplicate
+//     if (wrapper.find(".stock-first-row-filter").length) {
+//         return;
+//     }
+
+//     const heading = wrapper.find(".grid-heading-row").first();
+//     if (!heading.length) {
+//         return;
+//     }
+
+//     const filter_row = $(`
+//         <div class="stock-first-row-filter">
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="category" placeholder="Filter Category">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="type" placeholder="Filter Type">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="moc" placeholder="Filter MoC">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="vendor" placeholder="Filter Vendor">
+//             </div>
+
+//              <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="purchase_order_no" placeholder="Filter PO">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="description" placeholder="Description">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="status" placeholder="Filter Status">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="length" placeholder="Length">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="width" placeholder="Width">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="thickness" placeholder="Thickness">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="outer_diameter" placeholder="Outer Diameter">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="inner_diameter" placeholder="Inner Diameter">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="nps" placeholder="NPS">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="sch" placeholder="SCH">
+//             </div>
+
+//             <div class="stock-filter-cell">
+//                 <input type="text" class="form-control input-xs" data-field="class" placeholder="Class">
+//             </div>
+
+//             <div class="stock-filter-clear">
+//                 <button type="button" class="btn btn-xs btn-default" title="Clear Filter">
+//                     <i class="fa fa-times"></i>
+//                 </button>
+//             </div>
+//         </div>
+//     `);
+
+//     heading.after(filter_row);
+//     filter_row.on("input", ".stock-filter-cell input",
+//         function () {
+//             apply_first_row_filter(frm, table_name, filter_row);
+//         }
+//     );
+
+
+//     /* * Clear filter  */
+//     filter_row.on("click", ".stock-filter-clear button",
+//         function () {
+//             filter_row.find("input").val("");
+//             show_all_child_rows(frm, table_name);
+//         }
+//     );
+// }
+
+
+// /* ===================== APPLY FILTER  =================== */
+
+// function apply_first_row_filter(frm, table_name, filter_row) {
+//     const field = frm.fields_dict[table_name];
+//     if (!field || !field.grid) {
+//         return;
+//     }
+
+//     const grid = field.grid;
+//     const filters = {};
+//     filter_row
+//         .find("input")
+//         .each(function () {
+
+//             const fieldname = $(this).data("field");
+//             const value = $(this).val().trim().toLowerCase();
+
+//             if (value) {
+//                 filters[fieldname] = value;
+//             }
+//         });
+
+
+//     /*
+//      * Filter existing rows only
+//      */
+//     grid.grid_rows.forEach(grid_row => {
+//         const row = grid_row.doc;
+//         let matched = true;
+
+//         Object.keys(filters).forEach(fieldname => {
+//             if (!matched) {
+//                 return;
+//             }
+
+//             let row_value = row[fieldname];
+//             if (
+//                 row_value === undefined ||
+//                 row_value === null
+//             ) {
+//                 row_value = "";
+//             }
+
+//             row_value = String(row_value).toLowerCase();
+//             const filter_value = filters[fieldname];
+//             if (!row_value.includes(filter_value)) {
+//                 matched = false;
+//             }
+//         });
+
+//         if (matched) {
+//             $(grid_row.row).show();
+//         } else {
+//             $(grid_row.row).hide();
+//         }
+//     });
+// }
+
+
+// /* ================= SHOW ALL  ============ */
+
+// function show_all_child_rows(frm, table_name) {
+//     const field = frm.fields_dict[table_name];
+//     if (!field || !field.grid) {
+//         return;
+//     }
+
+//     field.grid.grid_rows.forEach(grid_row => {
+//         $(grid_row.row).show();
+//     });
+// }
+
+// function add_stock_first_row_filter_css() {
+//     if ($("#stock-first-row-filter-css").length) {
+//         return;
+//     }
+
+//     $("head").append(`
+//         <style id="stock-first-row-filter-css">
+
+//             .stock-first-row-filter {
+//                 display: flex;
+//                 width: 100%;
+//                 padding: 5px 0;
+//                 background: #f8fafc;
+//                 border-bottom: 1px solid #d1d5db;
+//                 box-sizing: border-box;
+//                 overflow-x: auto;
+//             }
+
+//             .stock-first-row-filter
+//             .stock-filter-cell {
+//                 flex: 0 0 120px;
+//                 width: 120px;
+//                 padding: 0 3px;
+//                 min-width: 0;
+//             }
+
+//             .stock-first-row-filter
+//             input {
+//                 width: 100% !important;
+//                 height: 28px !important;
+//                 min-height: 28px !important;
+//                 padding: 3px 7px !important;
+//                 font-size: 12px !important;
+//                 border: 1px solid #d1d5db !important;
+//                 border-radius: 4px !important;
+//                 background: #ffffff !important;
+//                 box-sizing: border-box;
+//             }
+
+//             .stock-first-row-filter
+//             input:focus {
+//                 border-color: #2490ef !important;
+//                 box-shadow: 0 0 0 1px rgba(36,144,239,.15) !important;
+//             }
+
+//             .stock-first-row-filter
+//             input::placeholder {
+//                 color: #9ca3af;
+//                 font-size: 11px;
+//             }
+
+//             .stock-filter-clear {
+//                 flex: 0 0 38px;
+//                 width: 38px;
+//                 padding: 0 3px;
+//                 display: flex;
+//                 align-items: center;
+//                 justify-content: center;
+//             }
+
+//             .stock-filter-clear button {
+//                 height: 28px;
+//                 width: 30px;
+//                 padding: 0;
+//             }
+
+//         </style>
+//     `)
+// }
+
+// add_stock_first_row_filter_css();
+
+
+
 /* ============================================================
-   STOCK ITEM - CHILD TABLE FIRST ROW FILTER
-   UI ONLY - DOES NOT CREATE CHILD TABLE RECORDS
+   STOCK ITEM - CHILD TABLE ADVANCED FILTER
+   ------------------------------------------------------------
+   Parent Doctype : Stock Item
+
+   Child Tables:
+   - Plates
+   - Pipes
+   - Tubes
+   - Flanges
+   - Rods
+
+   FEATURES:
+   1. Normal ERPNext child grid remains untouched
+   2. Filter + Clear Filter buttons outside/right of grid
+   3. Filter dialog reads child DocType fields dynamically
+   4. Four filter fields per row
+   5. Multiple values can be selected
+   6. Existing child-row values are shown as options
+   7. UI filtering only - does NOT create child records
    ============================================================ */
 
 
-function init_child_table_first_row_filters(frm) {
-    const tables = ["plates", "pipes", "tubes", "flanges", "rods"];
-    tables.forEach(table_name => {
-        const field = frm.fields_dict[table_name];
-        if (!field || !field.grid) {
+/* ============================================================
+   CONFIGURATION
+   ============================================================ */
+
+const STOCK_FILTER_TABLES = [
+    "plates",
+    "pipes",
+    "tubes",
+    "flanges",
+    "rods"
+];
+
+
+/* ============================================================
+   INITIALIZE
+   ============================================================ */
+
+function init_stock_child_filters(frm) {
+
+    STOCK_FILTER_TABLES.forEach(table_name => {
+
+        const table_field = frm.fields_dict[table_name];
+
+        if (!table_field || !table_field.grid) {
             return;
         }
-        create_first_row_filter(frm, table_name);
+
+        create_stock_filter_toolbar(frm, table_name);
     });
 }
 
-function create_first_row_filter(frm, table_name) {
-    const field = frm.fields_dict[table_name];
-    if (!field || !field.grid) {
+
+/* ============================================================
+   CREATE FILTER TOOLBAR
+   ============================================================ */
+
+// function create_stock_filter_toolbar(frm, table_name) {
+
+//     const table_field = frm.fields_dict[table_name];
+
+//     if (!table_field || !table_field.grid) {
+//         return;
+//     }
+
+//     const grid = table_field.grid;
+//     const wrapper = $(grid.wrapper);
+
+//     /*
+//      * Prevent duplicate toolbar
+//      */
+//     if (wrapper.find(".stock-child-filter-toolbar").length) {
+//         return;
+//     }
+
+
+//     /* --------------------------------------------------------
+//        Toolbar
+//        -------------------------------------------------------- */
+
+//     const toolbar = $(`
+//         <div class="stock-child-filter-toolbar">
+
+//             <div class="stock-filter-toolbar-right">
+
+//                 <button
+//                     type="button"
+//                     class="btn btn-sm btn-primary stock-filter-btn">
+//                     <i class="fa fa-filter"></i>
+//                     <span>Filter</span>
+//                 </button>
+
+//                 <button
+//                     type="button"
+//                     class="btn btn-sm btn-default stock-clear-filter-btn">
+//                     <i class="fa fa-times"></i>
+//                     <span>Clear Filter</span>
+//                 </button>
+
+//             </div>
+
+//         </div>
+//     `);
+
+
+//     /*
+//      * Put toolbar BEFORE grid heading
+//      */
+//     wrapper.find(".grid-heading-row").first().before(toolbar);
+
+
+//     /* --------------------------------------------------------
+//        Filter button
+//        -------------------------------------------------------- */
+
+//     toolbar.on(
+//         "click",
+//         ".stock-filter-btn",
+//         function () {
+
+//             open_stock_child_filter_dialog(
+//                 frm,
+//                 table_name
+//             );
+//         }
+//     );
+
+
+//     /* --------------------------------------------------------
+//        Clear filter button
+//        -------------------------------------------------------- */
+
+//     toolbar.on(
+//         "click",
+//         ".stock-clear-filter-btn",
+//         function () {
+
+//             clear_stock_child_filter(
+//                 frm,
+//                 table_name
+//             );
+//         }
+//     );
+// }
+
+function create_stock_filter_toolbar(frm, table_name) {
+    const table_field = frm.fields_dict[table_name];
+    if (!table_field || !table_field.grid) {
+        return;
+    }
+    const grid = table_field.grid;
+    /*
+     * IMPORTANT:
+     * Use the complete Table field wrapper,
+     * NOT grid.wrapper.
+     */
+    const field_wrapper = $(table_field.wrapper);
+    /*
+     * Prevent duplicate toolbar
+     */
+    if (field_wrapper.find(".stock-child-filter-toolbar").length) {
         return;
     }
 
-    const grid = field.grid;
-    const wrapper = $(grid.wrapper);
+    /* * Create toolbar OUTSIDE the actual grid */
+    const toolbar = $(`
+        <div class="stock-child-filter-toolbar">
+            <div class="stock-filter-toolbar-right">
+                <button type="button" class="btn btn-sm btn-primary stock-filter-btn">
+                    <i class="fa fa-filter"></i> <span>Filter</span>
+                </button>
 
-    // Prevent duplicate
-    if (wrapper.find(".stock-first-row-filter").length) {
-        return;
-    }
-
-    const heading = wrapper.find(".grid-heading-row").first();
-    if (!heading.length) {
-        return;
-    }
-
-    const filter_row = $(`
-        <div class="stock-first-row-filter">
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="category" placeholder="Filter Category">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="type" placeholder="Filter Type">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="moc" placeholder="Filter MoC">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="vendor" placeholder="Filter Vendor">
-            </div>
-
-             <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="purchase_order_no" placeholder="Filter PO">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="description" placeholder="Description">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="status" placeholder="Filter Status">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="length" placeholder="Length">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="width" placeholder="Width">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="thickness" placeholder="Thickness">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="outer_diameter" placeholder="Outer Diameter">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="inner_diameter" placeholder="Inner Diameter">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="nps" placeholder="NPS">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="sch" placeholder="SCH">
-            </div>
-
-            <div class="stock-filter-cell">
-                <input type="text" class="form-control input-xs" data-field="class" placeholder="Class">
-            </div>
-
-            <div class="stock-filter-clear">
-                <button type="button" class="btn btn-xs btn-default" title="Clear Filter">
-                    <i class="fa fa-times"></i>
+                <button type="button" class="btn btn-sm btn-default stock-clear-filter-btn">
+                    <i class="fa fa-times"></i> <span>Clear Filter</span>
                 </button>
             </div>
         </div>
     `);
 
-    heading.after(filter_row);
+    /* * Find the grid container  */
+    const grid_wrapper = $(grid.wrapper);
 
-    filter_row.on("input", ".stock-filter-cell input",
-        function () {
-            apply_first_row_filter(frm, table_name, filter_row);
-        }
-    );
+    /*
+     * Put toolbar BEFORE grid wrapper
+     *
+     * This is the important change.
+     */
+    grid_wrapper.before(toolbar);
 
 
     /*
-     * Clear filter
+     * Filter button
      */
-    filter_row.on("click", ".stock-filter-clear button",
+    toolbar.on("click", ".stock-filter-btn",
         function () {
-            filter_row.find("input").val("");
-            show_all_child_rows(frm, table_name);
+            open_stock_child_filter_dialog(frm, table_name);
+        });
+
+    /*
+     * Clear Filter button
+     */
+    toolbar.on("click", ".stock-clear-filter-btn",
+        function () {
+            clear_stock_child_filter(frm, table_name);
         }
     );
 }
-
-
 /* ============================================================
-   APPLY FILTER
+   OPEN FILTER DIALOG
    ============================================================ */
 
-function apply_first_row_filter(frm, table_name, filter_row) {
-    const field = frm.fields_dict[table_name];
-    if (!field || !field.grid) {
+function open_stock_child_filter_dialog(frm, table_name) {
+    const table_field = frm.fields_dict[table_name];
+    if (!table_field || !table_field.grid) {
         return;
     }
 
-    const grid = field.grid;
-    const filters = {};
-    filter_row
-        .find("input")
-        .each(function () {
+    const grid = table_field.grid;
+    /* * Get child DocType  */
+    const child_doctype = get_stock_child_doctype(frm, table_name);
 
-            const fieldname = $(this).data("field");
-            const value = $(this).val().trim().toLowerCase();
+    if (!child_doctype) {
+        frappe.msgprint("Unable to find child DocType for " + table_name);
+        return;
+    }
 
-            if (value) {
-                filters[fieldname] = value;
-            }
-        });
+    /* * Get child DocType metadata */
+    const meta = frappe.get_meta(child_doctype);
+    if (!meta || !meta.fields) {
+        return;
+    }
 
+    /* * Get usable fields */
+    const filter_fields = get_stock_filter_fields(meta.fields);
+    if (!filter_fields.length) {
+        frappe.msgprint("No filterable fields found.");
+        return;
+    }
+
+    /* * Create Dialog fields */
+    const dialog_fields = [];
+    /*
+     * Heading
+     */
+    dialog_fields.push({
+        fieldtype: "HTML",
+        fieldname: "filter_info",
+        options: `
+            <div class="stock-filter-dialog-info">
+                <i class="fa fa-info-circle"></i>
+                Select one or more values for any field.
+                Different fields are combined together.
+            </div>
+        `
+    });
 
     /*
-     * Filter existing rows only
+     * Create fields dynamically
+     *
+     * 4 fields per row
      */
+    filter_fields.forEach((df, index) => {
+        /*
+         * Start new row every 4 fields
+         */
+        if (index % 4 === 0) {
+            dialog_fields.push({
+                fieldtype: "Section Break",
+                fieldname: `stock_filter_section_${index}`
+            });
+        }
+
+        /*
+         * Every field except first in row
+         * should use Column Break
+         */
+        if (index % 4 !== 0) {
+            dialog_fields.push({
+                fieldtype: "Column Break",
+                fieldname: `stock_filter_column_${index}`
+            });
+        }
+
+
+        dialog_fields.push({
+            fieldtype: "MultiSelectList",
+            fieldname: `filter_${df.fieldname}`,
+            label: df.label || df.fieldname,
+            description: `Select ${df.label || df.fieldname}`,
+            get_data: function (txt) {
+                return get_stock_filter_options(frm, table_name, df.fieldname, txt);
+            }
+        });
+    });
+
+
+    /* * Dialog  */
+    const dialog = new frappe.ui.Dialog({
+        title: "Filter " + (meta.name || child_doctype),
+        size: "extra-large",
+        fields: dialog_fields,
+        primary_action_label: "Apply Filter",
+        primary_action: function () {
+            const values = dialog.get_values();
+            apply_stock_child_filter(frm, table_name, values, filter_fields);
+            dialog.hide();
+        }
+    });
+
+
+    /* * Show dialog */
+    dialog.show();
+
+    /* * Set useful width */
+    setTimeout(() => {
+        dialog.$wrapper
+            .find(".modal-dialog")
+            .css({
+                "max-width": "1200px",
+                "width": "95%"
+            });
+    }, 100);
+}
+
+
+/* ================  GET CHILD DOCTYPE ======================== */
+
+function get_stock_child_doctype(frm, table_name) {
+    const df = frm.fields_dict[table_name].df;
+    if (!df) {
+        return null;
+    }
+    return df.options;
+}
+
+
+/* ======================= GET FILTERABLE CHILD FIELDS =================== */
+
+function get_stock_filter_fields(fields) {
+    /* * Fields which should NOT appear in filter dialog  */
+    const ignored_fieldtypes = [
+        "Section Break",
+        "Column Break",
+        "Tab Break",
+        "HTML",
+        "Button",
+        "Table",
+        "Table MultiSelect",
+        "Fold"
+    ];
+
+
+    /* * ERPNext internal fields */
+    const ignored_fieldnames = [
+        "name",
+        "owner",
+        "creation",
+        "modified",
+        "modified_by",
+        "parent",
+        "parentfield",
+        "parenttype",
+        "idx",
+        "docstatus"
+    ];
+
+
+    return fields.filter(df => {
+        if (!df.fieldname) {
+            return false;
+        }
+
+        if (ignored_fieldnames.includes(df.fieldname)) {
+            return false;
+        }
+
+        if (ignored_fieldtypes.includes(df.fieldtype)) {
+            return false;
+        }
+
+        /* * Hidden fields don't need filtering */
+        if (df.hidden) {
+            return false;
+        }
+        return true;
+    });
+}
+
+
+/* ================== GET FILTER OPTIONS ================ */
+
+function get_stock_filter_options(frm, table_name, fieldname, search_text) {
+    const table_field = frm.fields_dict[table_name];
+    if (!table_field || !table_field.grid) {
+        return [];
+    }
+
+    const grid = table_field.grid;
+    const search = String(search_text || "").trim().toLowerCase();
+
+    /* * Get values from existing child rows */
+    const unique_values = new Set();
+    grid.grid_rows.forEach(grid_row => {
+        const row = grid_row.doc;
+        if (!row) {
+            return;
+        }
+        let value = row[fieldname];
+
+        if (value === undefined || value === null || value === "") {
+            return;
+        }
+
+        /* * Convert value to string  */
+        value = String(value).trim();
+        if (!value) {
+            return;
+        }
+
+        /* * Search text */
+        if (search && !value.toLowerCase().includes(search)) {
+            return;
+        }
+        unique_values.add(value);
+    });
+
+
+    /* * Convert to Frappe MultiSelectList format */
+    return Array.from(unique_values)
+        .sort((a, b) =>
+            a.localeCompare(b, undefined, {
+                numeric: true,
+                sensitivity: "base"
+            })
+        )
+        .map(value => ({
+            value: value,
+            description: ""
+        }));
+}
+
+
+/* ======================== APPLY FILTER ============================= */
+
+function apply_stock_child_filter(frm, table_name, selected_values, filter_fields) {
+    const table_field = frm.fields_dict[table_name];
+    if (!table_field || !table_field.grid) {
+        return;
+    }
+
+    const grid = table_field.grid;
+    /* * Build active filters  */
+    const active_filters = {};
+
+    filter_fields.forEach(df => {
+        const fieldname = `filter_${df.fieldname}`;
+        let values = selected_values[fieldname];
+        if (!values) {
+            return;
+        }
+
+        /* * MultiSelectList returns array */
+        if (!Array.isArray(values)) {
+            values = [values];
+        }
+
+        values = values.map(value => String(value).trim().toLowerCase()).filter(Boolean);
+        if (values.length) {
+            active_filters[df.fieldname] = values;
+        }
+    });
+
+
+    /* * Filter every existing row */
     grid.grid_rows.forEach(grid_row => {
         const row = grid_row.doc;
         let matched = true;
 
-        Object.keys(filters).forEach(fieldname => {
-            if (!matched) {
-                return;
-            }
+        /* * Each field = AND  */
+        Object.keys(active_filters).forEach(fieldname => {
+                if (!matched) {
+                    return;
+                }
+                let row_value = row[fieldname];
 
-            let row_value = row[fieldname];
-            if (
-                row_value === undefined ||
-                row_value === null
-            ) {
-                row_value = "";
-            }
+                if (row_value === undefined || row_value === null) {
+                    row_value = "";
+                }
+                row_value = String(row_value).trim().toLowerCase();
 
-            row_value = String(row_value).toLowerCase();
-            const filter_value = filters[fieldname];
-            if (!row_value.includes(filter_value)) {
-                matched = false;
-            }
-        });
+                /* * Multiple selected values  * within same field = OR  */
+                const field_values = active_filters[fieldname];
+                const field_matched = field_values.some(selected_value => row_value === selected_value);
 
+                if (!field_matched) {
+                    matched = false;
+                }
+            });
+
+        /* * Show / hide row */
         if (matched) {
             $(grid_row.row).show();
         } else {
             $(grid_row.row).hide();
         }
     });
+
+    /* * Update filter button  */
+    update_stock_filter_button(frm, table_name, Object.keys(active_filters).length);
 }
 
 
 /* ============================================================
-   SHOW ALL
+   CLEAR FILTER
    ============================================================ */
 
-function show_all_child_rows(frm, table_name) {
-    const field = frm.fields_dict[table_name];
-    if (!field || !field.grid) {
+function clear_stock_child_filter(frm, table_name) {
+    const table_field = frm.fields_dict[table_name];
+    if (!table_field || !table_field.grid) {
         return;
     }
 
-    field.grid.grid_rows.forEach(grid_row => {
+    const grid = table_field.grid;
+
+    /* * Show every child row  */
+    grid.grid_rows.forEach(grid_row => {
         $(grid_row.row).show();
     });
+
+    /* * Reset button */
+    update_stock_filter_button(frm, table_name, 0);
 }
 
-function add_stock_first_row_filter_css() {
-    if ($("#stock-first-row-filter-css").length) {
+
+/* ================== UPDATE FILTER BUTTON ====================== */
+function update_stock_filter_button(frm, table_name, filter_count) {
+    const table_field = frm.fields_dict[table_name];
+    if (!table_field || !table_field.grid) {
+        return;
+    }
+
+    const wrapper = $(table_field.wrapper);
+    const button = wrapper.find(".stock-filter-btn");
+
+    if (!button.length) {
+        return;
+    }
+
+    if (filter_count > 0) {
+        button.html(`<i class="fa fa-filter"></i>Filter (${filter_count})`);
+        button.addClass("stock-filter-active");
+    } else {
+        button.html(`<i class="fa fa-filter"></i>Filter`);
+        button.removeClass("stock-filter-active");
+    }
+}
+
+
+/* ============= CSS ================== */
+
+function add_stock_child_filter_css() {
+    if ($("#stock-child-filter-css").length) {
         return;
     }
 
     $("head").append(`
-        <style id="stock-first-row-filter-css">
+        <style id="stock-child-filter-css">
+            /* ================== FILTER TOOLBAR ======================= */
 
-            .stock-first-row-filter {
-                display: flex;
+            .stock-child-filter-toolbar {
                 width: 100%;
-                padding: 5px 0;
-                background: #f8fafc;
-                border-bottom: 1px solid #d1d5db;
-                box-sizing: border-box;
-                overflow-x: auto;
-            }
-
-            .stock-first-row-filter
-            .stock-filter-cell {
-                flex: 0 0 120px;
-                width: 120px;
-                padding: 0 3px;
-                min-width: 0;
-            }
-
-            .stock-first-row-filter
-            input {
-                width: 100% !important;
-                height: 28px !important;
-                min-height: 28px !important;
-                padding: 3px 7px !important;
-                font-size: 12px !important;
-                border: 1px solid #d1d5db !important;
-                border-radius: 4px !important;
-                background: #ffffff !important;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin: 6px 0;
+                padding: 0;
                 box-sizing: border-box;
             }
 
-            .stock-first-row-filter
-            input:focus {
-                border-color: #2490ef !important;
-                box-shadow: 0 0 0 1px rgba(36,144,239,.15) !important;
-            }
-
-            .stock-first-row-filter
-            input::placeholder {
-                color: #9ca3af;
-                font-size: 11px;
-            }
-
-            .stock-filter-clear {
-                flex: 0 0 38px;
-                width: 38px;
-                padding: 0 3px;
+            .stock-filter-toolbar-right {
                 display: flex;
                 align-items: center;
-                justify-content: center;
+                justify-content: flex-end;
+                gap: 6px;
             }
 
-            .stock-filter-clear button {
-                height: 28px;
-                width: 30px;
-                padding: 0;
+            .stock-filter-toolbar-right button {
+                height: 30px;
+                min-height: 30px;
+                padding: 4px 12px;
+                font-size: 12px;
+                border-radius: 5px;
             }
 
+            .stock-filter-btn {
+                font-weight: 500;
+            }
+
+            .stock-clear-filter-btn {
+                background: #ffffff;
+            }
+
+
+            /* =================== FILTER DIALOG ==================== */
+            .stock-filter-dialog-info {
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 5px;
+                padding: 9px 12px;
+                margin-bottom: 12px;
+                font-size: 12px;
+                color: #475569;
+            }
+
+            .stock-filter-dialog-info
+            .fa {
+                margin-right: 5px;
+                color: #2490ef;
+            }
+
+            /* * Four columns  */
+            .modal-dialog
+            .form-section {
+                margin-bottom: 12px;
+            }
+
+            /* * Column spacing  */
+            .modal-dialog
+            .form-column {
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+
+            /* * Label  */
+            .modal-dialog
+            .frappe-control
+            .control-label {
+                font-size: 11px;
+                font-weight: 600;
+                color: #475569;
+                margin-bottom: 4px;
+            }
+
+
+            /* * MultiSelectList */
+            .modal-dialog
+            .frappe-control
+            .form-control {
+                min-height: 34px;
+                font-size: 12px;
+            }
+
+
+            /* * Dialog body */
+            .stock-filter-dialog-info
+            + .form-section {
+                padding-top: 4px;
+            }
+
+
+            /*  * Make dialog footer clean */
+            .modal-dialog
+            .modal-footer {
+                padding-top: 10px;
+            }
+
+
+        /* ======================= MOBILE / SMALL SCREEN =================== */
+            @media (max-width: 900px) {
+                .stock-child-filter-toolbar {
+                    justify-content: flex-start;
+                }
+
+                .stock-filter-toolbar-right {
+                    justify-content: flex-start;
+                }
+            }
         </style>
-    `)
+    `);
 }
 
-add_stock_first_row_filter_css();
+
+/* =================== INITIALIZE CSS =============== */
+
+add_stock_child_filter_css();

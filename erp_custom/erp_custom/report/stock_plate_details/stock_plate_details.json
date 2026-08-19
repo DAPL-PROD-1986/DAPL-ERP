@@ -1,0 +1,30 @@
+{
+ "add_total_row": 0,
+ "add_translate_data": 0,
+ "columns": [],
+ "creation": "2026-08-19 17:28:28.957973",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "json": "{}",
+ "letter_head": null,
+ "modified": "2026-08-19 17:34:50.134323",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Stock Plate Details",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "SELECT\n    sp.name AS \"ID:Data:120\",\n    sp.parent AS \"Stock Item:Link/Stock Item:150\",\n    sp.category AS \"Category:Data:120\",\n    sp.type AS \"Type:Data:120\",\n    sp.moc AS \"MOC:Data:120\",\n    sp.vendor AS \"Vendor:Link/Supplier:150\",\n    sp.purchase_order_no AS \"Purchase Order No:Data:150\",\n    sp.description AS \"Description:Data:200\",\n    sp.length AS \"Length:Float:100\",\n    sp.width AS \"Width:Float:100\",\n    sp.thickness AS \"Thickness:Float:100\",\n    sp.density AS \"Density:Float:100\",\n    sp.quantity AS \"Quantity:Float:100\",\n    sp.rate_per_kg AS \"Rate Per Kg:Currency:120\",\n    sp.used_weight AS \"Used Weight:Float:120\",\n    sp.weight_per_item AS \"Weight Per Item:Float:130\",\n    sp.actual_weight AS \"Actual Weight:Float:120\",\n    sp.available_weight AS \"Available Weight:Float:130\",\n    sp.actual_weight_amount AS \"Actual Weight Amount:Currency:150\",\n    sp.available_weight_amount AS \"Available Weight Amount:Currency:160\",\n    sp.used_weight_percentage AS \"Used Weight %:Percent:120\",\n    sp.status AS \"Status:Data:120\",\n    sp.reference_image AS \"Reference Image:Data:150\"\n\nFROM `tabStock Plate details` sp\n\nWHERE\n    sp.parenttype = 'Stock Item'\n\n    AND (\n        %(stock_item)s IS NULL\n        OR %(stock_item)s = ''\n        OR sp.parent = %(stock_item)s\n    )\n\n    AND (\n        %(category)s IS NULL\n        OR %(category)s = ''\n        OR sp.category = %(category)s\n    )\n\n    AND (\n        %(type)s IS NULL\n        OR %(type)s = ''\n        OR sp.type = %(type)s\n    )\n\n    AND (\n        %(moc)s IS NULL\n        OR %(moc)s = ''\n        OR sp.moc = %(moc)s\n    )\n\n    AND (\n        %(vendor)s IS NULL\n        OR %(vendor)s = ''\n        OR sp.vendor = %(vendor)s\n    )\n\n    AND (\n        %(status)s IS NULL\n        OR %(status)s = ''\n        OR sp.status = %(status)s\n    )\n\nORDER BY sp.modified DESC",
+ "ref_doctype": "Stock Item",
+ "report_name": "Stock Plate Details",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "timeout": 0
+}
