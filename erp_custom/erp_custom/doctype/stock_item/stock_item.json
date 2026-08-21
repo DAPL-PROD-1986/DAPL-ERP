@@ -16,14 +16,17 @@
   "pipes",
   "overall_avail_wgt_pipe",
   "overall_avail_wgt_amt_pipe",
+  "overall_avail_mtr_pipe",
   "tubes_tab",
   "tubes",
   "overall_avail_wgt_tube",
   "overall_avail_wgt_amt_tube",
+  "overall_avail_mtr_tube",
   "rods_tab",
   "rods",
   "overall_avail_wgt_rod",
   "overall_avail_wgt_amt_rod",
+  "overall_avail_mtr_rod",
   "flanges_tab",
   "flanges",
   "welding_tab",
@@ -149,7 +152,7 @@
   {
    "fieldname": "overall_avail_wgt_pipe",
    "fieldtype": "Float",
-   "label": "Overall Available Weight (Mtr)"
+   "label": "Overall Available Weight"
   },
   {
    "fieldname": "overall_avail_wgt_amt_pipe",
@@ -159,7 +162,7 @@
   {
    "fieldname": "overall_avail_wgt_tube",
    "fieldtype": "Float",
-   "label": "Overall Available Weight (Mtr)"
+   "label": "Overall Available Weight"
   },
   {
    "fieldname": "overall_avail_wgt_amt_tube",
@@ -169,7 +172,7 @@
   {
    "fieldname": "overall_avail_wgt_rod",
    "fieldtype": "Float",
-   "label": "Overall Available Weight (Mtr)"
+   "label": "Overall Available Weight"
   },
   {
    "fieldname": "overall_avail_wgt_amt_rod",
@@ -189,12 +192,29 @@
    "in_list_view": 1,
    "label": "Overall Amount (\u20b9)",
    "read_only": 1
+  },
+  {
+   "fieldname": "overall_avail_mtr_pipe",
+   "fieldtype": "Float",
+   "label": "Overall Available Meter",
+   "precision": "2"
+  },
+  {
+   "fieldname": "overall_avail_mtr_tube",
+   "fieldtype": "Float",
+   "label": "Overall Available Meter",
+   "precision": "2"
+  },
+  {
+   "fieldname": "overall_avail_mtr_rod",
+   "fieldtype": "Float",
+   "label": "Overall Available Meter"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-18 10:38:45.391171",
+ "modified": "2026-08-20 11:12:43.953790",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock Item",

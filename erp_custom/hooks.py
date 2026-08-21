@@ -342,6 +342,13 @@ fixtures = [
             ["name", "in", ["Projects", "Quality", "Frappe HR", "Buying", "Manufacturing"]]
         ]
     },
+
+    {
+        "doctype": "Page",
+        "filters": [
+            ["name", "in", ["purchase-dashboard"]]
+        ]
+    },
      # Dashboard Charts
     {
     "doctype": "Dashboard Chart",

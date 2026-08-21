@@ -272,28 +272,30 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                 <div class="card-header bg-danger text-white text-center">
                     <i class="fa fa-clock me-2"></i> Required By
                 </div>
-                <div class="card-body p-0 table-responsive dashboard-table-body">
-                    <table class="table table-hover text-center align-middle mb-0">
-                        <thead class="table-light text-muted">
-                            <tr>
-                                <th>PO Name</th>
-                                <th>Supplier</th>
-                                <th>Project</th>
-                                <th>Order Type</th>
-                                <th>Date</th>
-                                <th>Required By</th>
-                                <th>Status</th>
-                                <th>Grand Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="upcoming_po_table"></tbody>
-                        <tfoot style="background-color: #fee2e2; border-top: 2px solid #ef4444;">
-                            <tr>
-                                <td class="text-start ps-3" colspan="7">Overall Total</td>
-                                <td id="upcoming_po_total_amount">0.00</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                <div class="card-body p-0 dashboard-table-body">
+                    <div class="full-po-table-wrapper">
+                        <table class="table table-hover text-center align-middle mb-0">
+                            <thead class="table-light text-muted">
+                                <tr>
+                                    <th>PO Name</th>
+                                    <th>Supplier</th>
+                                    <th>Project</th>
+                                    <th>Order Type</th>
+                                    <th>Date</th>
+                                    <th>Required By</th>
+                                    <th>Status</th>
+                                    <th>Grand Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="upcoming_po_table"></tbody>
+                            <tfoot style="background-color: #fee2e2; border-top: 2px solid #ef4444;">
+                                <tr>
+                                    <td class="text-start ps-3" colspan="7">Overall Total</td>
+                                    <td id="upcoming_po_total_amount">0.00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
 

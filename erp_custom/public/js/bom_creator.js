@@ -88,10 +88,7 @@ frappe.ui.form.on('BOM Creator Item', {
 
         let row = locals[cdt][cdn];
 
-        // =====================================================
-        // MANUAL ENTRY MODE
-        // =====================================================
-
+        // ====================== MANUAL ENTRY MODE ===============================
         if (row.custom_shape === "N/A") {
 
             row.custom_length = 0;
@@ -106,10 +103,7 @@ frappe.ui.form.on('BOM Creator Item', {
             return;
         }
 
-        // =====================================================
-        // AUTO CALCULATION MODE
-        // =====================================================
-
+        // ===================== AUTO CALCULATION MODE ===============================
         trigger_calc(frm, cdt, cdn);
     },
 
@@ -127,10 +121,7 @@ function trigger_calc(frm, cdt, cdn) {
 
     let row = locals[cdt][cdn];
 
-    // =====================================================
-    // MANUAL MODE
-    // =====================================================
-
+    // ================== MANUAL MODE =======================
     if (row.custom_shape === "N/A") {
 
         let qty = flt(row.qty);
@@ -148,16 +139,11 @@ function trigger_calc(frm, cdt, cdn) {
         }
 
         frm.refresh_field("items");
-
         calculate_total_bom_weight(frm);
-
         return;
     }
 
-    // =====================================================
-    // AUTO CALCULATION
-    // =====================================================
-
+    // ===================  AUTO CALCULATION =================================
     frappe.call({
         method: "erp_custom.erp_custom.overrides.bom_creator.recalc_item",
         args: {
@@ -166,11 +152,8 @@ function trigger_calc(frm, cdt, cdn) {
         callback: function (r) {
 
             if (r.message) {
-
                 Object.assign(row, r.message);
-
                 frm.refresh_field("items");
-
                 calculate_total_bom_weight(frm);
             }
         }
@@ -179,15 +162,11 @@ function trigger_calc(frm, cdt, cdn) {
 
 
 function calculate_total_bom_weight(frm) {
-
     let total = 0;
 
     (frm.doc.items || []).forEach(row => {
         total += flt(row.custom_total_weight);
     });
 
-    frm.set_value(
-        "custom_total_bom_weight",
-        flt(total, 4)
-    );
+    frm.set_value("custom_total_bom_weight", flt(total, 4));
 }

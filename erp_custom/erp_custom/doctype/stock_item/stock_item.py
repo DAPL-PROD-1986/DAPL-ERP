@@ -37,6 +37,9 @@ class StockItem(Document):
 
         self.overall_avail_wgt_pipe = 0
         self.overall_avail_wgt_amt_pipe = 0
+        self.overall_avail_mtr_pipe = 0
+        self.overall_avail_mtr_tube = 0
+        self.overall_avail_mtr_rod = 0
 
         self.overall_avail_wgt_rod = 0
         self.overall_avail_wgt_amt_rod = 0
@@ -52,18 +55,23 @@ class StockItem(Document):
             self.calculate_tube(row)
             self.overall_avail_wgt_tube += row.available_weight or 0
             self.overall_avail_wgt_amt_tube += row.available_weight_amount or 0
+            self.overall_avail_mtr_tube += row.available_meter or 0
+
 
         # Pipes
         for row in self.pipes or []:
             self.calculate_pipe(row)
             self.overall_avail_wgt_pipe += row.available_weight or 0
             self.overall_avail_wgt_amt_pipe += row.available_weight_amount or 0
+            self.overall_avail_mtr_pipe += row.available_meter or 0
 
         # Rods
         for row in self.rods or []:
             self.calculate_rod(row)
             self.overall_avail_wgt_rod += row.available_weight or 0
             self.overall_avail_wgt_amt_rod += row.available_weight_amount or 0
+            self.overall_avail_mtr_rod += row.available_meter or 0
+
     
     def calculate_plate(self, row):
         length = row.length or 0
@@ -83,6 +91,16 @@ class StockItem(Document):
 
 
     def calculate_tube(self, row):
+        length = row.length or 0
+        outer_diameter = row.outer_diameter or 0
+        thickness = row.thickness or 0
+        density = row.density or 0
+        quantity = row.quantity or 0
+        used_quantity = row.used_quantity or 0
+        used_weight = row.used_weight or 0
+        used_meter = row.used_meter or 0
+        rate_per_mtr = row.rate_per_mtr or 0
+
         if row.length and row.outer_diameter and row.thickness and row.density:
             od = row.outer_diameter
             inner_diameter = od - (2 * row.thickness)
@@ -97,12 +115,27 @@ class StockItem(Document):
         row.balanced_quantity = ((row.quantity or 0) - (row.used_quantity or 0))
         row.actual_weight = (row.quantity or 1) * (row.weight_per_item or 0)
         row.available_weight = (row.actual_weight or 0) - (row.used_weight or 0)
+
+        meter_per_item = length / 1000
+        row.actual_meter = (quantity * meter_per_item)
+        row.available_meter = max(row.actual_meter - used_meter,0)
+
         row.used_weight_percentage = (((row.actual_weight or 0) - (row.available_weight or 0)) / row.actual_weight * 100) if row.actual_weight else 0
         row.actual_weight_amount = (row.actual_weight or 0) * (row.rate_per_mtr or 0)
         row.available_weight_amount = (row.available_weight or 0) * (row.rate_per_mtr or 0)
 
 
     def calculate_pipe(self, row):
+        length = row.length or 0
+        outer_diameter = row.outer_diameter or 0
+        thickness = row.thickness or 0
+        density = row.density or 0
+        quantity = row.quantity or 0
+        used_quantity = row.used_quantity or 0
+        used_weight = row.used_weight or 0
+        used_meter = row.used_meter or 0
+        rate_per_mtr = row.rate_per_mtr or 0
+
         if row.length and row.outer_diameter and row.thickness and row.density:
             od = row.outer_diameter
             inner_diameter = od - (2 * row.thickness)
@@ -117,12 +150,26 @@ class StockItem(Document):
         row.balanced_quantity = ((row.quantity or 0) - (row.used_quantity or 0))
         row.actual_weight = (row.quantity or 1) * (row.weight_per_item or 0)
         row.available_weight = (row.actual_weight or 0) - (row.used_weight or 0)
-        row.used_weight_percentage = (((row.actual_weight or 0) - (row.available_weight or 0)) / row.actual_weight * 100) if row.actual_weight else 0
+
+        meter_per_item = length / 1000
+        row.actual_meter = (quantity * meter_per_item)
+        row.available_meter = max(row.actual_meter - used_meter,0)
+
+        row.used_weight_percentage = (((row.actual_meter or 0) - (row.available_meter or 0)) / row.actual_meter * 100) if row.actual_meter else 0
         row.actual_weight_amount = (row.actual_weight or 0) * (row.rate_per_mtr or 0)
         row.available_weight_amount = (row.available_weight or 0) * (row.rate_per_mtr or 0)
 
 
     def calculate_rod(self, row):
+        length = row.length or 0
+        outer_diameter = row.outer_diameter or 0
+        density = row.density or 0
+        quantity = row.quantity or 0
+        used_quantity = row.used_quantity or 0
+        used_weight = row.used_weight or 0
+        used_meter = row.used_meter or 0
+        rate_per_mtr = row.rate_per_mtr or 0
+
         if row.length and row.outer_diameter and row.density:
             row.weight_per_item = (pi * ((row.outer_diameter / 2) ** 2) * row.length * row.density) / 1000000
         else:
@@ -131,6 +178,11 @@ class StockItem(Document):
         row.balanced_quantity = ((row.quantity or 0) - (row.used_quantity or 0))
         row.actual_weight = (row.quantity or 1) * (row.weight_per_item or 0)
         row.available_weight = (row.actual_weight or 0) - (row.used_weight or 0)
+
+        meter_per_item = length / 1000
+        row.actual_meter = (quantity * meter_per_item)
+        row.available_meter = max(row.actual_meter - used_meter,0)
+
         row.used_weight_percentage = (((row.actual_weight or 0) - (row.available_weight or 0)) / row.actual_weight * 100) if row.actual_weight else 0
         row.actual_weight_amount = (row.actual_weight or 0) * (row.rate_per_mtr or 0)
         row.available_weight_amount = (row.available_weight or 0) * (row.rate_per_mtr or 0)
@@ -209,8 +261,8 @@ def download_template():
                 "Vendor", "Description", "Purchase Order No", "Status",
                 "Length", "Thickness", "Outer Diameter", "Density",
                 "Quantity", "Used Quantity", "Rate ₹ (Per Mtr)",
-                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
-                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+                "Used Weight", "Used Meter" "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Meter", "Available Meter", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
         },
 
         "tube": {
@@ -220,8 +272,8 @@ def download_template():
                 "Vendor", "Description", "Purchase Order No", "Status",
                 "Length", "Thickness", "Outer Diameter", "Density",
                 "Quantity", "Used Quantity", "Rate ₹ (Per Mtr)",
-                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
-                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+                "Used Weight", "Used Meter", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Meter", "Available Meter", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
         },
 
         "rod": {
@@ -231,8 +283,8 @@ def download_template():
                 "Vendor", "Description", "Purchase Order No", "Status",
                 "Length", "Outer Diameter", "Density",
                 "Quantity", "Used Quantity", "Rate ₹ (Per Mtr)",
-                "Used Weight", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
-                "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
+                "Used Weight", "Used Meter", "Weight Per Item", "Balanced Quantity", "Actual Weight", "Available Weight",
+                "Actual Meter", "Available Meter", "Actual Weight Amount (₹)", "Available Weight Amount (₹)", "Remarks"]
         },
 
         "flange": {
@@ -367,10 +419,13 @@ DOWNLOAD_CONFIG = {
             ("Used Quantity", "used_quantity"),
             ("Rate ₹ (Per Mtr)", "rate_per_mtr"),
             ("Used Weight", "used_weight"),
+            ("Used Meter", "used_meter"),
             ("Weight Per Item", "weight_per_item"),
             ("Balanced Quantity", "balanced_quantity"),
             ("Actual Weight", "actual_weight"),
             ("Available Weight", "available_weight"),
+            ("Actual Meter", "actual_meter"),
+            ("Available Meter", "available_meter"),
             ("Used Weight Percentage", "used_weight_percentage"),
             ("Actual Weight Amount (₹)", "actual_weight_amount"),
             ("Available Weight Amount (₹)", "available_weight_amount"),
@@ -397,10 +452,13 @@ DOWNLOAD_CONFIG = {
             ("Used Quantity", "used_quantity"),
             ("Rate ₹ (Per Mtr)", "rate_per_mtr"),
             ("Used Weight", "used_weight"),
+            ("Used Meter", "used_meter"),
             ("Weight Per Item", "weight_per_item"),
             ("Balanced Quantity", "balanced_quantity"),
             ("Actual Weight", "actual_weight"),
             ("Available Weight", "available_weight"),
+            ("Actual Meter", "actual_meter"),
+            ("Available Meter", "available_meter"),
             ("Used Weight Percentage", "used_weight_percentage"),
             ("Actual Weight Amount (₹)", "actual_weight_amount"),
             ("Available Weight Amount (₹)", "available_weight_amount"),
@@ -426,10 +484,13 @@ DOWNLOAD_CONFIG = {
             ("Used Quantity", "used_quantity"),
             ("Rate ₹ (Per Mtr)", "rate_per_mtr"),
             ("Used Weight", "used_weight"),
+            ("Used Meter", "used_meter"),
             ("Weight Per Item", "weight_per_item"),
             ("Balanced Quantity", "balanced_quantity"),
             ("Actual Weight", "actual_weight"),
             ("Available Weight", "available_weight"),
+            ("Actual Meter", "actual_meter"),
+            ("Available Meter", "available_meter"),
             ("Used Weight Percentage", "used_weight_percentage"),
             ("Actual Weight Amount (₹)", "actual_weight_amount"),
             ("Available Weight Amount (₹)", "available_weight_amount"),
@@ -814,11 +875,14 @@ def upload_sheet_data(ws, doc, upload_type):
         "Rate ₹ (Per Kg)": "rate_per_kg",
 
         "Used Weight": "used_weight",
+        "Used Meter": "used_meter",
         "Weight Per Item": "weight_per_item",
         "Balanced Quantity": "balanced_quantity",
 
         "Actual Weight": "actual_weight",
         "Available Weight": "available_weight",
+        "Actual Meter": "actual_meter",
+        "Available Meter": "available_meter",
         "Used Weight Percentage": "used_weight_percentage",
 
         "Actual Weight Amount (₹)": "actual_weight_amount",
