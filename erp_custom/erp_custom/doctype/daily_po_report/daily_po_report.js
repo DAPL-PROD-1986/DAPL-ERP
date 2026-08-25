@@ -6,3 +6,14 @@
 
 // 	},
 // });
+
+
+
+frappe.ui.form.on("Daily PO Report", {
+    after_save(frm) {
+        if (frm.doc.name && frm.doc.series !== frm.doc.name) {
+            frm.set_value("series", frm.doc.name);
+            frm.save();
+        }
+    }
+});

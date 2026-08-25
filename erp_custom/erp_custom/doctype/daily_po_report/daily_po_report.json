@@ -6,6 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "series",
   "date",
   "column_break_svbs",
   "department",
@@ -68,12 +69,18 @@
    "fieldtype": "Link",
    "label": "Yesterday PO Report",
    "options": "Daily PO Report"
+  },
+  {
+   "fieldname": "series",
+   "fieldtype": "Data",
+   "label": "Series",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-21 17:36:53.704858",
+ "modified": "2026-08-22 10:38:57.863949",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Daily PO Report",

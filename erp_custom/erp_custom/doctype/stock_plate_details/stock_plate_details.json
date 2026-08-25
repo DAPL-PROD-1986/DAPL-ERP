@@ -15,6 +15,7 @@
   "vendor",
   "purchase_order_no",
   "stock_date",
+  "column_break_ihlv",
   "po_plate_reference",
   "section_break_mzbe",
   "length",
@@ -261,13 +262,17 @@
    "fieldname": "po_plate_reference",
    "fieldtype": "HTML",
    "label": "PO Plate Reference"
+  },
+  {
+   "fieldname": "column_break_ihlv",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-08-20 16:11:51.731791",
+ "modified": "2026-08-24 15:57:03.231047",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock Plate Details",

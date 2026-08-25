@@ -143,7 +143,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
             <!-- FILTERS PANEL -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-success text-white">
-                    <strong>🔍 Filter Purchase Orders</strong>
+                    <span class="fw-semibold fst-italic">🔍 Filter Purchase Orders</span>
                 </div>
                 <div class="card-body">
                     <div class="row g-3 align-items-center" id="filter_row">
@@ -302,39 +302,32 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
             <!-- FULL PURCHASE ORDER DATA (based on current filters) -->
             <div class="card shadow-sm border-0 table-card mb-4">
                 <div class="card-header text-white d-flex justify-content-between align-items-center"
-     style="background-color: #22c55e">
+                            style="background-color: #22c55e">
 
     <div class="text-center flex-grow-1">
-        <i class="fa fa-list me-2"></i>
-        Overall Purchase Order
+        <i class="fa fa-list me-2"></i> Overall Purchase Order
     </div>
 
-    <button
-        type="button"
-        id="download_purchase_excel"
-        class="btn btn-light btn-sm d-flex align-items-center gap-2"
-        title="Download Purchase Order Excel"
-        style="font-weight:600; border-radius:7px;">
+        <button type="button" id="download_purchase_excel"
+            class="btn btn-light btn-sm d-flex align-items-center gap-2"
+            title="Download Purchase Order Excel" style="font-weight:600; border-radius:7px;">
 
-        <svg xmlns="http://www.w3.org/2000/svg"
-             width="17"
-             height="17"
-             viewBox="0 0 24 24"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="2"
-             stroke-linecap="round"
-             stroke-linejoin="round">
-            <path d="M12 3v12"></path>
-            <path d="m7 10 5 5 5-5"></path>
-            <path d="M5 21h14"></path>
-        </svg>
-
-        Download Excel
-    </button>
-
-</div>
-                <div class="card-body p-0 dashboard-table-body">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M12 3v12"></path>
+                    <path d="m7 10 5 5 5-5"></path>
+                    <path d="M5 21h14"></path>
+                </svg> Download Excel
+        </button>
+    </div>
+            <div class="card-body p-0 dashboard-table-body">
                 <div class="full-po-table-wrapper">
                     <table class="table table-hover text-center align-middle mb-0">
                         <thead class="table-light text-muted">
@@ -352,9 +345,20 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
                         <tbody id="full_po_table"></tbody>
                         <tfoot style="background-color: #dcfce7; border-top: 2px solid #22c55e;">
                             <tr>
-                                <td class="text-start ps-3" colspan="7">Overall Total</td>
-                                <td id="full_po_total_amount">0.00</td>
-                            </tr>
+    <td class="text-start ps-3" colspan="7">
+        <small class="text-muted fst-italic">
+            <i class="fa fa-info-circle me-1 text-success"></i>
+            Cancelled orders are displayed in table but INR value not considered.
+        </small>
+    </td>
+
+    <td class="text-end pe-3">
+        <strong>
+            Overall Total: <br> </strong>
+            <span id="full_po_total_amount">0.00</span>
+        
+    </td>
+</tr>
                         </tfoot>
                     </table>
                     </div>
@@ -399,9 +403,9 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
             icon.removeClass("fa-spin");
         }, 300);
     });
-    // -------------------------
-    // FILTER CONTROLS (Link fields with proper search/autocomplete)
-    // -------------------------
+
+    // ----------------------FILTER CONTROLS (Link fields with proper search/autocomplete) ----------------------
+
     let filters = {
         id: frappe.ui.form.make_control({
             parent: $(wrapper).find("#filter_id"),
@@ -524,9 +528,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
         });
     }
 
-    // -------------------------
-    // KPI CARDS (Bootstrap only — text-white handles contrast, no custom CSS needed)
-    // -------------------------
+    // ---------------------- KPI CARDS  --------------------
     function render_kpis(data) {
         let status_map = {
             "Draft": 0,
@@ -659,9 +661,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
         frappe.set_route("List", "Purchase Order");
     };
 
-    // -------------------------
-    // RENDER FUNCTIONS
-    // -------------------------
+    // ------------------------- RENDER FUNCTIONS -------------------------
     function render_table(rows) {
         let html = "";
         let total_count = 0;
@@ -885,9 +885,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
         $("#upcoming_po_total_amount").html(frappe.format(total_amount, { fieldtype: "Currency" }));
     }
 
-    // -------------------------
-    // FILTER EVENTS
-    // -------------------------
+    // ------------------------ FILTER EVENTS -------------------------
     $(document).on("click", "#refresh", function () {
         let btnIcon = $(this).find('i');
         btnIcon.addClass('fa-spin');
@@ -912,11 +910,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
     load_data();
 
-
-
-// =====================================================
-// DOWNLOAD PURCHASE ORDER EXCEL
-// =====================================================
+// ======================== DOWNLOAD PURCHASE ORDER EXCEL ==============================
 
 $(document).on("click", "#download_purchase_excel", function () {
     const btn = $(this);
@@ -941,10 +935,7 @@ $(document).on("click", "#download_purchase_excel", function () {
              stroke-linecap="round"
              stroke-linejoin="round"
              style="animation: spin 1s linear infinite;">
-            <circle cx="12" cy="12" r="9"
-                    stroke-dasharray="45"
-                    stroke-dashoffset="10">
-            </circle>
+            <circle cx="12" cy="12" r="9" stroke-dasharray="45" stroke-dashoffset="10"> </circle>
         </svg> Preparing... `);
 
     // Current dashboard filters

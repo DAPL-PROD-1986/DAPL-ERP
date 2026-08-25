@@ -14,6 +14,7 @@
   "purchase_order_no",
   "vendor",
   "status",
+  "po_flange_reference",
   "section_break_gazz",
   "nps",
   "sch",
@@ -140,13 +141,18 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Class"
+  },
+  {
+   "fieldname": "po_flange_reference",
+   "fieldtype": "HTML",
+   "label": "PO Flange Reference"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-08-10 15:34:39.063125",
+ "modified": "2026-08-24 15:30:33.311447",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock Flange Details",

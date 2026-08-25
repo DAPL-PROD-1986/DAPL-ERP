@@ -14,14 +14,19 @@
   "valid_to",
   "plate_tab",
   "plate_price_list",
+  "plate_reference_po",
   "pipes_tab",
   "pipe_price_list",
+  "pipe_reference_po",
   "tubes_tab",
   "tube_price_list",
+  "tube_reference_po",
   "rods_tab",
   "rod_price_list",
+  "rod_reference_po",
   "flanges_tab",
-  "flange_price_list"
+  "flange_price_list",
+  "flange_reference_po"
  ],
  "fields": [
   {
@@ -112,12 +117,37 @@
    "fieldtype": "Table",
    "label": "Flange Price List",
    "options": "Material Flange Price"
+  },
+  {
+   "fieldname": "plate_reference_po",
+   "fieldtype": "HTML",
+   "label": "Plate Reference PO"
+  },
+  {
+   "fieldname": "pipe_reference_po",
+   "fieldtype": "HTML",
+   "label": "Pipe Reference PO"
+  },
+  {
+   "fieldname": "tube_reference_po",
+   "fieldtype": "HTML",
+   "label": "Tube Reference PO"
+  },
+  {
+   "fieldname": "rod_reference_po",
+   "fieldtype": "HTML",
+   "label": "Rod Reference PO"
+  },
+  {
+   "fieldname": "flange_reference_po",
+   "fieldtype": "HTML",
+   "label": "Flange Reference PO"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-13 12:21:43.832627",
+ "modified": "2026-08-25 14:54:44.940742",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Material Price Master",

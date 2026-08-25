@@ -12,6 +12,7 @@
   "moc",
   "section_break_qiot",
   "supplier",
+  "purchase_order_no",
   "column_break_hhsm",
   "date",
   "section_break_kqyr",
@@ -127,13 +128,19 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Date"
+  },
+  {
+   "fieldname": "purchase_order_no",
+   "fieldtype": "Link",
+   "label": "Purchase Order No",
+   "options": "Purchase Order"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-08-19 15:14:16.205482",
+ "modified": "2026-08-25 14:46:11.892339",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Material Rod Price",

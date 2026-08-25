@@ -13,6 +13,7 @@
   "type",
   "purchase_order_no",
   "vendor",
+  "po_pipe_reference",
   "section_break_hqmq",
   "length",
   "column_break_wiuu",
@@ -272,13 +273,18 @@
    "in_list_view": 1,
    "label": "Available Meter",
    "precision": "2"
+  },
+  {
+   "fieldname": "po_pipe_reference",
+   "fieldtype": "HTML",
+   "label": "PO Pipe Reference"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-08-20 10:41:03.154076",
+ "modified": "2026-08-24 15:29:38.827282",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Stock Pipe Details",

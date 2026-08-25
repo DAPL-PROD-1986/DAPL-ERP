@@ -21,7 +21,6 @@ frappe.ui.form.on("Stock Item", {
         show_reference_preview(frm);
     },
 
-
     onload_post_render(frm) {
         setTimeout(() => {
             init_stock_child_filters(frm);
@@ -128,85 +127,42 @@ function add_upload_button(frm) {
     btn.addClass("stock-upload-btn");
 }
 
+// =========================== PLATES =================================
 frappe.ui.form.on("Stock Plate Details", {
     form_render(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
-
-        setTimeout(() => {
-            let grid_row = frm.fields_dict.plates.grid.grid_rows_by_docname[cdn];
-            if (!grid_row || !grid_row.grid_form) return;
-
-            let field = grid_row.grid_form.fields_dict.reference_preview;
-            if (!field) return;
-
-            $(field.wrapper).html(`
-                <img src="${row.reference_image}" style="max-width:100%; max-height:300px; border-radius:6px;">`);
+        setTimeout(function() {
+            render_child_reference_image(frm, cdt, cdn);
+            load_po_reference(frm, cdt, cdn);
         }, 100);
     },
+
+    purchase_order_no(frm, cdt, cdn) {
+        load_po_reference(frm, cdt, cdn);
+    },
+
     quantity(frm) { calculate_weights(frm); },
     length(frm) { calculate_weights(frm); },
     width(frm) { calculate_weights(frm); },
     thickness(frm) { calculate_weights(frm); },
     density(frm) { calculate_weights(frm); },
     used_weight(frm) { calculate_weights(frm); },
-    rate_per_kg(frm) { calculate_weights(frm); },
-
-    purchase_order_no: function(frm, cdt, cdn) {
-
-        let row = locals[cdt][cdn];
-
-        console.log("Purchase Order selected:", row.purchase_order_no);
-
-        if (!row.purchase_order_no) {
-            clear_po_plate_reference(frm, cdn);
-            return;
-        }
-
-        load_po_plate_reference(frm, cdt, cdn);
-    }
+    rate_per_kg(frm) { calculate_weights(frm); }
 });
 
 
-frappe.ui.form.on("Stock Tube Details", {
-    form_render(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
-
-        setTimeout(() => {
-            let grid_row = frm.fields_dict.tubes.grid.grid_rows_by_docname[cdn];
-            if (!grid_row || !grid_row.grid_form) return;
-
-            let field = grid_row.grid_form.fields_dict.reference_preview;
-            if (!field) return;
-
-            $(field.wrapper).html(`
-                <img src="${row.reference_image}" style="max-width:100%; max-height:300px; border-radius:6px;">`);
-        }, 100);
-    },
-    quantity(frm) { calculate_weights(frm); },
-    length(frm) { calculate_weights(frm); },
-    outer_diameter(frm) { calculate_weights(frm); },
-    thickness(frm) { calculate_weights(frm); },
-    density(frm) { calculate_weights(frm); },
-    used_weight(frm) { calculate_weights(frm); },
-    used_meter(frm) { calculate_weights(frm); },
-    rate_per_mtr(frm) { calculate_weights(frm); }
-});
-
+// =========================== PIPES =================================
 frappe.ui.form.on("Stock Pipe Details", {
     form_render(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
-
-        setTimeout(() => {
-            let grid_row = frm.fields_dict.pipes.grid.grid_rows_by_docname[cdn];
-            if (!grid_row || !grid_row.grid_form) return;
-
-            let field = grid_row.grid_form.fields_dict.reference_preview;
-            if (!field) return;
-
-            $(field.wrapper).html(`
-                <img src="${row.reference_image}" style="max-width:100%; max-height:300px; border-radius:6px;">`);
+        setTimeout(function() {
+            render_child_reference_image(frm, cdt, cdn);
+            load_po_reference(frm, cdt, cdn);
         }, 100);
     },
+
+    purchase_order_no(frm, cdt, cdn) {
+        load_po_reference(frm, cdt, cdn);
+    },
+
     quantity(frm) { calculate_weights(frm); },
     length(frm) { calculate_weights(frm); },
     outer_diameter(frm) { calculate_weights(frm); },
@@ -217,21 +173,44 @@ frappe.ui.form.on("Stock Pipe Details", {
     rate_per_mtr(frm) { calculate_weights(frm); }
 });
 
-frappe.ui.form.on("Stock Rod Details", {
+
+// ============================= TUBES ====================================
+frappe.ui.form.on("Stock Tube Details", {
     form_render(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
-
-        setTimeout(() => {
-            let grid_row = frm.fields_dict.rods.grid.grid_rows_by_docname[cdn];
-            if (!grid_row || !grid_row.grid_form) return;
-
-            let field = grid_row.grid_form.fields_dict.reference_preview;
-            if (!field) return;
-
-            $(field.wrapper).html(`
-                <img src="${row.reference_image}" style="max-width:100%; max-height:300px; border-radius:6px;">`);
+        setTimeout(function() {
+            render_child_reference_image(frm, cdt, cdn);
+            load_po_reference(frm, cdt, cdn);
         }, 100);
     },
+
+    purchase_order_no(frm, cdt, cdn) {
+        load_po_reference(frm, cdt, cdn);
+    },
+
+    quantity(frm) { calculate_weights(frm); },
+    length(frm) { calculate_weights(frm); },
+    outer_diameter(frm) { calculate_weights(frm); },
+    thickness(frm) { calculate_weights(frm); },
+    density(frm) { calculate_weights(frm); },
+    used_weight(frm) { calculate_weights(frm); },
+    used_meter(frm) { calculate_weights(frm); },
+    rate_per_mtr(frm) { calculate_weights(frm); }
+});
+
+
+// ========================= RODS ====================================
+frappe.ui.form.on("Stock Rod Details", {
+    form_render(frm, cdt, cdn) {
+        setTimeout(function() {
+            render_child_reference_image(frm, cdt, cdn);
+            load_po_reference(frm, cdt, cdn);
+        }, 100);
+    },
+
+    purchase_order_no(frm, cdt, cdn) {
+        load_po_reference(frm, cdt, cdn);
+    },
+
     quantity(frm) { calculate_weights(frm); },
     length(frm) { calculate_weights(frm); },
     outer_diameter(frm) { calculate_weights(frm); },
@@ -239,6 +218,29 @@ frappe.ui.form.on("Stock Rod Details", {
     used_weight(frm) { calculate_weights(frm); },
     used_meter(frm) { calculate_weights(frm); },
     rate_per_mtr(frm) { calculate_weights(frm); }
+});
+
+
+// ========================= FLANGES =================================
+frappe.ui.form.on("Stock Flange Details", {
+    form_render(frm, cdt, cdn) {
+        setTimeout(function() {
+            render_child_reference_image(frm, cdt, cdn);
+            load_po_reference(frm, cdt, cdn);
+        }, 100);
+    },
+
+    purchase_order_no(frm, cdt, cdn) {
+        load_po_reference(frm, cdt, cdn);
+    },
+
+    quantity(frm) { calculate_weights(frm); },
+    outer_diameter(frm) { calculate_weights(frm); },
+    inner_diameter(frm) { calculate_weights(frm); },
+    thickness(frm) { calculate_weights(frm); },
+    density(frm) { calculate_weights(frm); },
+    used_weight(frm) { calculate_weights(frm); },
+    rate_per_kg(frm) { calculate_weights(frm); }
 });
 
 function calculate_weights(frm) {
@@ -255,7 +257,6 @@ function calculate_weights(frm) {
         }
     });
 }
-
 
 function show_reference_preview(frm) {
     let wrapper = frm.fields_dict.reference_preview?.$wrapper;
@@ -863,305 +864,10 @@ function show_download_data_dialog(frm) {
 
 
 // FILTER
-
-// /* ============================================================
-//    STOCK ITEM - CHILD TABLE FIRST ROW FILTER
-//    UI ONLY - DOES NOT CREATE CHILD TABLE RECORDS
-//    ============================================================ */
-
-// function init_child_table_first_row_filters(frm) {
-//     const tables = ["plates", "pipes", "tubes", "flanges", "rods"];
-//     tables.forEach(table_name => {
-//         const field = frm.fields_dict[table_name];
-//         if (!field || !field.grid) {
-//             return;
-//         }
-//         create_first_row_filter(frm, table_name);
-//     });
-// }
-
-// function create_first_row_filter(frm, table_name) {
-//     const field = frm.fields_dict[table_name];
-//     if (!field || !field.grid) {
-//         return;
-//     }
-
-//     const grid = field.grid;
-//     const wrapper = $(grid.wrapper);
-
-//     // Prevent duplicate
-//     if (wrapper.find(".stock-first-row-filter").length) {
-//         return;
-//     }
-
-//     const heading = wrapper.find(".grid-heading-row").first();
-//     if (!heading.length) {
-//         return;
-//     }
-
-//     const filter_row = $(`
-//         <div class="stock-first-row-filter">
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="category" placeholder="Filter Category">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="type" placeholder="Filter Type">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="moc" placeholder="Filter MoC">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="vendor" placeholder="Filter Vendor">
-//             </div>
-
-//              <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="purchase_order_no" placeholder="Filter PO">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="description" placeholder="Description">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="status" placeholder="Filter Status">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="length" placeholder="Length">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="width" placeholder="Width">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="thickness" placeholder="Thickness">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="outer_diameter" placeholder="Outer Diameter">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="inner_diameter" placeholder="Inner Diameter">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="nps" placeholder="NPS">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="sch" placeholder="SCH">
-//             </div>
-
-//             <div class="stock-filter-cell">
-//                 <input type="text" class="form-control input-xs" data-field="class" placeholder="Class">
-//             </div>
-
-//             <div class="stock-filter-clear">
-//                 <button type="button" class="btn btn-xs btn-default" title="Clear Filter">
-//                     <i class="fa fa-times"></i>
-//                 </button>
-//             </div>
-//         </div>
-//     `);
-
-//     heading.after(filter_row);
-//     filter_row.on("input", ".stock-filter-cell input",
-//         function () {
-//             apply_first_row_filter(frm, table_name, filter_row);
-//         }
-//     );
-
-
-//     /* * Clear filter  */
-//     filter_row.on("click", ".stock-filter-clear button",
-//         function () {
-//             filter_row.find("input").val("");
-//             show_all_child_rows(frm, table_name);
-//         }
-//     );
-// }
-
-
-// /* ===================== APPLY FILTER  =================== */
-
-// function apply_first_row_filter(frm, table_name, filter_row) {
-//     const field = frm.fields_dict[table_name];
-//     if (!field || !field.grid) {
-//         return;
-//     }
-
-//     const grid = field.grid;
-//     const filters = {};
-//     filter_row
-//         .find("input")
-//         .each(function () {
-
-//             const fieldname = $(this).data("field");
-//             const value = $(this).val().trim().toLowerCase();
-
-//             if (value) {
-//                 filters[fieldname] = value;
-//             }
-//         });
-
-
-//     /*
-//      * Filter existing rows only
-//      */
-//     grid.grid_rows.forEach(grid_row => {
-//         const row = grid_row.doc;
-//         let matched = true;
-
-//         Object.keys(filters).forEach(fieldname => {
-//             if (!matched) {
-//                 return;
-//             }
-
-//             let row_value = row[fieldname];
-//             if (
-//                 row_value === undefined ||
-//                 row_value === null
-//             ) {
-//                 row_value = "";
-//             }
-
-//             row_value = String(row_value).toLowerCase();
-//             const filter_value = filters[fieldname];
-//             if (!row_value.includes(filter_value)) {
-//                 matched = false;
-//             }
-//         });
-
-//         if (matched) {
-//             $(grid_row.row).show();
-//         } else {
-//             $(grid_row.row).hide();
-//         }
-//     });
-// }
-
-
-// /* ================= SHOW ALL  ============ */
-
-// function show_all_child_rows(frm, table_name) {
-//     const field = frm.fields_dict[table_name];
-//     if (!field || !field.grid) {
-//         return;
-//     }
-
-//     field.grid.grid_rows.forEach(grid_row => {
-//         $(grid_row.row).show();
-//     });
-// }
-
-// function add_stock_first_row_filter_css() {
-//     if ($("#stock-first-row-filter-css").length) {
-//         return;
-//     }
-
-//     $("head").append(`
-//         <style id="stock-first-row-filter-css">
-
-//             .stock-first-row-filter {
-//                 display: flex;
-//                 width: 100%;
-//                 padding: 5px 0;
-//                 background: #f8fafc;
-//                 border-bottom: 1px solid #d1d5db;
-//                 box-sizing: border-box;
-//                 overflow-x: auto;
-//             }
-
-//             .stock-first-row-filter
-//             .stock-filter-cell {
-//                 flex: 0 0 120px;
-//                 width: 120px;
-//                 padding: 0 3px;
-//                 min-width: 0;
-//             }
-
-//             .stock-first-row-filter
-//             input {
-//                 width: 100% !important;
-//                 height: 28px !important;
-//                 min-height: 28px !important;
-//                 padding: 3px 7px !important;
-//                 font-size: 12px !important;
-//                 border: 1px solid #d1d5db !important;
-//                 border-radius: 4px !important;
-//                 background: #ffffff !important;
-//                 box-sizing: border-box;
-//             }
-
-//             .stock-first-row-filter
-//             input:focus {
-//                 border-color: #2490ef !important;
-//                 box-shadow: 0 0 0 1px rgba(36,144,239,.15) !important;
-//             }
-
-//             .stock-first-row-filter
-//             input::placeholder {
-//                 color: #9ca3af;
-//                 font-size: 11px;
-//             }
-
-//             .stock-filter-clear {
-//                 flex: 0 0 38px;
-//                 width: 38px;
-//                 padding: 0 3px;
-//                 display: flex;
-//                 align-items: center;
-//                 justify-content: center;
-//             }
-
-//             .stock-filter-clear button {
-//                 height: 28px;
-//                 width: 30px;
-//                 padding: 0;
-//             }
-
-//         </style>
-//     `)
-// }
-
-// add_stock_first_row_filter_css();
-
-
-
-/* ============================================================
-   STOCK ITEM - CHILD TABLE ADVANCED FILTER
-   ------------------------------------------------------------
-   Parent Doctype : Stock Item
-
-   Child Tables:
-   - Plates
-   - Pipes
-   - Tubes
-   - Flanges
-   - Rods
-
-   FEATURES:
-   1. Normal ERPNext child grid remains untouched
-   2. Filter + Clear Filter buttons outside/right of grid
-   3. Filter dialog reads child DocType fields dynamically
-   4. Four filter fields per row
-   5. Multiple values can be selected
-   6. Existing child-row values are shown as options
-   7. UI filtering only - does NOT create child records
-   ============================================================ */
-
-
 /* ============== CONFIGURATION ==================== */
-
 const STOCK_FILTER_TABLES = ["plates", "pipes", "tubes", "flanges", "rods"];
 
 /* ======================== INITIALIZE ======================= */
-
 function init_stock_child_filters(frm) {
     STOCK_FILTER_TABLES.forEach(table_name => {
         const table_field = frm.fields_dict[table_name];
@@ -1172,95 +878,6 @@ function init_stock_child_filters(frm) {
     });
 }
 
-/* ======================= CREATE FILTER TOOLBAR ========================= */
-
-// function create_stock_filter_toolbar(frm, table_name) {
-
-//     const table_field = frm.fields_dict[table_name];
-
-//     if (!table_field || !table_field.grid) {
-//         return;
-//     }
-
-//     const grid = table_field.grid;
-//     const wrapper = $(grid.wrapper);
-
-//     /*
-//      * Prevent duplicate toolbar
-//      */
-//     if (wrapper.find(".stock-child-filter-toolbar").length) {
-//         return;
-//     }
-
-
-//     /* --------------------------------------------------------
-//        Toolbar
-//        -------------------------------------------------------- */
-
-//     const toolbar = $(`
-//         <div class="stock-child-filter-toolbar">
-
-//             <div class="stock-filter-toolbar-right">
-
-//                 <button
-//                     type="button"
-//                     class="btn btn-sm btn-primary stock-filter-btn">
-//                     <i class="fa fa-filter"></i>
-//                     <span>Filter</span>
-//                 </button>
-
-//                 <button
-//                     type="button"
-//                     class="btn btn-sm btn-default stock-clear-filter-btn">
-//                     <i class="fa fa-times"></i>
-//                     <span>Clear Filter</span>
-//                 </button>
-
-//             </div>
-
-//         </div>
-//     `);
-
-
-//     /*
-//      * Put toolbar BEFORE grid heading
-//      */
-//     wrapper.find(".grid-heading-row").first().before(toolbar);
-
-
-//     /* --------------------------------------------------------
-//        Filter button
-//        -------------------------------------------------------- */
-
-//     toolbar.on(
-//         "click",
-//         ".stock-filter-btn",
-//         function () {
-
-//             open_stock_child_filter_dialog(
-//                 frm,
-//                 table_name
-//             );
-//         }
-//     );
-
-
-//     /* --------------------------------------------------------
-//        Clear filter button
-//        -------------------------------------------------------- */
-
-//     toolbar.on(
-//         "click",
-//         ".stock-clear-filter-btn",
-//         function () {
-
-//             clear_stock_child_filter(
-//                 frm,
-//                 table_name
-//             );
-//         }
-//     );
-// }
 
 function create_stock_filter_toolbar(frm, table_name) {
     const table_field = frm.fields_dict[table_name];
@@ -1385,7 +1002,6 @@ function open_stock_child_filter_dialog(frm, table_name) {
         });
     });
 
-
     /* * Dialog  */
     const dialog = new frappe.ui.Dialog({
         title: "Filter " + (meta.name || child_doctype),
@@ -1426,7 +1042,6 @@ function get_stock_child_doctype(frm, table_name) {
 
 
 /* ======================= GET FILTERABLE CHILD FIELDS =================== */
-
 function get_stock_filter_fields(fields) {
     /* * Fields which should NOT appear in filter dialog  */
     const ignored_fieldtypes = ["Section Break", "Column Break", "Tab Break", "HTML", "Button",
@@ -1459,7 +1074,6 @@ function get_stock_filter_fields(fields) {
 
 
 /* ================== GET FILTER OPTIONS ================ */
-
 function get_stock_filter_options(frm, table_name, fieldname, search_text) {
     const table_field = frm.fields_dict[table_name];
     if (!table_field || !table_field.grid) {
@@ -1540,7 +1154,6 @@ function apply_stock_child_filter(frm, table_name, selected_values, filter_field
         }
     });
 
-
     /* * Filter every existing row */
     grid.grid_rows.forEach(grid_row => {
         const row = grid_row.doc;
@@ -1579,7 +1192,6 @@ function apply_stock_child_filter(frm, table_name, selected_values, filter_field
     update_stock_filter_button(frm, table_name, Object.keys(active_filters).length);
 }
 
-
 /* ============== CLEAR FILTER ====================== */
 function clear_stock_child_filter(frm, table_name) {
     const table_field = frm.fields_dict[table_name];
@@ -1588,8 +1200,6 @@ function clear_stock_child_filter(frm, table_name) {
     }
 
     const grid = table_field.grid;
-
-    /* * Show every child row  */
     grid.grid_rows.forEach(grid_row => {
         $(grid_row.row).show();
     });
@@ -1597,7 +1207,6 @@ function clear_stock_child_filter(frm, table_name) {
     /* * Reset button */
     update_stock_filter_button(frm, table_name, 0);
 }
-
 
 /* ================== UPDATE FILTER BUTTON ====================== */
 function update_stock_filter_button(frm, table_name, filter_count) {
@@ -1749,10 +1358,93 @@ function add_stock_child_filter_css() {
 add_stock_child_filter_css();
 
 
+const PO_REFERENCE_CONFIG = {
+    "Stock Plate Details": {
+        table_field: "plates",
+        item_group: "Plates",
+        reference_field: "po_plate_reference",
+        title: "Purchase Order Plate Reference"
+    },
+
+    "Stock Pipe Details": {
+        table_field: "pipes",
+        item_group: "Pipes",
+        reference_field: "po_pipe_reference",
+        title: "Purchase Order Pipe Reference"
+    },
+
+    "Stock Tube Details": {
+        table_field: "tubes",
+        item_group: "Tubes",
+        reference_field: "po_tube_reference",
+        title: "Purchase Order Tube Reference"
+    },
+
+    "Stock Rod Details": {
+        table_field: "rods",
+        item_group: "Rods",
+        reference_field: "po_rod_reference",
+        title: "Purchase Order Rod Reference"
+    },
+
+    "Stock Flange Details": {
+        table_field: "flanges",
+        item_group: "Flanges",
+        reference_field: "po_flange_reference",
+        title: "Purchase Order Flange Reference"
+    }
+};
 
 
-function load_po_plate_reference(frm, cdt, cdn) {
+// ======================= COMMON CHILD TABLE FUNCTIONS =================================
+function render_child_reference_image(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
+    let config = PO_REFERENCE_CONFIG[cdt];
+
+    if (!row || !config) {
+        return;
+    }
+
+    let grid_field = frm.fields_dict[config.table_field];
+    if (!grid_field || !grid_field.grid) {
+        return;
+    }
+
+    let grid_row = grid_field.grid.grid_rows_by_docname[cdn];
+    if (!grid_row || !grid_row.grid_form) {
+        return;
+    }
+
+    let field = grid_row.grid_form.fields_dict.reference_preview;
+    if (!field) {
+        return;
+    }
+
+    if (row.reference_image) {
+        $(field.wrapper).html(`
+            <img src="${row.reference_image}" style="max-width:100%; max-height:300px; border-radius:6px;">
+        `);
+    } else {
+        $(field.wrapper).empty();
+    }
+}
+
+
+function load_po_reference(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+    let config = PO_REFERENCE_CONFIG[cdt];
+
+    if (!row || !config) {
+        return;
+    }
+
+    // No Purchase Order selected
+    if (!row.purchase_order_no) {
+        set_po_reference(frm, cdt, cdn, "");
+        return;
+    }
+
+    console.log("Loading Purchase Order Reference:", cdt, row.purchase_order_no);
     frappe.call({
         method: "frappe.client.get",
         args: {
@@ -1761,67 +1453,173 @@ function load_po_plate_reference(frm, cdt, cdn) {
         },
 
         callback: function(r) {
-
             if (!r.message) {
-                clear_po_plate_reference(frm, cdn);
+                set_po_reference(frm, cdt, cdn, "");
                 return;
             }
 
             let po = r.message;
-            console.log("Purchase Order:", po);
-
-            // Get Purchase Order Items
             let items = po.items || [];
-            console.log("All PO Items:", items);
 
-            // Only Item Group = Plates
-            let plate_items = items.filter(function(item) {
-                return item.item_group === "Plates";
+            // Filter PO Items based on Item Group
+            let matching_items = items.filter(function(item) {
+                return item.item_group === config.item_group;
             });
 
-            console.log("Plate Items:", plate_items);
-            if (!plate_items.length) {
-                set_po_plate_reference(frm, cdn,
-                    `
-                    <div style="padding:15px; border:1px solid #e5e7eb; border-radius:8px; background:#f9fafb; color:#6b7280;">
-                        <b>No Plates found</b> <br>
-                        This Purchase Order does not contain Item Group = Plates.
+            console.log(config.item_group + " Items:", matching_items);
+
+            // No matching items
+            if (!matching_items.length) {
+
+                let html = `
+                    <div style="padding:15px; border:1px solid #e5e7eb; border-radius:8px;
+                        background:#f9fafb; color:#6b7280;">
+                        <b>No ${config.item_group} found</b> <br>
+                        This Purchase Order does not contain
+                        Item Group = ${config.item_group}.
                     </div>
-                    `);
+                `;
+
+                set_po_reference(frm, cdt, cdn, html);
                 return;
             }
 
+            // =========================== MAIN HTML ==============================
             let html = `
                 <div style="margin-top:10px; margin-bottom:10px;">
                     <div style="font-size:13px; font-weight:600; margin-bottom:10px; color:#374151;">
-                        Purchase Order Plate Reference
+                        ${config.title}
                     </div>
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">`;
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
+            `;
 
-            plate_items.forEach(function(item, index) {
-                html += `
-                    <div style="border:1px solid #d1d5db; border-radius:8px; padding:12px; background:#ffffff;">
-                        <div style="font-weight:600; font-size:13px; margin-bottom:10px; color:#111827;">
-                            Plate ${index + 1}
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                            ${po_reference_field("Item Group",item.item_group)}
-                            ${po_reference_field("Rate",item.rate)}
+            // =========================== EACH PO ITEM ===================================
+            matching_items.forEach(function(item, index) {
+
+                // ---------------------- ROW 1 - COMMON FOR ALL TABLES ----------------------------
+                let common_row = `
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:8px;">
+                        ${po_reference_field("Item Group", item.item_group)}
+                        ${po_reference_field("Quantity", item.qty)}
+                        ${po_reference_field("Rate", item.rate)}
+                    </div>
+                `;
+
+                // --------------------- ROW 2 - TABLE SPECIFIC ------------------------
+                let specific_row = "";
+
+                // ========================= PLATES ==============================
+                if (cdt === "Stock Plate Details") {
+                    specific_row = `
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px;">
                             ${po_reference_field("Length", item.custom_length)}
                             ${po_reference_field("Width", item.custom_width)}
                             ${po_reference_field("Thickness", item.custom_thickness)}
                             ${po_reference_field("Density", item.custom_density)}
                         </div>
+                    `;
+                }
+
+                // ======================= PIPES ================================
+                else if (cdt === "Stock Pipe Details") {
+                    specific_row = `
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px;">
+                            ${po_reference_field("Length", item.custom_length)}
+                            ${po_reference_field("Outer Diameter", item.custom_outer_diameter)}
+                            ${po_reference_field("Thickness", item.custom_thickness)}
+                            ${po_reference_field("Density", item.custom_density)}
+                        </div>
+                    `;
+                }
+
+                // =========================== TUBES ==================================
+                else if (cdt === "Stock Tube Details") {
+                    specific_row = `
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px;">
+                            ${po_reference_field("Length", item.custom_length)}
+                            ${po_reference_field("Outer Diameter", item.custom_outer_diameter)}
+                            ${po_reference_field("Thickness", item.custom_thickness)}
+                            ${po_reference_field("Density", item.custom_density)}
+                        </div>
+                    `;
+                }
+
+                // ========================== RODS ================================
+                else if (cdt === "Stock Rod Details") {
+                    specific_row = `
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+                            ${po_reference_field("Length", item.custom_length)}
+                            ${po_reference_field("Outer Diameter", item.custom_outer_diameter)}
+                            ${po_reference_field("Density", item.custom_density)}
+                        </div>
+                    `;
+                }
+
+                // ===================== FLANGES ============================
+                else if (cdt === "Stock Flange Details") {
+                    specific_row = `
+                        <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+                            ${po_reference_field("Description", item.description)}
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div style="border:1px solid #d1d5db; border-radius:8px; padding:12px; background:#ffffff;">
+                        <div style="font-weight:600; font-size:13px; margin-bottom:10px; color:#111827;">
+                            ${config.item_group.slice(0, -1)}
+                            ${index + 1}
+                        </div>
+                        ${common_row}
+                        ${specific_row}
                     </div>
                 `;
             });
-
-            html += `</div>
+            html += `
+                    </div>
                 </div>
             `;
-            set_po_plate_reference(frm, cdn, html);
+            set_po_reference(frm, cdt, cdn, html);
         }
     });
+}
+
+
+function set_po_reference(frm, cdt, cdn, html) {
+    let config = PO_REFERENCE_CONFIG[cdt];
+    if (!config) {
+        return;
+    }
+
+    let grid_field = frm.fields_dict[config.table_field];
+    if (!grid_field || !grid_field.grid) {
+        return;
+    }
+
+    let grid = grid_field.grid;
+    let grid_row = grid.get_row(cdn);
+    if (!grid_row) {
+        return;
+    }
+
+    // Make sure child row is open
+    if (!grid_row.grid_form) {
+        grid_row.toggle_view(true);
+    }
+
+    setTimeout(function() {
+        if (!grid_row.grid_form || !grid_row.grid_form.fields_dict) {
+            return;
+        }
+
+        let field = grid_row.grid_form.fields_dict[config.reference_field];
+        if (!field) {
+            console.warn("PO reference field not found:", config.reference_field);
+            return;
+        }
+
+        field.$wrapper.html(html || "");
+    }, 150);
 }
 
 function po_reference_field(label, value) {
@@ -1839,51 +1637,4 @@ function po_reference_field(label, value) {
             </div>
         </div>
     `;
-}
-
-function set_po_plate_reference(frm, cdn, html) {
-    let grid = frm.fields_dict.plates.grid;
-    let grid_row = grid.get_row(cdn);
-    if (!grid_row) {
-        console.log("Grid row not found:",cdn);
-        return;
-    }
-
-    // Make sure child row is opened
-    if (!grid_row.grid_form) {
-        grid_row.toggle_view(true);
-    }
-
-    setTimeout(function() {
-
-        if (grid_row.grid_form && grid_row.grid_form.fields_dict && grid_row.grid_form.fields_dict.po_plate_reference) {
-            let field = grid_row
-                .grid_form
-                .fields_dict
-                .po_plate_reference;
-
-            field.$wrapper.html(html);
-            console.log("PO Plate Reference HTML displayed");
-        } else {
-            console.log("po_plate_reference HTML field not found");
-        }
-    }, 300);
-}
-
-function clear_po_plate_reference(frm, cdn) {
-    let grid = frm.fields_dict.plates.grid;
-    let grid_row = grid.get_row(cdn);
-    if (!grid_row) {
-        return;
-    }
-
-    if (grid_row.grid_form && grid_row.grid_form.fields_dict && grid_row.grid_form.fields_dict.po_plate_reference) {
-
-        grid_row
-            .grid_form
-            .fields_dict
-            .po_plate_reference
-            .$wrapper
-            .empty();
-    }
 }
