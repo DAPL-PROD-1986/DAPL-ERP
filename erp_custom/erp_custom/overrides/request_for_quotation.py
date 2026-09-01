@@ -130,7 +130,8 @@ def send_email_background(doc, method=None):
 
     <h3 style="border-bottom:2px solid #444; padding-bottom:4px;">Item Details</h3>
 
-    <table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse; width:100%; text-align:center;">
+    <table border="1" cellpadding="8" cellspacing="0"
+        style="border-collapse:collapse; width:100%; text-align:center;">
 
         <tr style="background-color:#f2f2f2;"> {header_html} </tr>
         {items_html}
