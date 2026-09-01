@@ -1,7 +1,6 @@
 
 frappe.ui.form.on('BOM Creator', {
     refresh(frm) {
-
         if (frm.is_new() || frm.doc.docstatus !== 0) return;
 
         let btn = frm.add_custom_button('Upload BOM', () => {
@@ -10,7 +9,6 @@ frappe.ui.form.on('BOM Creator', {
                 allow_multiple: false,
 
                 on_success(file) {
-
                     frappe.call({
                         method: "erp_custom.erp_custom.overrides.bom_creator.upload_bom_excel",
                         args: {
@@ -19,11 +17,8 @@ frappe.ui.form.on('BOM Creator', {
                         freeze: true,
 
                         callback: function (r) {
-
                             if (!r.message) return;
-
                             frm.clear_table("items");
-
                             r.message.forEach(row => {
                                 let child = frm.add_child("items");
 
@@ -44,7 +39,6 @@ frappe.ui.form.on('BOM Creator', {
                             });
                         }
                     });
-
                 }
             });
 
@@ -99,7 +93,6 @@ frappe.ui.form.on('BOM Creator Item', {
             // row.custom_wall_thickness = 0;
 
             frm.refresh_field("items");
-
             return;
         }
 
@@ -118,7 +111,6 @@ frappe.ui.form.on('BOM Creator Item', {
 
 
 function trigger_calc(frm, cdt, cdn) {
-
     let row = locals[cdt][cdn];
 
     // ================== MANUAL MODE =======================

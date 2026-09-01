@@ -3,9 +3,7 @@
 <head>
 <meta charset="utf-8">
 <style>
-/* ==========================================================================
-   CSS STYLES
-   ========================================================================== */
+/* ============================= CSS STYLES =============================== */
 @page {
     size: A4;
     margin: 8mm; /* Safe print margins */
@@ -173,7 +171,18 @@ td:nth-child(3), th:nth-child(3) {
                         <b style="display:inline-block; width:140px;">Supplier Ref no</b> : {{ sq.quotation_number or "" }}<br>
                         <b style="display:inline-block; width:140px;">Supplier Ref Date</b> : {{ frappe.format(sq.transaction_date, {'fieldtype':'Date'}) or "" }}<br>
                     {% endif %}
-                    <b style="display:inline-block; width:140px;">DAPL Job Reference</b> : {{ doc.custom_dapl_reference or "" }}
+                    <b style="display:inline-block; width:140px;">DAPL Job Reference</b> : {{ doc.custom_dapl_reference or "" }}<br>
+                    
+                    {% set supplier_total = frappe.db.sql("""
+                        SELECT COALESCE(SUM(grand_total), 0)
+                        FROM `tabPurchase Order`
+                        WHERE supplier = %s
+                        AND docstatus = 1
+                        AND name != %s
+                        AND creation < %s
+                    """, (doc.supplier, doc.name, doc.creation))[0][0] %}
+
+        <b style="display:inline-block; width:140px;">Supplier Total Purchase Value</b> : {{ frappe.utils.fmt_money(supplier_total, currency=doc.currency) }}
                 </td>
             </tr>
 

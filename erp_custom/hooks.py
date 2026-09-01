@@ -499,6 +499,10 @@ doc_events = {
     #  "Project": {
     #     "onload": "erp_custom.erp_custom.overrides.projects_dashboard.project_onload"
     # }
+
+    "Supplier Quotation": {
+        "before_save": "erp_custom.erp_custom.overrides.supplier_quotation.sync_material_request_item_weights"
+    }
 }
 
 override_doctype_dashboards = {

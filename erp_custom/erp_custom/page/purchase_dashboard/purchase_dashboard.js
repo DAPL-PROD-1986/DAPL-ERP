@@ -7,7 +7,6 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
     });
 
     $(wrapper).find('.layout-main').html(`
-
     <style>
         /* Only the handful of rules Bootstrap utilities genuinely can't cover */
 
@@ -301,15 +300,10 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
             <!-- FULL PURCHASE ORDER DATA (based on current filters) -->
             <div class="card shadow-sm border-0 table-card mb-4">
-                <div class="card-header text-white d-flex justify-content-between align-items-center"
-                            style="background-color: #22c55e">
+                <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #22c55e">
+                    <div class="text-center flex-grow-1"> <i class="fa fa-list me-2"></i> Overall Purchase Order </div>
 
-    <div class="text-center flex-grow-1">
-        <i class="fa fa-list me-2"></i> Overall Purchase Order
-    </div>
-
-        <button type="button" id="download_purchase_excel"
-            class="btn btn-light btn-sm d-flex align-items-center gap-2"
+        <button type="button" id="download_purchase_excel" class="btn btn-light btn-sm d-flex align-items-center gap-2"
             title="Download Purchase Order Excel" style="font-weight:600; border-radius:7px;">
 
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -328,51 +322,81 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
         </button>
     </div>
             <div class="card-body p-0 dashboard-table-body">
-                <div class="full-po-table-wrapper">
-                    <table class="table table-hover text-center align-middle mb-0">
-                        <thead class="table-light text-muted">
-                            <tr>
-                                <th>PO Name</th>
-                                <th>Supplier</th>
-                                <th>Project</th>
-                                <th>Order Type</th>
-                                <th>Date</th>
-                                <th>Required By</th>
-                                <th>Status</th>
-                                <th>Grand Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="full_po_table"></tbody>
-                        <tfoot style="background-color: #dcfce7; border-top: 2px solid #22c55e;">
-                            <tr>
-    <td class="text-start ps-3" colspan="7">
-        <small class="text-muted fst-italic">
-            <i class="fa fa-info-circle me-1 text-success"></i>
-            Cancelled orders are displayed in table but INR value not considered.
-        </small>
-    </td>
+    <div class="full-po-table-wrapper">
+        <table class="table table-hover text-center align-middle mb-0">
 
-    <td class="text-end pe-3">
-        <strong>
-            Overall Total: <br> </strong>
-            <span id="full_po_total_amount">0.00</span>
-        
-    </td>
-</tr>
-                        </tfoot>
-                    </table>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light">
-                        <div class="btn-group" role="group" id="page_size_group">
-                            <button class="btn btn-outline-success active page-size-btn" data-size="20"> 20 </button>
-                            <button class="btn btn-outline-success page-size-btn" data-size="100"> 100 </button>
-                            <button class="btn btn-outline-success page-size-btn" data-size="500"> 500 </button>
-                            <button class="btn btn-outline-success page-size-btn" data-size="2500"> All </button>
-                        </div>
+            <thead class="table-light text-muted">
+                <tr>
+                    <th>PO Name</th>
+                    <th>Supplier</th>
+                    <th>Project</th>
+                    <th>Order Type</th>
+                    <th>Date</th>
+                    <th>Required By</th>
+                    <th>Status</th>
+                    <th>Net Total</th>
+                    <th>Taxes & Charges</th>
+                    <th>Grand Total</th>
+                </tr>
+            </thead>
 
-                        <button class="btn btn-success btn-sm" id="load_more"> Load More </button>
-                    </div>
-                </div>
+            <tbody id="full_po_table"></tbody>
+
+            <tfoot style="background-color: #dcfce7; border-top: 2px solid #22c55e;">
+                <tr>
+
+                    <td class="text-start ps-3" colspan="7">
+                        <small class="text-muted fst-italic">
+                            <i class="fa fa-info-circle me-1 text-success"></i>
+                            Cancelled orders are displayed in table but INR value not considered.
+                        </small>
+                    </td>
+
+                    <td class="text-end pe-3">
+                        <strong>Net Total:</strong><br>
+                        <span id="full_po_total_net">0.00</span>
+                    </td>
+
+                    <td class="text-end pe-3">
+                        <strong>Taxes & Charges:</strong><br>
+                        <span id="full_po_total_taxes">0.00</span>
+                    </td>
+
+                    <td class="text-end pe-3">
+                        <strong>Grand Total:</strong><br>
+                        <span id="full_po_total_amount">0.00</span>
+                    </td>
+
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light">
+        <div class="btn-group" role="group" id="page_size_group">
+            <button class="btn btn-outline-success active page-size-btn" data-size="20">
+                20
+            </button>
+
+            <button class="btn btn-outline-success page-size-btn" data-size="100">
+                100
+            </button>
+
+            <button class="btn btn-outline-success page-size-btn" data-size="500">
+                500
+            </button>
+
+            <button class="btn btn-outline-success page-size-btn" data-size="2500">
+                All
+            </button>
+        </div>
+
+        <button class="btn btn-success btn-sm" id="load_more">
+            Load More
+        </button>
+    </div>
+</div>
             </div>
         </div>
     </div>
@@ -807,44 +831,90 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
     function render_full_po_table(rows, append = false) {
         let html = "";
-        let total_amount = 0;
+
+        let total_net = 0;
+        let total_taxes = 0;
+        let total_grand = 0;
 
         full_po_names = (rows || []).map(r => r.name);
-
         if (!rows || !rows.length) {
-            $("#full_po_table").html(`<tr><td colspan="8" class="text-muted py-3">No Purchase Orders found for the selected filters.</td></tr>`);
+            $("#full_po_table").html(`
+                <tr>
+                    <td colspan="10" class="text-muted py-3"> No Purchase Orders found for the selected filters. </td>
+                </tr>
+            `);
+
+            $("#full_po_total_net").html(frappe.format(0, { fieldtype: "Currency" }));
+            $("#full_po_total_taxes").html(frappe.format(0, { fieldtype: "Currency" }));
             $("#full_po_total_amount").html(frappe.format(0, { fieldtype: "Currency" }));
             return;
         }
 
         rows.forEach(r => {
-            let amount = Number(r.grand_total || 0);
+            let net_total = Number(r.net_total || 0);
+            let taxes = Number(r.total_taxes_and_charges || 0);
+            let grand_total = Number(r.grand_total || 0);
+
+            // Same existing logic: Cancelled PO values are NOT included in overall totals
             if (r.workflow_state !== "Cancelled") {
-                total_amount += amount;
+                total_net += net_total;
+                total_taxes += taxes;
+                total_grand += grand_total;
             }
+
             html += `
                 <tr>
                     <td>
-                        <span class="quick-preview-btn me-2" data-name="${r.name}" title="Quick Preview" style="cursor:pointer;">
-                            ${frappe.utils.icon("eye", "sm")}
-                        </span>
-                        <a href="/app/purchase-order/${r.name}" target="_blank">${r.name}</a>
+                        <span class="quick-preview-btn me-2" data-name="${r.name}" title="Quick Preview"
+                            style="cursor:pointer;"> ${frappe.utils.icon("eye", "sm")} </span>
+                        <a href="/app/purchase-order/${r.name}" target="_blank"> ${r.name} </a>
                     </td>
-                    <td>${r.supplier || "-"}</td>
-                    <td>${r.project || "-"}</td>
-                    <td>${r.custom_order_type || "Purchase Order"}</td>
-                    <td>${frappe.datetime.str_to_user(r.transaction_date) || "-"}</td>
-                    <td>${r.schedule_date ? frappe.datetime.str_to_user(r.schedule_date) : "-"}</td>
-                    <td>${r.workflow_state || "Draft"}</td>
-                    <td>${frappe.format(amount, { fieldtype: "Currency" })}</td>
-                </tr>`;
+
+                    <td> ${r.supplier || "-"} </td>
+                    <td> ${r.project || "-"} </td>
+                    <td> ${r.custom_order_type || "Purchase Order"} </td>
+                    <td> ${frappe.datetime.str_to_user(r.transaction_date) || "-"} </td>
+                    <td> ${r.schedule_date ? frappe.datetime.str_to_user(r.schedule_date) : "-"} </td>
+                    <td> ${r.workflow_state || "Draft"} </td>
+                    <td> ${frappe.format(net_total, {
+                            fieldtype: "Currency"
+                        })} </td>
+                        
+                    <td> ${frappe.format(taxes, {
+                            fieldtype: "Currency"
+                        })} </td>
+
+                    <td> ${frappe.format(grand_total, {
+                            fieldtype: "Currency"
+                        })} </td>
+                </tr>
+            `;
         });
 
-        if (append)
+        if (append) {
             $("#full_po_table").append(html);
-        else
+        } else {
             $("#full_po_table").html(html);
-        $("#full_po_total_amount").html(frappe.format(total_amount, { fieldtype: "Currency" }));
+        }
+
+        // Overall totals
+        $("#full_po_total_net").html(
+            frappe.format(total_net, {
+                fieldtype: "Currency"
+            })
+        );
+
+        $("#full_po_total_taxes").html(
+            frappe.format(total_taxes, {
+                fieldtype: "Currency"
+            })
+        );
+
+        $("#full_po_total_amount").html(
+            frappe.format(total_grand, {
+                fieldtype: "Currency"
+            })
+        );
     }
 
     // click handler — add once, near your other $(document).on(...) bindings

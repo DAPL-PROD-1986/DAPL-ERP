@@ -230,10 +230,11 @@
 
     {% endif %}
 </td>
-<td class="center">{{ item.qty }}</td>
-<td class="center">{{ item.uom }}</td>
+<td class="center"> {{ item.qty }} </td>
+<td class="center"> {{ item.uom }} </td>
+<td class="center"> {{ frappe.format_value((item.rate), {"fieldtype": "Currency"}) }} </td>
 
-{# ✅ Rate Logic #}
+<!-- {# ✅ Rate Logic #}
 {% if item.item_group == "Plates" %}
     {% set rate = item.custom_rate_per_kg or item.rate %}
     {% set rate_unit = "Kg" %}
@@ -250,7 +251,7 @@
 <td class="right">
     {{ frappe.format_value(rate, {"fieldtype": "Currency"}) }}
     {% if rate_unit %} / {{ rate_unit }}{% endif %}
-</td>
+</td> -->
 
 <!-- {# ✅ Rate Logic #}
 {% if item.item_group in ["Plates", "Pipes"] %}

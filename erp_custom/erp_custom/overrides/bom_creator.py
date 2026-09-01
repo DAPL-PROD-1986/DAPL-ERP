@@ -6,12 +6,9 @@ from frappe.utils import flt
 from erpnext.manufacturing.doctype.bom_creator.bom_creator import BOMCreator
 
 
-# =========================================================
-# COMMON CALCULATION FUNCTION (FROM bom.js LOGIC)
-# =========================================================
+# ============================== COMMON CALCULATION FUNCTION (FROM bom.js LOGIC) ========================================
 @frappe.whitelist()
 def recalc_item(item):
-
     import json
 
     if isinstance(item, str):
@@ -20,7 +17,6 @@ def recalc_item(item):
     return calculate_values(item)
 
 def calculate_values(item):
-
     import math
     from frappe.utils import flt
 
@@ -58,12 +54,9 @@ def calculate_values(item):
     π = math.pi
     base = 0
 
-    # =====================================================
-    # MANUAL ENTRY MODE
-    # =====================================================
+    # ============================ MANUAL ENTRY MODE ========================================
 
     if shape == "N/A":
-
         manual_kg = flt(get("custom_kilogramskgs"))
         manual_total = flt(get("custom_total_weight"))
 
@@ -81,21 +74,11 @@ def calculate_values(item):
         scrap_pct = flt(get("custom_scrap_margin_percentage"))
         transport_rate = flt(get("custom_transportation_cost"))
 
-        setv(
-            "custom_scrap_margin_kgs",
-            flt(manual_total * scrap_pct / 100, 4)
-        )
-
-        setv(
-            "custom_transportation_cost_kgs",
-            flt(manual_total * transport_rate, 2)
-        )
-
+        setv("custom_scrap_margin_kgs", flt(manual_total * scrap_pct / 100, 4))
+        setv("custom_transportation_cost_kgs", flt(manual_total * transport_rate, 2))
         return item
 
-    # =====================================================
-    # AUTO CALCULATION MODE
-    # =====================================================
+    # ======================= AUTO CALCULATION MODE =========================================
 
     if not density:
         setv("custom_kilogramskgs", 0)
@@ -153,9 +136,7 @@ def calculate_values(item):
         if OD and ID and T:
             base = (π * ((OD / 2) ** 2 - (ID / 2) ** 2) * T * density) / 1_000_000
 
-    # =====================================================
-    # FINAL
-    # =====================================================
+    # ============================== FINAL =========================================
 
     kg_per_unit = flt(base, 4)
     total = flt(qty * kg_per_unit, 4)
@@ -171,9 +152,7 @@ def calculate_values(item):
 
     return item
 
-# =========================================================
-# EXCEL UPLOAD METHOD
-# =========================================================
+# ================================ EXCEL UPLOAD METHOD =========================================
 @frappe.whitelist()
 def upload_bom_excel(file_url):
 
@@ -250,9 +229,7 @@ def upload_bom_excel(file_url):
         data.append(child)
     return data
 
-# =========================================================
-# CUSTOM BOM CREATOR
-# =========================================================
+# ========================= CUSTOM BOM CREATOR =========================================
 
 class CustomBOMCreator(BOMCreator):
     @frappe.whitelist()
@@ -388,9 +365,7 @@ def download_bom_template():
     ws = wb.active
     ws.title = "BOM Template"
 
-    # =====================================================
-    # ✅ HEADERS (MATCH YOUR SYSTEM)
-    # =====================================================
+    # ========================  ✅ HEADERS (MATCH YOUR SYSTEM) =========================================
 
     headers = [
         "Part Number",
@@ -414,9 +389,7 @@ def download_bom_template():
 
     ws.append(headers)
 
-    # =====================================================
-    # ✅ AUTO WIDTH
-    # =====================================================
+    # ========================= ✅ AUTO WIDTH =====================================
 
     for col in ws.columns:
         max_length = 0
@@ -428,9 +401,7 @@ def download_bom_template():
 
         ws.column_dimensions[col_letter].width = max_length + 3
 
-    # =====================================================
-    # ✅ SAVE FILE
-    # =====================================================
+    # ========================== ✅ SAVE FILE =======================================
 
     file_stream = io.BytesIO()
     wb.save(file_stream)

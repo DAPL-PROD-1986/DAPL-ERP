@@ -1,7 +1,5 @@
 
-// =====================================================
-// PURCHASE ORDER (PARENT)
-// =====================================================
+// ========================= PURCHASE ORDER (PARENT) =====================================
 frappe.ui.form.on("Purchase Order", {
 
     refresh(frm) {
@@ -24,7 +22,6 @@ supplier(frm) {
 
         frappe.db.get_value("Supplier", frm.doc.supplier, "is_transporter")
             .then(r => {
-
                 if (r.message.is_transporter) {
                     frm.set_value("custom_order_type", "Transport Order");
                 }
@@ -80,9 +77,7 @@ supplier(frm) {
 });
 
 
-// =====================================================
-// PURCHASE ORDER ITEM (CHILD)
-// =====================================================
+// ======================== PURCHASE ORDER ITEM (CHILD) ====================================
 frappe.ui.form.on("Purchase Order Item", {
     custom_rate_per_kg(frm, cdt, cdn) {
         calculate_rate_from_weight(frm, cdt, cdn);
@@ -92,9 +87,15 @@ frappe.ui.form.on("Purchase Order Item", {
         calculate_total(frm);
     },
 
+    custom_length(frm, cdt, cdn) {
+        calculate_kgs(frm, cdt, cdn);
+        calculate_meter(frm, cdt, cdn);
+    },
+
     qty(frm, cdt, cdn) {
         calculate_total(frm);
         calculate_total_weight(frm, cdt, cdn);
+        calculate_meter(frm, cdt, cdn);
     },
 
     rate(frm, cdt, cdn) {
@@ -133,7 +134,7 @@ frappe.ui.form.on("Purchase Order Item", {
         });
     },
 
-    custom_length: calculate_kgs,
+    // custom_length: calculate_kgs,
     custom_width: calculate_kgs,
     custom_thickness: calculate_kgs,
     custom_outer_diameter: calculate_kgs,
@@ -144,9 +145,7 @@ frappe.ui.form.on("Purchase Order Item", {
     custom_transportation_cost: calculate_scrap_and_transport
 });
 
-// ====================================================
-// WEIGHT PER UNIT (Kg)
-// ====================================================
+// ====================== WEIGHT PER UNIT (Kg) ==================================
 function calculate_kgs(frm, cdt, cdn) {
 
     const row = locals[cdt][cdn];
@@ -164,10 +163,7 @@ function calculate_kgs(frm, cdt, cdn) {
     const π = Math.PI;
     let base_weight = 0;
 
-    // ==========================
-    // MANUAL ENTRY MODE
-    // ==========================
-
+    // ================ MANUAL ENTRY MODE =====================
     if (shape === "N/A") {
         let kg = flt(row.custom_kilogramskgs);
         let total = flt(row.custom_total_weights);
@@ -194,10 +190,7 @@ function calculate_kgs(frm, cdt, cdn) {
         return;
     }
 
-    // ==========================
-    // PLATES
-    // ==========================
-
+    // ================= PLATES =====================
     if (item_group === "Plates") {
         if (shape === "Rectangle" && L && W && T) {
             base_weight = (L * W * T * density) / 1000000;
@@ -213,10 +206,7 @@ function calculate_kgs(frm, cdt, cdn) {
         }
     }
 
-    // ==========================
-    // PIPES / TUBES
-    // ==========================
-
+    // =================== PIPES / TUBES =======================
     else if (item_group === "Pipes" || item_group === "Tubes") {
         if (shape === "Hollow" && OD && T && L) {
             const ID_calc = OD - (2 * T);
@@ -226,10 +216,7 @@ function calculate_kgs(frm, cdt, cdn) {
         }
     }
 
-    // ==========================
-    // FORGINGS
-    // ==========================
-
+    // ==================== FORGINGS ========================
     else if (item_group === "Forgings") {
         if (shape === "Hollow" && OD && T && L) {
             const ID_calc = OD - (2 * T);
@@ -241,20 +228,14 @@ function calculate_kgs(frm, cdt, cdn) {
         }
     }
 
-    // ==========================
-    // RODS
-    // ==========================
-
+    // ================== RODS ======================
     else if (item_group === "Rods") {
         if (shape === "Circle" && OD && L) {
             base_weight = (π * Math.pow(OD / 2, 2) * L * density) / 1000000;
         }
     }
 
-    // ==========================
-    // FLANGES / RINGS
-    // ==========================
-
+    // =================== FLANGES / RINGS =====================
     else if (item_group === "Flanges" || item_group === "Rings") {
         if (OD && ID && T) {
             base_weight = (π * ( Math.pow(OD / 2, 2) - Math.pow(ID / 2, 2)) * T * density) / 1000000;
@@ -273,9 +254,7 @@ function calculate_kgs(frm, cdt, cdn) {
     }
 }
 
-// ====================================================
-// TOTAL WEIGHT
-// ====================================================
+// ================================= TOTAL WEIGHT =======================================
 function calculate_total_weight(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
     const total_weight = flt(row.qty) * flt(row.custom_kilogramskgs);
@@ -289,10 +268,25 @@ function calculate_total_weight(frm, cdt, cdn) {
     calculate_scrap_and_transport(frm, cdt, cdn);
 }
 
+// ================================= TOTAL METER =======================================
+function calculate_meter(frm, cdt, cdn) {
+    const row = locals[cdt][cdn];
+    const length = flt(row.custom_length);
+    const qty = flt(row.qty);
 
-// ====================================================
-// AMOUNT
-// ====================================================
+    const mtr_per_unit = length / 1000;
+    const total_mtr = mtr_per_unit * qty;
+
+    if (flt(row.custom_mtr_per_unit) !== flt(mtr_per_unit, 4)) {
+        frappe.model.set_value(cdt, cdn, "custom_mtr_per_unit", flt(mtr_per_unit, 4));
+    }
+
+    if (flt(row.custom_total_mtr) !== flt(total_mtr, 4)) {
+        frappe.model.set_value(cdt, cdn, "custom_total_mtr", flt(total_mtr, 4));
+    }
+}
+
+// =========================== AMOUNT =================================
 function calculate_custom_amount(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
 
@@ -309,9 +303,7 @@ function calculate_custom_amount(frm, cdt, cdn) {
 }
 
 
-// ====================================================
-// SCRAP & TRANSPORT
-// ====================================================
+// ============================ SCRAP & TRANSPORT =====================================
 function calculate_scrap_and_transport(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
 
@@ -323,9 +315,7 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
     frappe.model.set_value(cdt, cdn, "custom_transportation_cost_", flt(total_weight * transport_rate, 2));
 }
 
-// =====================================================
-// RATE CALCULATION (NEW)
-// =====================================================
+// ============================= RATE CALCULATION ==========================================
 function calculate_rate_from_weight(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
     const kg = flt(row.custom_kilogramskgs) || 0;
@@ -335,19 +325,6 @@ function calculate_rate_from_weight(frm, cdt, cdn) {
     frappe.model.set_value(cdt, cdn, "rate", flt(rate, 2));
 }
 
-// function calculate_rate_from_weight(frm, cdt, cdn) {
-//     const row = locals[cdt][cdn];
-//     const rate_per_kg = flt(row.custom_rate_per_kg) || 0;
-//     const weight = flt(row.custom_total_weights) || 0;
-
-//     if (rate_per_kg && weight) {
-//         const rate = rate_per_kg * weight;
-
-//         frappe.model.set_value(cdt, cdn, "rate", flt(rate, 2));
-//     }
-// }
-
-
 function update_amount(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
     row.amount = (flt(row.qty) * flt(row.rate));
@@ -356,10 +333,7 @@ function update_amount(frm, cdt, cdn) {
     calculate_total(frm);
 }
 
-
-// ===============================
-// CALCULATE PARENT TOTAL
-// ===============================
+// ====================== CALCULATE PARENT TOTAL ============================
 function calculate_total(frm) {
     let total = 0;
 
