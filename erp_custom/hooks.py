@@ -343,12 +343,13 @@ fixtures = [
         ]
     },
 
-    {
-        "doctype": "Page",
-        "filters": [
-            ["name", "in", ["purchase-dashboard"]]
-        ]
-    },
+    # {
+    #     "doctype": "Page",
+    #     "filters": [
+    #         ["name", "in", ["purchase-dashboard"]]
+    #     ]
+    # },
+    
      # Dashboard Charts
     {
     "doctype": "Dashboard Chart",
