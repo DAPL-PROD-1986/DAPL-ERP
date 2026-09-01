@@ -13,7 +13,6 @@ class RequestforQuotation(Document):
         self.set_reference_numbers()
 
     def set_reference_numbers(self):
-
         if not self.items:
             return
 
@@ -34,19 +33,13 @@ class RequestforQuotation(Document):
         self.custom_cutting_plan_no = mr.custom_cutting_plan_no
 
 
-# =========================================================
-# CUSTOM RFQ EMAIL
-# =========================================================
+# ======================= CUSTOM RFQ EMAIL ===================================
 def send_email_background(doc, method=None):
 
-    # -------------------------------------------------
-    # Prevent ERPNext default RFQ email
-    # -------------------------------------------------
+    # --------------------- Prevent ERPNext default RFQ email -----------------------------------
     doc.flags.ignore_email = True
 
-    # -------------------------------------------------
-    # Collect Supplier Emails
-    # -------------------------------------------------
+    # -------------------- Collect Supplier Emails --------------------------------
     recipients = []
 
     for s in doc.suppliers:
@@ -57,16 +50,13 @@ def send_email_background(doc, method=None):
         frappe.log_error("No supplier emails found", "RFQ Email")
         return
 
-    # -------------------------------------------------
-    # Optional Columns Logic (UNCHANGED)
-    # -------------------------------------------------
+    # -------------------- Optional Columns Logic (UNCHANGED) -------------------------------
     optional_fields = [
         ("Length", "custom_length"),
         ("Width", "custom_width"),
         ("Thickness", "custom_thickness"),
         ("Outer Diameter", "custom_outer_diameter"),
-        ("Inner Diameter", "custom_inner_diameter"),
-        ("Wall Thickness", "custom_wall_thickness")
+        ("Inner Diameter", "custom_inner_diameter")
     ]
 
     visible_fields = []
@@ -77,13 +67,11 @@ def send_email_background(doc, method=None):
                 visible_fields.append((label, fieldname))
                 break
 
-    # -------------------------------------------------
-    # Table Header (UPDATED WITH NEW FIELDS)
-    # -------------------------------------------------
+    # ----------------------- Table Header (UPDATED WITH NEW FIELDS) ------------------------------
     header_html = """
         <th>Item Code</th>
+        <th>Material Type</th>
         <th>Description</th>
-        <th>Schedule Date</th>
         <th>Qty</th>
         <th>UOM</th>
     """
@@ -99,18 +87,15 @@ def send_email_background(doc, method=None):
         <th>Remarks</th>
     """
 
-    # -------------------------------------------------
-    # Table Rows (UPDATED WITH NEW FIELDS)
-    # -------------------------------------------------
+    # ---------------------- Table Rows (UPDATED WITH NEW FIELDS) -------------------------------
     items_html = ""
 
     for d in doc.items:
-
         row = f"""
         <tr>
             <td>{d.item_code or ""}</td>
+            <td>{d.custom_material_type or ""}</td>
             <td>{d.description or ""}</td>
-            <td>{d.schedule_date or ""}</td>
             <td>{d.qty or ""}</td>
             <td>{d.uom or ""}</td>
         """
@@ -129,14 +114,10 @@ def send_email_background(doc, method=None):
 
         items_html += row
 
-    # -------------------------------------------------
-    # Email Subject
-    # -------------------------------------------------
+    # -------------------- Email Subject ------------------------------
     subject = f"Request for Quotation: {doc.name}"
 
-    # -------------------------------------------------
-    # Email Message
-    # -------------------------------------------------
+    # -------------------- Email Message ------------------------------
     message = f"""
     <h2 style="color:#2c3e50;">Dear Supplier,</h2>
     <p>{doc.message_for_supplier or ""}</p><br>
@@ -149,15 +130,10 @@ def send_email_background(doc, method=None):
 
     <h3 style="border-bottom:2px solid #444; padding-bottom:4px;">Item Details</h3>
 
-    <table border="1" cellpadding="8" cellspacing="0"
-        style="border-collapse:collapse; width:100%; text-align:center;">
+    <table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse; width:100%; text-align:center;">
 
-        <tr style="background-color:#f2f2f2;">
-            {header_html}
-        </tr>
-
+        <tr style="background-color:#f2f2f2;"> {header_html} </tr>
         {items_html}
-
     </table>
 
     <br>
@@ -185,9 +161,7 @@ def send_email_background(doc, method=None):
     # frappe.msgprint(f"Reference File : {reference_file}")
     # frappe.msgprint(f"Attachment Count : {len(attachments)}")
 
-    # -------------------------------------------------
-    # Send Email
-    # -------------------------------------------------
+    # ---------------------- Send Email -------------------------------
     for recipient in recipients:
         frappe.sendmail(
             recipients=[recipient],
@@ -234,9 +208,7 @@ def send_email_background(doc, method=None):
     #     attachments=attachments
     # )
 
-# =========================================================
-# BLOCK ERPNext CORE RFQ EMAIL
-# =========================================================
+# ===================== BLOCK ERPNext CORE RFQ EMAIL ===================================
 import erpnext.buying.doctype.request_for_quotation.request_for_quotation as rfq_core
 
 
