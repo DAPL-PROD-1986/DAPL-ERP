@@ -339,7 +339,7 @@ fixtures = [
     {
         "doctype": "Workspace",
         "filters": [
-            ["name", "in", ["Projects", "Quality", "Frappe HR", "Buying", "Manufacturing"]]
+            ["name", "in", ["Projects", "Quality", "Frappe HR", "Buying", "Manufacturing", "Stock"]]
         ]
     },
 
@@ -349,7 +349,7 @@ fixtures = [
     #         ["name", "in", ["purchase-dashboard"]]
     #     ]
     # },
-    
+
      # Dashboard Charts
     {
     "doctype": "Dashboard Chart",
