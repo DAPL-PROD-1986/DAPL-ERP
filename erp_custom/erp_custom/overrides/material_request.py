@@ -470,7 +470,6 @@ def calculate_values(item):
     base_weight = 0
 
     # ======================= MANUAL ENTRY MODE ============================
-
     if shape == "N/A":
         manual_kg = flt(get("custom_kilogramskgs"))
         manual_total_weight = flt(get("custom_total_weight"))
@@ -503,7 +502,6 @@ def calculate_values(item):
         return item
 
     # ========================= AUTO CALCULATION MODE ===================================
-
     if not density:
         setv("custom_kilogramskgs", 0)
         setv("custom_total_weight", 0)
@@ -566,11 +564,31 @@ def calculate_values(item):
         setv("custom_kilogramskgs", kg_per_unit)
         setv("custom_total_weight", total_weight)
 
-    # ========================= AUTO METER CALCULATION =================================
-    mtr_per_unit = flt(length / 1000, 4)
-    total_mtr = flt(mtr_per_unit * qty, 4)
-    setv("custom_mtr_per_unit", mtr_per_unit)
-    setv("custom_total_mtr", total_mtr)
+    # ========================= METER CALCULATION =================================
+    manual_mtr_per_unit = flt(get("custom_mtr_per_unit"))
+    manual_total_mtr = flt(get("custom_total_mtr"))
+
+    # ========================= MANUAL ENTRY MODE =========================
+    if shape == "N/A":
+
+        # Mtr Per Unit → Total Mtr
+        if manual_mtr_per_unit > 0 and qty > 0:
+            manual_total_mtr = manual_mtr_per_unit * qty
+
+        # Total Mtr → Mtr Per Unit
+        elif manual_total_mtr > 0 and qty > 0:
+            manual_mtr_per_unit = manual_total_mtr / qty
+
+        setv("custom_mtr_per_unit", flt(manual_mtr_per_unit, 4))
+        setv("custom_total_mtr", flt(manual_total_mtr, 4))
+
+    # ========================= AUTO ENTRY MODE =========================
+    else:
+        mtr_per_unit = flt(length / 1000, 4)
+        total_mtr = flt(mtr_per_unit * qty, 4)
+
+        setv("custom_mtr_per_unit", mtr_per_unit)
+        setv("custom_total_mtr",total_mtr)
 
     return item
 
@@ -599,28 +617,10 @@ def upload_material_request_excel(file_url=None):
         return []
 
     # ========================= PROFESSIONAL EXCEL HEADERS ===================================
-
     expected_headers = [
-        "Item Code",
-        "Item Name",
-        "Item Group",
-        "Shape",
-        "Material Type",
-        "Qty",
-        "UOM",
-        "Length (mm)",
-        "Width (mm)",
-        "Thickness (mm)",
-        "Outer Diameter (mm)",
-        "Inner Diameter (mm)",
-        "Density (kg/m³)",
-        "Kgs Per Unit",
-        "Total Weight",
-        "Mtr Per Unit",
-        "Total Mtr",
-        "Description",
-        "BOM No",
-        "BOM Part No"
+        "Item Code", "Item Name", "Item Group", "Shape", "Material Type", "Qty", "UOM",
+        "Length (mm)", "Width (mm)", "Thickness (mm)", "Outer Diameter (mm)", "Inner Diameter (mm)", "Density (kg/m³)",
+        "Kgs Per Unit", "Total Weight", "Mtr Per Unit", "Total Mtr", "Description", "BOM No", "BOM Part No"
     ]
 
     headers = [str(value).strip()
@@ -671,7 +671,6 @@ def upload_material_request_excel(file_url=None):
 
     # ======================= READ EXCEL DATA =================================
     for excel_row in rows[1:]:
-
         if not any(
             value is not None
             and str(value).strip()
@@ -699,25 +698,15 @@ def upload_material_request_excel(file_url=None):
         child = {}
 
         # ======================= MAP EXCEL -> FRAPPE =============================
-
         for excel_field, frappe_field in field_map.items():
             value = get_value(excel_field)
             if frappe_field in ["qty"]:
                 value = flt(value)
 
             elif frappe_field in [
-                "custom_length",
-                "custom_width",
-                "custom_thickness",
-                "custom_outer_diameter",
-                "custom_inner_diameter",
-                "custom_density",
-                "custom_kilogramskgs",
-                "custom_total_weight",
-                "custom_mtr_per_unit",
-                "custom_total_mtr"
+                "custom_length", "custom_width", "custom_thickness", "custom_outer_diameter", "custom_inner_diameter", "custom_density",
+                "custom_kilogramskgs", "custom_total_weight", "custom_mtr_per_unit", "custom_total_mtr"
             ]:
-
                 value = flt(value)
 
             elif value is None:
@@ -725,7 +714,6 @@ def upload_material_request_excel(file_url=None):
 
             else:
                 value = str(value).strip()
-
             child[frappe_field] = value
 
             # Always set Conversion Factor = 1
@@ -782,7 +770,6 @@ def download_material_request_excel():
     worksheet.title = "Material Request"
 
     # ======================== HEADERS ===============================
-
     headers = [
         "Item Code", "Item Name", "Item Group", "Shape", "Material Type", "Qty", "UOM",
         "Length (mm)", "Width (mm)", "Thickness (mm)", "Outer Diameter (mm)", "Inner Diameter (mm)", "Density (kg/m³)",

@@ -2,6 +2,7 @@
 import frappe
 import math
 from openpyxl import load_workbook
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from frappe.utils import flt
 from erpnext.manufacturing.doctype.bom_creator.bom_creator import BOMCreator
 
@@ -15,6 +16,136 @@ def recalc_item(item):
         item = json.loads(item)
 
     return calculate_values(item)
+
+# def calculate_values(item):
+#     import math
+#     from frappe.utils import flt
+
+#     def get(key):
+#         if isinstance(item, dict):
+#             return item.get(key)
+#         return getattr(item, key, None)
+
+#     def setv(key, value):
+#         if isinstance(item, dict):
+#             item[key] = value
+#         else:
+#             setattr(item, key, value)
+
+#     density = flt(get("custom_density"))
+#     qty = flt(get("qty"))
+
+#     item_group = (item.get("item_group") if isinstance(item, dict)
+#         else getattr(item, "item_group", None))
+
+#     shape = (item.get("custom_shape") if isinstance(item, dict)
+#         else getattr(item, "custom_shape", None))
+
+#     L = flt(get("custom_length"))
+#     W = flt(get("custom_width"))
+#     T = flt(get("custom_thickness"))
+#     OD = flt(get("custom_outer_diameter"))
+#     ID = flt(get("custom_inner_diameter"))
+
+#     π = math.pi
+#     base = 0
+
+#     # ============================ MANUAL ENTRY MODE ========================================
+#     if shape == "N/A":
+#         manual_kg = flt(get("custom_kilogramskgs"))
+#         manual_total = flt(get("custom_total_weight"))
+
+#         manual_mtr = flt(get("custom_mtr_per_unit"))
+#         manual_total_mtr = flt(get("custom_total_mtr"))
+
+#         # Auto total from KG
+#         if manual_kg > 0 and qty > 0:
+#             manual_total = manual_kg * qty
+
+#         # Auto KG from total
+#         elif manual_total > 0 and qty > 0:
+#             manual_kg = manual_total / qty
+
+#         mtr_per_unit = flt(L / 1000, 4)
+#         total_mtr = flt(mtr_per_unit * qty, 4)
+
+#         setv("custom_kilogramskgs", flt(manual_kg, 4))
+#         setv("custom_total_weight", flt(manual_total, 4))
+
+#         setv("custom_mtr_per_unit", flt(manual_mtr, 4))
+#         setv("custom_total_mtr", flt(manual_total_mtr, 4))
+
+#         scrap_pct = flt(get("custom_scrap_margin_percentage"))
+#         transport_rate = flt(get("custom_transportation_cost"))
+
+#         setv("custom_scrap_margin_kgs", flt(manual_total * scrap_pct / 100, 4))
+#         setv("custom_transportation_cost_kgs", flt(manual_total * transport_rate, 2))
+#         return item
+
+#     # ======================= AUTO CALCULATION MODE =========================================
+
+#     if not density:
+#         setv("custom_kilogramskgs", 0)
+#         setv("custom_total_weight", 0)
+#         return item
+
+#     # ================= PLATES =================
+#     if item_group == "Plates":
+#         if shape == "Rectangle" and L and W and T:
+#             base = (L * W * T * density) / 1_000_000
+
+#         elif shape == "Circle" and OD and T:
+#             base = (π * (OD / 2) ** 2 * T * density) / 1_000_000
+
+#         elif shape == "Hollow":
+#             if ID and T and L:
+#                 OD_calc = OD if OD else (ID + 2 * T)
+#                 outer = (OD_calc / 2) ** 2
+#                 inner = (ID / 2) ** 2
+#                 base = (π * (outer - inner) * L * density) / 1_000_000
+
+#     # ================= PIPES / TUBES =================
+#     elif item_group in ["Pipes", "Tubes"]:
+#         if shape == "Hollow" and OD and T and L:
+#             ID_calc = OD - (2 * T)
+
+#             if ID_calc > 0:
+#                 base = (π * ((OD / 2) ** 2 - (ID_calc / 2) ** 2) * L * density) / 1_000_000
+
+#     # ================= FORGINGS =================
+#     elif item_group == "Forgings":
+#         if shape == "Hollow" and OD and T and L:
+#             ID_calc = OD - (2 * T)
+#             base = (π * ((OD / 2) ** 2 - (ID_calc / 2) ** 2) * L * density) / 1_000_000
+
+#         elif shape == "Circle" and OD and T:
+#             base = (π * (OD / 2) ** 2 * T * density) / 1_000_000
+
+#     # ================= RODS =================
+#     elif item_group == "Rods":
+#         if shape == "Circle" and OD and L:
+#             base = (π * (OD / 2) ** 2 * L * density) / 1_000_000
+
+#     # ================= FLANGES =================
+#     elif item_group in ["Flanges", "Rings"]:
+#         if OD and ID and T:
+#             base = (π * ((OD / 2) ** 2 - (ID / 2) ** 2) * T * density) / 1_000_000
+
+#     # ============================== FINAL =========================================
+#     kg_per_unit = flt(base, 4)
+#     total = flt(qty * kg_per_unit, 4)
+
+#     setv("custom_kilogramskgs", kg_per_unit)
+#     setv("custom_total_weight", total)
+
+#     scrap_pct = flt(get("custom_scrap_margin_percentage"))
+#     transport_rate = flt(get("custom_transportation_cost"))
+
+#     setv("custom_scrap_margin_kgs", flt(total * scrap_pct / 100, 4))
+#     setv("custom_transportation_cost_kgs", flt(total * transport_rate, 2))
+
+#     return item
+
 
 def calculate_values(item):
     import math
@@ -34,122 +165,147 @@ def calculate_values(item):
     density = flt(get("custom_density"))
     qty = flt(get("qty"))
 
-    item_group = (
-        item.get("item_group") if isinstance(item, dict)
-        else getattr(item, "item_group", None)
-    )
+    item_group = (item.get("item_group") if isinstance(item, dict)
+        else getattr(item, "item_group", None))
 
-    shape = (
-        item.get("custom_shape") if isinstance(item, dict)
-        else getattr(item, "custom_shape", None)
-    )
+    shape = (item.get("custom_shape") if isinstance(item, dict)
+        else getattr(item, "custom_shape", None))
 
     L = flt(get("custom_length"))
     W = flt(get("custom_width"))
     T = flt(get("custom_thickness"))
     OD = flt(get("custom_outer_diameter"))
     ID = flt(get("custom_inner_diameter"))
-    # WALL = flt(get("custom_wall_thickness"))
 
     π = math.pi
     base = 0
 
-    # ============================ MANUAL ENTRY MODE ========================================
-
+    # ========================= MANUAL ENTRY MODE ===================================
     if shape == "N/A":
+        # ===================== MANUAL WEIGHT =====================
         manual_kg = flt(get("custom_kilogramskgs"))
         manual_total = flt(get("custom_total_weight"))
 
-        # Auto total from KG
+        # Kgs Per Unit -> Total Weight
         if manual_kg > 0 and qty > 0:
             manual_total = manual_kg * qty
 
-        # Auto KG from total
+        # Total Weight -> Kgs Per Unit
         elif manual_total > 0 and qty > 0:
             manual_kg = manual_total / qty
 
         setv("custom_kilogramskgs", flt(manual_kg, 4))
         setv("custom_total_weight", flt(manual_total, 4))
 
+        # ===================== MANUAL METER =====================
+        manual_mtr = flt(get("custom_mtr_per_unit"))
+        manual_total_mtr = flt(get("custom_total_mtr"))
+
+        # Mtr Per Unit -> Total Mtr
+        if manual_mtr > 0 and qty > 0:
+            manual_total_mtr = manual_mtr * qty
+
+        # Total Mtr -> Mtr Per Unit
+        elif manual_total_mtr > 0 and qty > 0:
+            manual_mtr = manual_total_mtr / qty
+
+        setv("custom_mtr_per_unit", flt(manual_mtr, 4))
+        setv("custom_total_mtr", flt(manual_total_mtr, 4))
+
+        # ===================== SCRAP / TRANSPORT =====================
         scrap_pct = flt(get("custom_scrap_margin_percentage"))
         transport_rate = flt(get("custom_transportation_cost"))
-
         setv("custom_scrap_margin_kgs", flt(manual_total * scrap_pct / 100, 4))
         setv("custom_transportation_cost_kgs", flt(manual_total * transport_rate, 2))
+
         return item
 
-    # ======================= AUTO CALCULATION MODE =========================================
-
+    # ========================= AUTO CALCULATION MODE ======================================
     if not density:
         setv("custom_kilogramskgs", 0)
         setv("custom_total_weight", 0)
-        return item
+    else:
+        # ================= PLATES =================
+        if item_group == "Plates":
+            if shape == "Rectangle" and L and W and T:
+                base = (L * W * T * density) / 1_000_000
 
-    # ================= PLATES =================
+            elif shape == "Circle" and OD and T:
+                base = (π * (OD / 2) ** 2 * T * density) / 1_000_000
 
-    if item_group == "Plates":
+            elif shape == "Hollow":
+                if ID and T and L:
+                    OD_calc = OD if OD else (ID + 2 * T)
+                    outer = (OD_calc / 2) ** 2
+                    inner = (ID / 2) ** 2
+                    base = (π * (outer - inner) * L * density) / 1_000_000
 
-        if shape == "Rectangle" and L and W and T:
-            base = (L * W * T * density) / 1_000_000
 
-        elif shape == "Circle" and OD and T:
-            base = (π * (OD / 2) ** 2 * T * density) / 1_000_000
+        # ================= PIPES / TUBES =================
+        elif item_group in ["Pipes", "Tubes"]:
+            if shape == "Hollow" and OD and T and L:
+                ID_calc = OD - (2 * T)
+                if ID_calc > 0:
+                    base = (π * ((OD / 2) ** 2 - (ID_calc / 2) ** 2) * L * density) / 1_000_000
 
-        elif shape == "Hollow":
-
-            if ID and T and L:
-
-                OD_calc = OD if OD else (ID + 2 * T)
-
-                outer = (OD_calc / 2) ** 2
-                inner = (ID / 2) ** 2
-                base = (π * (outer - inner) * L * density) / 1_000_000
-
-    # ================= PIPES / TUBES =================
-
-    elif item_group in ["Pipes", "Tubes"]:
-        if shape == "Hollow" and OD and T and L:
-            ID_calc = OD - (2 * T)
-
-            if ID_calc > 0:
+        # ================= FORGINGS =================
+        elif item_group == "Forgings":
+            if shape == "Hollow" and OD and T and L:
+                ID_calc = OD - (2 * T)
                 base = (π * ((OD / 2) ** 2 - (ID_calc / 2) ** 2) * L * density) / 1_000_000
 
-    # ================= FORGINGS =================
+            elif shape == "Circle" and OD and T:
+                base = (π * (OD / 2) ** 2 * T * density) / 1_000_000
 
-    elif item_group == "Forgings":
-        if shape == "Hollow" and OD and T and L:
-            ID_calc = OD - (2 * T)
-            base = (π * ((OD / 2) ** 2 - (ID_calc / 2) ** 2) * L * density) / 1_000_000
+        # ================= RODS =================
+        elif item_group == "Rods":
+            if shape == "Circle" and OD and L:
+                base = (π * (OD / 2) ** 2 * L * density) / 1_000_000
 
-        elif shape == "Circle" and OD and T:
-            base = (π * (OD / 2) ** 2 * T * density) / 1_000_000
 
-    # ================= RODS =================
+        # ================= FLANGES / RINGS =================
+        elif item_group in ["Flanges", "Rings"]:
+            if OD and ID and T:
+                base = (π * ((OD / 2) ** 2 - (ID / 2) ** 2) * T * density) / 1_000_000
 
-    elif item_group == "Rods":
-        if shape == "Circle" and OD and L:
-            base = (π * (OD / 2) ** 2 * L * density) / 1_000_000
+        # ================= FINAL WEIGHT =================
+        kg_per_unit = flt(base, 4)
+        total = flt(qty * kg_per_unit, 4)
 
-    # ================= FLANGES =================
+        setv("custom_kilogramskgs", kg_per_unit)
+        setv("custom_total_weight", total)
 
-    elif item_group in ["Flanges", "Rings"]:
-        if OD and ID and T:
-            base = (π * ((OD / 2) ** 2 - (ID / 2) ** 2) * T * density) / 1_000_000
 
-    # ============================== FINAL =========================================
+    # ====================== METER CALCULATION ====================================
+    manual_mtr = flt(get("custom_mtr_per_unit"))
+    manual_total_mtr = flt(get("custom_total_mtr"))
 
-    kg_per_unit = flt(base, 4)
-    total = flt(qty * kg_per_unit, 4)
+    # ------------------------If manual meter value already exists, preserve it --------------------------------------
 
-    setv("custom_kilogramskgs", kg_per_unit)
-    setv("custom_total_weight", total)
+    if manual_mtr > 0 and qty > 0:
+        setv("custom_mtr_per_unit", flt(manual_mtr, 4))
+        setv("custom_total_mtr", flt(manual_mtr * qty, 4))
 
+    elif manual_total_mtr > 0 and qty > 0:
+        setv("custom_mtr_per_unit", flt(manual_total_mtr / qty, 4))
+        setv("custom_total_mtr", flt(manual_total_mtr, 4))
+
+    else:
+        # Existing automatic meter calculation
+        mtr_per_unit = flt(L / 1000, 4)
+        total_mtr = flt(mtr_per_unit * qty, 4)
+
+        setv("custom_mtr_per_unit", mtr_per_unit)
+        setv("custom_total_mtr", total_mtr)
+
+
+    # ====================== SCRAP / TRANSPORT =====================================
+
+    final_total = flt(get("custom_total_weight"))
     scrap_pct = flt(get("custom_scrap_margin_percentage"))
     transport_rate = flt(get("custom_transportation_cost"))
-
-    setv("custom_scrap_margin_kgs", flt(total * scrap_pct / 100, 4))
-    setv("custom_transportation_cost_kgs", flt(total * transport_rate, 2))
-
+    setv("custom_scrap_margin_kgs", flt(final_total * scrap_pct / 100, 4))
+    setv("custom_transportation_cost_kgs", flt(final_total * transport_rate, 2))
     return item
 
 # ================================ EXCEL UPLOAD METHOD =========================================
@@ -186,12 +342,15 @@ def upload_bom_excel(file_url):
         "Length (mm)": "custom_length",
         "Width (mm)": "custom_width",
         "Thickness (mm)": "custom_thickness",
-        "Density (kg/m³)": "custom_density",
         "Outer Diameter (mm)": "custom_outer_diameter",
         "Inner Diameter (mm)": "custom_inner_diameter",
-        # "Wall Thickness (mm)": "custom_wall_thickness",
+        "Density (kg/m³)": "custom_density",
+
         "Kgs Per Unit": "custom_kilogramskgs",
         "Total Weight": "custom_total_weight",
+        "Mtr Per Unit": "custom_mtr_per_unit",
+        "Total Mtr": "custom_total_mtr",
+
         "Scrap Margin (%)": "custom_scrap_margin_percentage",
         "Scrap Margin (Kg)": "custom_scrap_margin_kgs",
         "Transportation Cost (₹ / Kg)": "custom_transportation_cost",
@@ -230,7 +389,6 @@ def upload_bom_excel(file_url):
     return data
 
 # ========================= CUSTOM BOM CREATOR =========================================
-
 class CustomBOMCreator(BOMCreator):
     @frappe.whitelist()
     def process_item_selection(self, item_idx=None):
@@ -247,12 +405,9 @@ class CustomBOMCreator(BOMCreator):
             calculate_values(item)
 
     def create_bom(self, row, production_item_wise_rm):
-
         bom_creator_item = row.name if row.name != self.name else ""
 
-        if frappe.db.exists(
-            "BOM",
-            {
+        if frappe.db.exists("BOM", {
                 "bom_creator": self.name,
                 "item": row.item_code,
                 "bom_creator_item": bom_creator_item,
@@ -262,7 +417,6 @@ class CustomBOMCreator(BOMCreator):
             return
 
         bom = frappe.new_doc("BOM")
-
         bom.update({
             "item": row.item_code,
             "bom_type": "Production",
@@ -279,12 +433,7 @@ class CustomBOMCreator(BOMCreator):
             bom.transfer_material_against = "Work Order"
 
         BOM_FIELDS = [
-            "company",
-            "rm_cost_as_per",
-            "project",
-            "currency",
-            "conversion_rate",
-            "buying_price_list",
+            "company", "rm_cost_as_per", "project", "currency", "conversion_rate", "buying_price_list",
         ]
 
         for field in BOM_FIELDS:
@@ -300,9 +449,7 @@ class CustomBOMCreator(BOMCreator):
             item.do_not_explode = 1
 
             if (item.item_code, item.name) in production_item_wise_rm:
-                bom_no = production_item_wise_rm.get(
-                    (item.item_code, item.name)
-                ).bom_no
+                bom_no = production_item_wise_rm.get((item.item_code, item.name)).bom_no
                 item.do_not_explode = 0
 
             item_args = {
@@ -325,12 +472,14 @@ class CustomBOMCreator(BOMCreator):
                 "custom_length",
                 "custom_width",
                 "custom_thickness",
-                "custom_density",
                 "custom_outer_diameter",
                 "custom_inner_diameter",
-                # "custom_wall_thickness",
+                "custom_density",
+
                 "custom_kilogramskgs",
                 "custom_total_weight",
+                "custom_mtr_per_unit",
+                "custom_total_mtr",
                 "custom_scrap_margin_percentage",
                 "custom_scrap_margin_kgs",
                 "custom_transportation_cost",
@@ -346,12 +495,10 @@ class CustomBOMCreator(BOMCreator):
                 "allow_scrap_items": not item.get("is_phantom_item"),
                 "include_item_in_manufacturing": 1,
             })
-
             bom.append("items", item_args)
 
         bom.save(ignore_permissions=True)
         bom.submit()
-
         production_item_wise_rm[(row.item_code, row.name)].bom_no = bom.name
 
 
@@ -360,37 +507,35 @@ import io
 
 @frappe.whitelist()
 def download_bom_template():
-
     wb = Workbook()
     ws = wb.active
     ws.title = "BOM Template"
 
     # ========================  ✅ HEADERS (MATCH YOUR SYSTEM) =========================================
-
-    headers = [
-        "Part Number",
-        "Item Code",
-		"Material Type",
-        "Item Group",
-        "Shape",
-        "Qty",
-        "Finished Goods Item",
+    headers = ["Part Number", "Item Code", "Material Type",
+        "Item Group", "Shape", "Qty", "Finished Goods Item",
 
         # Custom Fields
-        "Length (mm)",
-        "Width (mm)",
-        "Thickness (mm)",
-        "Outer Diameter (mm)",
-        "Inner Diameter (mm)",
-        "Density (kg/m³)",
-		"Kgs Per Unit",
-		"Total Weight"
-    ]
-
+        "Length (mm)", "Width (mm)", "Thickness (mm)", "Outer Diameter (mm)", "Inner Diameter (mm)",
+        "Density (kg/m³)", "Kgs Per Unit", "Total Weight", "Mtr Per Unit", "Total Mtr"]
     ws.append(headers)
 
-    # ========================= ✅ AUTO WIDTH =====================================
+    # ========================= HEADER STYLE =========================
+    header_fill = PatternFill(fill_type="solid", fgColor="DCFCE7")
+    header_font = Font(bold=True, color="166534")
+    header_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    border_side = Side(style="thin", color="B7D7C0")
+    header_border = Border(left=border_side, right=border_side, top=border_side, bottom=border_side)
 
+    for cell in ws[1]:
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = header_alignment
+        cell.border = header_border
+
+    ws.row_dimensions[1].height = 35
+
+    # ========================= ✅ AUTO WIDTH =====================================
     for col in ws.columns:
         max_length = 0
         col_letter = col[0].column_letter
@@ -398,11 +543,9 @@ def download_bom_template():
         for cell in col:
             if cell.value:
                 max_length = max(max_length, len(str(cell.value)))
-
         ws.column_dimensions[col_letter].width = max_length + 3
 
     # ========================== ✅ SAVE FILE =======================================
-
     file_stream = io.BytesIO()
     wb.save(file_stream)
     file_stream.seek(0)
@@ -415,5 +558,4 @@ def download_bom_template():
     })
 
     file_doc.insert(ignore_permissions=True)
-
     return file_doc.file_url

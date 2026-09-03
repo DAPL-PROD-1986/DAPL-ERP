@@ -62,24 +62,25 @@ frappe.ui.form.on('BOM Creator', {
 });
 
 frappe.ui.form.on('BOM Creator Item', {
-
     qty: trigger_calc,
+    item_group: trigger_calc,
     custom_length: trigger_calc,
     custom_width: trigger_calc,
     custom_thickness: trigger_calc,
-    custom_density: trigger_calc,
     custom_outer_diameter: trigger_calc,
     custom_inner_diameter: trigger_calc,
-    // custom_wall_thickness: trigger_calc,
-    custom_scrap_margin_percentage: trigger_calc,
-    custom_transportation_cost: trigger_calc,
-    item_group: trigger_calc,
-
+    custom_density: trigger_calc,
+    
     custom_kilogramskgs: trigger_calc,
     custom_total_weight: trigger_calc,
 
-    custom_shape(frm, cdt, cdn) {
+    custom_mtr_per_unit: trigger_calc,
+    custom_total_mtr: trigger_calc,
 
+    custom_scrap_margin_percentage: trigger_calc,
+    custom_transportation_cost: trigger_calc,
+
+    custom_shape(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
 
         // ====================== MANUAL ENTRY MODE ===============================
@@ -90,7 +91,6 @@ frappe.ui.form.on('BOM Creator Item', {
             row.custom_thickness = 0;
             row.custom_outer_diameter = 0;
             row.custom_inner_diameter = 0;
-            // row.custom_wall_thickness = 0;
 
             frm.refresh_field("items");
             return;
@@ -115,8 +115,9 @@ function trigger_calc(frm, cdt, cdn) {
 
     // ================== MANUAL MODE =======================
     if (row.custom_shape === "N/A") {
-
         let qty = flt(row.qty);
+
+        // ===================== MANUAL WEIGHT =====================
         let kg = flt(row.custom_kilogramskgs);
         let total = flt(row.custom_total_weight);
 
@@ -128,6 +129,20 @@ function trigger_calc(frm, cdt, cdn) {
         // Auto kg
         else if (total > 0 && qty > 0) {
             row.custom_kilogramskgs = total / qty;
+        }
+
+         // ===================== MANUAL METER =====================
+        let mtr = flt(row.custom_mtr_per_unit);
+        let total_mtr = flt(row.custom_total_mtr);
+
+        // Mtr Per Unit → Total Mtr
+        if (mtr > 0 && qty > 0) {
+            row.custom_total_mtr = mtr * qty;
+        }
+
+        // Total Mtr → Mtr Per Unit
+        else if (total_mtr > 0 && qty > 0) {
+            row.custom_mtr_per_unit = total_mtr / qty;
         }
 
         frm.refresh_field("items");
@@ -151,7 +166,6 @@ function trigger_calc(frm, cdt, cdn) {
         }
     });
 }
-
 
 function calculate_total_bom_weight(frm) {
     let total = 0;

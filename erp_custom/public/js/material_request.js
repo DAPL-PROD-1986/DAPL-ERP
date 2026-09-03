@@ -385,6 +385,16 @@
 frappe.ui.form.on("Material Request", {
     after_save(frm) {},
 
+    setup(frm) {
+        frm.set_query("bom_no", "items", function () {
+            return {
+                filters: {
+                    docstatus: 1
+                }
+            };
+        });
+    },
+
     refresh(frm) {
         if (frm.doc.docstatus !== 0) return;
 
@@ -647,7 +657,6 @@ frappe.ui.form.on("Material Request Item", {
         });
     },
 
-
     // ========================= MATERIAL TYPE ==================================
     custom_material_type(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
@@ -822,16 +831,52 @@ function calculate_kgs(frm, cdt, cdn) {
 
 
 // ======================= MTR CALC : Mtr Per Unit = Len / 1000 | Total Mtr = Mtr Per Unit × Qty ======================
+// function calculate_meter(frm, cdt, cdn) {
+//     const row = locals[cdt][cdn];
+//     const length = flt(row.custom_length);
+//     const qty = flt(row.qty);
+
+//     // --------------------- Mtr Per Unit ----------------------------------
+//     const mtr_per_unit = length / 1000;
+
+//     // ----------------------- Total Mtr --------------------------------------
+//     const total_mtr = mtr_per_unit * qty;
+//     frappe.model.set_value(cdt, cdn, "custom_mtr_per_unit", flt(mtr_per_unit, 4));
+//     frappe.model.set_value(cdt, cdn, "custom_total_mtr", flt(total_mtr, 4));
+// }
+
 function calculate_meter(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
-    const length = flt(row.custom_length);
+
     const qty = flt(row.qty);
+    const length = flt(row.custom_length);
 
-    // --------------------- Mtr Per Unit ----------------------------------
+    // ============================== MANUAL ENTRY MODE ==============================
+    if (row.custom_shape === "N/A") {
+
+        let mtr_per_unit = flt(row.custom_mtr_per_unit);
+        let total_mtr = flt(row.custom_total_mtr);
+
+        // Mtr Per Unit → Total Mtr
+        if (mtr_per_unit > 0 && qty > 0) {
+            total_mtr = mtr_per_unit * qty;
+        }
+
+        // Total Mtr → Mtr Per Unit
+        else if (total_mtr > 0 && qty > 0) {
+            mtr_per_unit = total_mtr / qty;
+        }
+
+        frappe.model.set_value(cdt, cdn, "custom_mtr_per_unit", flt(mtr_per_unit, 4));
+        frappe.model.set_value(cdt, cdn, "custom_total_mtr", flt(total_mtr, 4));
+
+        return;
+    }
+
+    // ============================== AUTO MODE ==============================
     const mtr_per_unit = length / 1000;
-
-    // ----------------------- Total Mtr --------------------------------------
     const total_mtr = mtr_per_unit * qty;
+
     frappe.model.set_value(cdt, cdn, "custom_mtr_per_unit", flt(mtr_per_unit, 4));
     frappe.model.set_value(cdt, cdn, "custom_total_mtr", flt(total_mtr, 4));
 }
