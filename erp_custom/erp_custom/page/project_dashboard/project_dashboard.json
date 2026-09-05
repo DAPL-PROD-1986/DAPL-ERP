@@ -1,0 +1,19 @@
+{
+ "content": null,
+ "creation": "2026-09-04 14:50:55.011947",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2026-09-04 14:50:55.011947",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "project-dashboard",
+ "owner": "Administrator",
+ "page_name": "project-dashboard",
+ "roles": [],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Project Dashboard"
+}

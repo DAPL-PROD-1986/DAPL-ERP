@@ -375,26 +375,13 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
     <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light">
         <div class="btn-group" role="group" id="page_size_group">
-            <button class="btn btn-outline-success active page-size-btn" data-size="20">
-                20
-            </button>
-
-            <button class="btn btn-outline-success page-size-btn" data-size="100">
-                100
-            </button>
-
-            <button class="btn btn-outline-success page-size-btn" data-size="500">
-                500
-            </button>
-
-            <button class="btn btn-outline-success page-size-btn" data-size="2500">
-                All
-            </button>
+            <button class="btn btn-outline-success active page-size-btn" data-size="20"> 20 </button>
+            <button class="btn btn-outline-success page-size-btn" data-size="100"> 100 </button>
+            <button class="btn btn-outline-success page-size-btn" data-size="500"> 500 </button>
+            <button class="btn btn-outline-success page-size-btn" data-size="2500"> All </button>
         </div>
 
-        <button class="btn btn-success btn-sm" id="load_more">
-            Load More
-        </button>
+        <button class="btn btn-success btn-sm" id="load_more"> Load More </button>
     </div>
 </div>
             </div>
@@ -794,7 +781,7 @@ frappe.pages['purchase-dashboard'].on_page_load = function (wrapper) {
 
             html += `
                 <tr>
-                    <td>${r.project || "-"}</td>
+                    <td> ${ r.project ? `<a href="/app/project/${encodeURIComponent(r.project)}" target="_blank"> ${frappe.utils.escape_html(r.project)} </a>` : "-" } </td>
                     <td>${r.tag_name || "-"}</td>
                     <td>${frappe.format(so_basic,{fieldtype:"Currency"})}</td>
                     <td>${frappe.format(so_gst,{fieldtype:"Currency"})}</td>
