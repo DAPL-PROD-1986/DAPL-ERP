@@ -1,10 +1,10 @@
 
 # import frappe
 # import json
-
 # from frappe.utils import flt
 
-# # ======================= FILTER OPTIONS ==============================
+
+# # ====================== FILTER OPTIONS ============================
 # @frappe.whitelist()
 # def get_project_filter_options():
 
@@ -12,6 +12,7 @@
 #         SELECT DISTINCT name
 #         FROM `tabProject`
 #         WHERE name IS NOT NULL
+#         AND name != ''
 #         ORDER BY name
 #     """, as_dict=False)
 
@@ -51,6 +52,7 @@
 #         SELECT DISTINCT name
 #         FROM `tabFiscal Year`
 #         WHERE name IS NOT NULL
+#         AND name != ''
 #         ORDER BY name DESC
 #     """, as_dict=False)
 
@@ -64,117 +66,179 @@
 #     }
 
 
+# # ====================== HELPER - NORMALIZE MULTI SELECT VALUES ==================================
+# def normalize_filter_values(value):
+
+#     if not value:
+#         return []
+
+#     if isinstance(value, str):
+#         return [value]
+
+#     if isinstance(value, list):
+#         return [item for item in value if item]
+
+#     return []
+
 # # ======================= PROJECT DASHBOARD ================================
 # @frappe.whitelist()
 # def get_project_dashboard_data(filters=None, limit=20, offset=0):
 
-#     # ======================== FILTER DATA ===============================
+#     # -------------------- FILTER DATA -------------------------------
 #     if isinstance(filters, str):
 #         filters = json.loads(filters)
 
 #     filters = filters or {}
+
 #     conditions = []
 #     values = {}
 
-#     # ======================= PROJECT ID ==============================
-#     if filters.get("project_id"):
-#         conditions.append("p.name = %(project_id)s")
-#         values["project_id"] = filters["project_id"]
+#     # ==================== PROJECT ID ================================
+#     project_ids = normalize_filter_values(filters.get("project_id"))
+#     if project_ids:
+#         placeholders = []
 
+#         for index, project_id in enumerate(project_ids):
+#             key = f"project_id_{index}"
+#             placeholders.append(f"%({key})s")
+#             values[key] = project_id
 
-#     # ====================== STATUS ============================
-#     if filters.get("status"):
-#         conditions.append("p.status = %(status)s")
-#         values["status"] = filters["status"]
+#         conditions.append(f"p.name IN ({', '.join(placeholders)})")
 
+#     # ================== STATUS =====================
+#     statuses = normalize_filter_values(filters.get("status"))
 
-#     # ======================= PROJECT TYPE ===============================
-#     if filters.get("project_type"):
-#         conditions.append("p.project_type = %(project_type)s")
-#         values["project_type"] = filters["project_type"]
+#     if statuses:
+#         placeholders = []
 
-#     # ======================= PRIORITY ===============================
-#     if filters.get("priority"):
-#         conditions.append("p.priority = %(priority)s")
-#         values["priority"] = filters["priority"]
+#         for index, status in enumerate(statuses):
+#             key = f"status_{index}"
+#             placeholders.append(f"%({key})s")
+#             values[key] = status
 
-#     # ======================== TAG ==============================
-#     if filters.get("tag"):
+#         conditions.append(f"p.status IN ({', '.join(placeholders)})")
+
+#     # ================== PROJECT TYPE ===========================
+#     project_types = normalize_filter_values(filters.get("project_type"))
+
+#     if project_types:
+#         placeholders = []
+
+#         for index, project_type in enumerate(project_types):
+#             key = f"project_type_{index}"
+#             placeholders.append(f"%({key})s")
+#             values[key] = project_type
+
+#         conditions.append(f"p.project_type IN ({', '.join(placeholders)})")
+
+#     # ====================== PRIORITY =============================
+#     priorities = normalize_filter_values(filters.get("priority"))
+
+#     if priorities:
+#         placeholders = []
+#         for index, priority in enumerate(priorities):
+#             key = f"priority_{index}"
+#             placeholders.append(f"%({key})s")
+#             values[key] = priority
+
+#         conditions.append(f"p.priority IN ({', '.join(placeholders)})")
+
+#     # ==================== TAG / ITEM CODE =============================
+#     tags = normalize_filter_values(filters.get("tag"))
+
+#     if tags:
+#         placeholders = []
+
+#         for index, tag in enumerate(tags):
+#             key = f"tag_{index}"
+#             placeholders.append(f"%({key})s")
+#             values[key] = tag
+
 #         conditions.append("""
 #             EXISTS (
 #                 SELECT 1
 #                 FROM `tabSales Order Item` soi_filter
 #                 WHERE soi_filter.project = p.name
-#                 AND soi_filter.item_code = %(tag)s
+#                 AND soi_filter.item_code IN (
+#                     %s
+#                 )
 #             )
-#         """)
-#         values["tag"] = filters["tag"]
+#         """ % ", ".join(placeholders))
 
-#     # ======================== FISCAL YEAR ==============================
-#     if filters.get("fiscal_year"):
+#     # ====================== FISCAL YEAR ============================
+#     fiscal_years = normalize_filter_values(filters.get("fiscal_year"))
+#     if fiscal_years:
+
+#         placeholders = []
+
+#         for index, fiscal_year in enumerate(fiscal_years):
+#             key = f"fiscal_year_{index}"
+#             placeholders.append(f"%({key})s")
+#             values[key] = fiscal_year
+
 #         conditions.append("""
 #             EXISTS (
 #                 SELECT 1
 #                 FROM `tabSales Order` so_filter
 #                 WHERE so_filter.name = p.sales_order
-#                 AND so_filter.custom_financial_year = %(fiscal_year)s
+#                 AND so_filter.custom_financial_year IN (
+#                     %s
+#                 )
 #             )
-#         """)
+#         """ % ", ".join(placeholders))
 
-#         values["fiscal_year"] = filters["fiscal_year"]
-
-#     # ====================== WHERE CLAUSE ==============================
+#     # ======================= WHERE CLAUSE ======================
 #     where_clause = ""
-#     if conditions:
-#         where_clause = ("WHERE " + " AND ".join(conditions))
 
-#     # ===================== TOTALS ==============================
+#     if conditions:
+#         where_clause = "WHERE " + " AND ".join(conditions)
+
+#     # ========================================================
+#     # TOTAL PROJECTS + TOTAL VALUES
+#     # Important: This calculates totals for ALL filtered projects, not just the current page.
+#     # ========================================================
 #     totals = frappe.db.sql(f"""
 #         SELECT
+#             COUNT(*) AS total_projects,
 #             COALESCE(SUM(basic_value), 0) AS total_basic_value,
 #             COALESCE(SUM(taxes), 0) AS total_taxes,
 #             COALESCE(SUM(purchase_value), 0) AS total_purchase_value
+
 #         FROM (
 #             SELECT
 #                 p.name,
-#                 COALESCE(so.total, 0) AS basic_value,
-#                 COALESCE(so.total_taxes_and_charges, 0) AS taxes,
-#                 COALESCE(so.grand_total, 0) AS purchase_value
+#                 COALESCE(MAX(so.total), 0) AS basic_value,
+#                 COALESCE(MAX(so.total_taxes_and_charges), 0) AS taxes,
+#                 COALESCE(MAX(so.grand_total), 0) AS purchase_value
 #             FROM `tabProject` p
 #             LEFT JOIN `tabSales Order` so
 #                 ON so.name = p.sales_order
 #             {where_clause}
-#             GROUP BY
-#                 p.name,
-#                 so.total,
-#                 so.total_taxes_and_charges,
-#                 so.grand_total
+#             GROUP BY p.name
 #         ) AS project_totals
-#         """,
-#         values, as_dict=True)[0]
+#     """, values, as_dict=True)[0]
 
+#     total_projects = int(totals.get("total_projects") or 0)
 #     total_basic_value = flt(totals.get("total_basic_value") or 0)
 #     total_taxes = flt(totals.get("total_taxes") or 0)
 #     total_purchase_value = flt(totals.get("total_purchase_value") or 0)
 
-
-#     # ====================== CUSTOMER COUNT ============================
+#     # ==================== CUSTOMER COUNT =============================
 #     customer_data = frappe.db.sql(f"""
-#         SELECT COUNT(DISTINCT p.customer) AS customer_count
+#         SELECT
+#             COUNT(DISTINCT p.customer) AS customer_count
 #         FROM `tabProject` p
 #         LEFT JOIN `tabSales Order` so
 #             ON so.name = p.sales_order
 
 #         {where_clause}
-#         """,
-#         values, as_dict=True)[0]
+#     """, values, as_dict=True)[0]
 
 #     customer_count = int(customer_data.get("customer_count") or 0)
 
-#     # ===================== PAGINATION ===================================
+#     # ================= PAGINATION =============================
 #     limit = int(limit or 20)
 #     offset = int(offset or 0)
-
 #     limit_clause = ""
 
 #     if limit > 0:
@@ -186,8 +250,7 @@
 #         values["limit"] = limit
 #         values["offset"] = offset
 
-
-#     # ======================= PROJECT DATA ===============================
+#     # ======================= PROJECT DATA ==============================
 #     projects = frappe.db.sql(f"""
 #         SELECT
 #             p.name,
@@ -195,30 +258,18 @@
 #             p.status,
 #             p.project_type,
 #             p.priority,
-
 #             so.custom_financial_year AS fiscal_year,
-
 #             COALESCE(so.total, 0) AS basic_value,
 #             COALESCE(so.total_taxes_and_charges, 0) AS taxes,
 #             COALESCE(so.grand_total, 0) AS purchase_value,
-
 #             COALESCE(
-#                 GROUP_CONCAT(
-#                     DISTINCT soi.item_code
-#                     ORDER BY soi.item_code
-#                     SEPARATOR ', '
-#                 ),
-#                 ''
-#             ) AS tag
-
+#                 GROUP_CONCAT(DISTINCT soi.item_code
+#                     ORDER BY soi.item_code SEPARATOR ', '), '') AS tag
 #         FROM `tabProject` p
-
 #         LEFT JOIN `tabSales Order` so
 #             ON so.name = p.sales_order
-
 #         LEFT JOIN `tabSales Order Item` soi
 #             ON soi.project = p.name
-
 #         {where_clause}
 
 #         GROUP BY
@@ -231,16 +282,12 @@
 #             so.total,
 #             so.total_taxes_and_charges,
 #             so.grand_total
-
 #         ORDER BY p.creation DESC
 
 #         {limit_clause}
-#         """,
-#         values, as_dict=True)
+#     """, values, as_dict=True)
 
-
-#     # ======================= RETURN ==============================
-
+#     # ====================== RETURN ===========================
 #     return {
 #         "total_projects": total_projects,
 #         "total_basic_value": total_basic_value,
@@ -254,14 +301,10 @@
 
 import frappe
 import json
-
 from frappe.utils import flt
 
 
-# ============================================================
-# FILTER OPTIONS
-# ============================================================
-
+# ====================== FILTER OPTIONS ============================
 @frappe.whitelist()
 def get_project_filter_options():
 
@@ -323,10 +366,7 @@ def get_project_filter_options():
     }
 
 
-# ============================================================
-# HELPER - NORMALIZE MULTI SELECT VALUES
-# ============================================================
-
+# ====================== HELPER - NORMALIZE MULTI SELECT VALUES ==================================
 def normalize_filter_values(value):
 
     if not value:
@@ -340,18 +380,11 @@ def normalize_filter_values(value):
 
     return []
 
-
-# ============================================================
-# PROJECT DASHBOARD
-# ============================================================
-
+# ======================= PROJECT DASHBOARD ================================
 @frappe.whitelist()
 def get_project_dashboard_data(filters=None, limit=20, offset=0):
 
-    # --------------------------------------------------------
-    # FILTER DATA
-    # --------------------------------------------------------
-
+    # -------------------- FILTER DATA -------------------------------
     if isinstance(filters, str):
         filters = json.loads(filters)
 
@@ -360,16 +393,9 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
     conditions = []
     values = {}
 
-    # ========================================================
-    # PROJECT ID
-    # ========================================================
-
-    project_ids = normalize_filter_values(
-        filters.get("project_id")
-    )
-
+    # ==================== PROJECT ID ================================
+    project_ids = normalize_filter_values(filters.get("project_id"))
     if project_ids:
-
         placeholders = []
 
         for index, project_id in enumerate(project_ids):
@@ -377,20 +403,12 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
             placeholders.append(f"%({key})s")
             values[key] = project_id
 
-        conditions.append(
-            f"p.name IN ({', '.join(placeholders)})"
-        )
+        conditions.append(f"p.name IN ({', '.join(placeholders)})")
 
-    # ========================================================
-    # STATUS
-    # ========================================================
-
-    statuses = normalize_filter_values(
-        filters.get("status")
-    )
+    # ================== STATUS =====================
+    statuses = normalize_filter_values(filters.get("status"))
 
     if statuses:
-
         placeholders = []
 
         for index, status in enumerate(statuses):
@@ -398,20 +416,12 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
             placeholders.append(f"%({key})s")
             values[key] = status
 
-        conditions.append(
-            f"p.status IN ({', '.join(placeholders)})"
-        )
+        conditions.append(f"p.status IN ({', '.join(placeholders)})")
 
-    # ========================================================
-    # PROJECT TYPE
-    # ========================================================
-
-    project_types = normalize_filter_values(
-        filters.get("project_type")
-    )
+    # ================== PROJECT TYPE ===========================
+    project_types = normalize_filter_values(filters.get("project_type"))
 
     if project_types:
-
         placeholders = []
 
         for index, project_type in enumerate(project_types):
@@ -419,41 +429,24 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
             placeholders.append(f"%({key})s")
             values[key] = project_type
 
-        conditions.append(
-            f"p.project_type IN ({', '.join(placeholders)})"
-        )
+        conditions.append(f"p.project_type IN ({', '.join(placeholders)})")
 
-    # ========================================================
-    # PRIORITY
-    # ========================================================
-
-    priorities = normalize_filter_values(
-        filters.get("priority")
-    )
+    # ====================== PRIORITY =============================
+    priorities = normalize_filter_values(filters.get("priority"))
 
     if priorities:
-
         placeholders = []
-
         for index, priority in enumerate(priorities):
             key = f"priority_{index}"
             placeholders.append(f"%({key})s")
             values[key] = priority
 
-        conditions.append(
-            f"p.priority IN ({', '.join(placeholders)})"
-        )
+        conditions.append(f"p.priority IN ({', '.join(placeholders)})")
 
-    # ========================================================
-    # TAG / ITEM CODE
-    # ========================================================
-
-    tags = normalize_filter_values(
-        filters.get("tag")
-    )
+    # ==================== TAG / ITEM CODE =============================
+    tags = normalize_filter_values(filters.get("tag"))
 
     if tags:
-
         placeholders = []
 
         for index, tag in enumerate(tags):
@@ -472,14 +465,8 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
             )
         """ % ", ".join(placeholders))
 
-    # ========================================================
-    # FISCAL YEAR
-    # ========================================================
-
-    fiscal_years = normalize_filter_values(
-        filters.get("fiscal_year")
-    )
-
+    # ====================== FISCAL YEAR ============================
+    fiscal_years = normalize_filter_values(filters.get("fiscal_year"))
     if fiscal_years:
 
         placeholders = []
@@ -500,10 +487,7 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
             )
         """ % ", ".join(placeholders))
 
-    # ========================================================
-    # WHERE CLAUSE
-    # ========================================================
-
+    # ======================= WHERE CLAUSE ======================
     where_clause = ""
 
     if conditions:
@@ -511,12 +495,8 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
 
     # ========================================================
     # TOTAL PROJECTS + TOTAL VALUES
-    #
-    # Important:
-    # This calculates totals for ALL filtered projects,
-    # not just the current page.
+    # Important: This calculates totals for ALL filtered projects, not just the current page.
     # ========================================================
-
     totals = frappe.db.sql(f"""
         SELECT
             COUNT(*) AS total_projects,
@@ -527,77 +507,41 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
         FROM (
             SELECT
                 p.name,
-
                 COALESCE(MAX(so.total), 0) AS basic_value,
-
-                COALESCE(
-                    MAX(so.total_taxes_and_charges),
-                    0
-                ) AS taxes,
-
-                COALESCE(
-                    MAX(so.grand_total),
-                    0
-                ) AS purchase_value
-
+                COALESCE(MAX(so.total_taxes_and_charges), 0) AS taxes,
+                COALESCE(MAX(so.grand_total), 0) AS purchase_value
             FROM `tabProject` p
-
             LEFT JOIN `tabSales Order` so
                 ON so.name = p.sales_order
-
             {where_clause}
-
             GROUP BY p.name
         ) AS project_totals
     """, values, as_dict=True)[0]
 
-    total_projects = int(
-        totals.get("total_projects") or 0
-    )
+    total_projects = int(totals.get("total_projects") or 0)
+    total_basic_value = flt(totals.get("total_basic_value") or 0)
+    total_taxes = flt(totals.get("total_taxes") or 0)
+    total_purchase_value = flt(totals.get("total_purchase_value") or 0)
 
-    total_basic_value = flt(
-        totals.get("total_basic_value") or 0
-    )
-
-    total_taxes = flt(
-        totals.get("total_taxes") or 0
-    )
-
-    total_purchase_value = flt(
-        totals.get("total_purchase_value") or 0
-    )
-
-    # ========================================================
-    # CUSTOMER COUNT
-    # ========================================================
-
+    # ==================== CUSTOMER COUNT =============================
     customer_data = frappe.db.sql(f"""
         SELECT
             COUNT(DISTINCT p.customer) AS customer_count
-
         FROM `tabProject` p
-
         LEFT JOIN `tabSales Order` so
             ON so.name = p.sales_order
 
         {where_clause}
     """, values, as_dict=True)[0]
 
-    customer_count = int(
-        customer_data.get("customer_count") or 0
-    )
+    customer_count = int(customer_data.get("customer_count") or 0)
 
-    # ========================================================
-    # PAGINATION
-    # ========================================================
-
+    # ================= PAGINATION =============================
     limit = int(limit or 20)
     offset = int(offset or 0)
-
     limit_clause = ""
 
     if limit > 0:
-
         limit_clause = """
             LIMIT %(limit)s
             OFFSET %(offset)s
@@ -606,50 +550,26 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
         values["limit"] = limit
         values["offset"] = offset
 
-    # ========================================================
-    # PROJECT DATA
-    # ========================================================
-
+    # ======================= PROJECT DATA ==============================
     projects = frappe.db.sql(f"""
         SELECT
-
             p.name,
             p.customer,
             p.status,
             p.project_type,
             p.priority,
-
             so.custom_financial_year AS fiscal_year,
-
             COALESCE(so.total, 0) AS basic_value,
-
+            COALESCE(so.total_taxes_and_charges, 0) AS taxes,
+            COALESCE(so.grand_total, 0) AS purchase_value,
             COALESCE(
-                so.total_taxes_and_charges,
-                0
-            ) AS taxes,
-
-            COALESCE(
-                so.grand_total,
-                0
-            ) AS purchase_value,
-
-            COALESCE(
-                GROUP_CONCAT(
-                    DISTINCT soi.item_code
-                    ORDER BY soi.item_code
-                    SEPARATOR ', '
-                ),
-                ''
-            ) AS tag
-
+                GROUP_CONCAT(DISTINCT soi.item_code
+                    ORDER BY soi.item_code SEPARATOR ', '), '') AS tag
         FROM `tabProject` p
-
         LEFT JOIN `tabSales Order` so
             ON so.name = p.sales_order
-
         LEFT JOIN `tabSales Order Item` soi
             ON soi.project = p.name
-
         {where_clause}
 
         GROUP BY
@@ -662,16 +582,12 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
             so.total,
             so.total_taxes_and_charges,
             so.grand_total
-
         ORDER BY p.creation DESC
 
         {limit_clause}
     """, values, as_dict=True)
 
-    # ========================================================
-    # RETURN
-    # ========================================================
-
+    # ====================== RETURN ===========================
     return {
         "total_projects": total_projects,
         "total_basic_value": total_basic_value,
@@ -679,4 +595,171 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
         "total_purchase_value": total_purchase_value,
         "customer_count": customer_count,
         "projects": projects
+    }
+
+
+# ======================================================================
+# ======================= CHART DATA (NEW - ADDITIVE ONLY) ============
+# This is a brand new whitelisted method. It does NOT modify or call
+# get_project_dashboard_data above - it rebuilds the same filter
+# conditions independently, using distinct SQL param keys ("chart_*")
+# so nothing in the existing method is touched or affected.
+# ======================================================================
+@frappe.whitelist()
+def get_project_chart_data(filters=None):
+
+    # -------------------- FILTER DATA -------------------------------
+    if isinstance(filters, str):
+        filters = json.loads(filters)
+
+    filters = filters or {}
+
+    conditions = []
+    values = {}
+
+    # ==================== PROJECT ID ================================
+    project_ids = normalize_filter_values(filters.get("project_id"))
+    if project_ids:
+        placeholders = []
+
+        for index, project_id in enumerate(project_ids):
+            key = f"chart_project_id_{index}"
+            placeholders.append(f"%({key})s")
+            values[key] = project_id
+
+        conditions.append(f"p.name IN ({', '.join(placeholders)})")
+
+    # ================== STATUS =====================
+    statuses = normalize_filter_values(filters.get("status"))
+
+    if statuses:
+        placeholders = []
+
+        for index, status in enumerate(statuses):
+            key = f"chart_status_{index}"
+            placeholders.append(f"%({key})s")
+            values[key] = status
+
+        conditions.append(f"p.status IN ({', '.join(placeholders)})")
+
+    # ================== PROJECT TYPE ===========================
+    project_types = normalize_filter_values(filters.get("project_type"))
+
+    if project_types:
+        placeholders = []
+
+        for index, project_type in enumerate(project_types):
+            key = f"chart_project_type_{index}"
+            placeholders.append(f"%({key})s")
+            values[key] = project_type
+
+        conditions.append(f"p.project_type IN ({', '.join(placeholders)})")
+
+    # ====================== PRIORITY =============================
+    priorities = normalize_filter_values(filters.get("priority"))
+
+    if priorities:
+        placeholders = []
+        for index, priority in enumerate(priorities):
+            key = f"chart_priority_{index}"
+            placeholders.append(f"%({key})s")
+            values[key] = priority
+
+        conditions.append(f"p.priority IN ({', '.join(placeholders)})")
+
+    # ==================== TAG / ITEM CODE =============================
+    tags = normalize_filter_values(filters.get("tag"))
+
+    if tags:
+        placeholders = []
+
+        for index, tag in enumerate(tags):
+            key = f"chart_tag_{index}"
+            placeholders.append(f"%({key})s")
+            values[key] = tag
+
+        conditions.append("""
+            EXISTS (
+                SELECT 1
+                FROM `tabSales Order Item` soi_filter
+                WHERE soi_filter.project = p.name
+                AND soi_filter.item_code IN (
+                    %s
+                )
+            )
+        """ % ", ".join(placeholders))
+
+    # ====================== FISCAL YEAR ============================
+    fiscal_years = normalize_filter_values(filters.get("fiscal_year"))
+    if fiscal_years:
+
+        placeholders = []
+
+        for index, fiscal_year in enumerate(fiscal_years):
+            key = f"chart_fiscal_year_{index}"
+            placeholders.append(f"%({key})s")
+            values[key] = fiscal_year
+
+        conditions.append("""
+            EXISTS (
+                SELECT 1
+                FROM `tabSales Order` so_filter
+                WHERE so_filter.name = p.sales_order
+                AND so_filter.custom_financial_year IN (
+                    %s
+                )
+            )
+        """ % ", ".join(placeholders))
+
+    # ======================= WHERE CLAUSE (base) ======================
+    where_clause = ""
+
+    if conditions:
+        where_clause = "WHERE " + " AND ".join(conditions)
+
+    # ==================== CUSTOMER WISE SPLIT =========================
+    # One row per customer: number of projects + total purchase value (grand_total).
+    customer_values = dict(values)
+    customer_values["chart_not_set_label"] = frappe._("Not Set")
+
+    customer_wise = frappe.db.sql(f"""
+        SELECT
+            COALESCE(p.customer, %(chart_not_set_label)s) AS customer,
+            COUNT(DISTINCT p.name) AS project_count,
+            COALESCE(SUM(so.grand_total), 0) AS purchase_value
+        FROM `tabProject` p
+        LEFT JOIN `tabSales Order` so
+            ON so.name = p.sales_order
+        {where_clause}
+        GROUP BY p.customer
+        ORDER BY purchase_value DESC
+    """, customer_values, as_dict=True)
+
+    # ==================== PRODUCT (ITEM CODE) WISE SPLIT ===============
+    # Build a separate condition list for this query since it needs an
+    # extra "item_code IS NOT NULL" condition - kept isolated so the
+    # customer query and get_project_dashboard_data remain unaffected.
+    product_conditions = list(conditions)
+    product_conditions.append("soi.item_code IS NOT NULL")
+    product_conditions.append("soi.item_code != ''")
+
+    product_where_clause = "WHERE " + " AND ".join(product_conditions)
+
+    product_wise = frappe.db.sql(f"""
+        SELECT
+            soi.item_code AS item_code,
+            COUNT(DISTINCT p.name) AS project_count,
+            COALESCE(SUM(soi.amount), 0) AS item_value
+        FROM `tabProject` p
+        INNER JOIN `tabSales Order Item` soi
+            ON soi.project = p.name
+        {product_where_clause}
+        GROUP BY soi.item_code
+        ORDER BY item_value DESC
+    """, values, as_dict=True)
+
+    # ====================== RETURN ===========================
+    return {
+        "customer_wise": customer_wise,
+        "product_wise": product_wise
     }
