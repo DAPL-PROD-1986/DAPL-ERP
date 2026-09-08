@@ -316,6 +316,14 @@ def get_project_filter_options():
         ORDER BY name
     """, as_dict=False)
 
+    customers = frappe.db.sql("""
+        SELECT DISTINCT customer
+        FROM `tabProject`
+        WHERE customer IS NOT NULL
+        AND customer != ''
+        ORDER BY customer
+    """, as_dict=False)
+
     statuses = frappe.db.sql("""
         SELECT DISTINCT status
         FROM `tabProject`
@@ -358,6 +366,7 @@ def get_project_filter_options():
 
     return {
         "project_ids": [row[0] for row in project_ids],
+        "customers": [row[0] for row in customers],
         "statuses": [row[0] for row in statuses],
         "project_types": [row[0] for row in project_types],
         "priorities": [row[0] for row in priorities],
@@ -404,6 +413,18 @@ def get_project_dashboard_data(filters=None, limit=20, offset=0):
             values[key] = project_id
 
         conditions.append(f"p.name IN ({', '.join(placeholders)})")
+
+    # ==================== CUSTOMER ================================
+    customers = normalize_filter_values(filters.get("customer"))
+    if customers:
+        placeholders = []
+
+        for index, customer in enumerate(customers):
+            key = f"customer_{index}"
+            placeholders.append(f"%({key})s")
+            values[key] = customer
+
+        conditions.append(f"p.customer IN ({', '.join(placeholders)})")
 
     # ================== STATUS =====================
     statuses = normalize_filter_values(filters.get("status"))
@@ -628,6 +649,18 @@ def get_project_chart_data(filters=None):
             values[key] = project_id
 
         conditions.append(f"p.name IN ({', '.join(placeholders)})")
+
+    # ==================== CUSTOMER ================================
+    customers = normalize_filter_values(filters.get("customer"))
+    if customers:
+        placeholders = []
+
+        for index, customer in enumerate(customers):
+            key = f"chart_customer_{index}"
+            placeholders.append(f"%({key})s")
+            values[key] = customer
+
+        conditions.append(f"p.customer IN ({', '.join(placeholders)})")
 
     # ================== STATUS =====================
     statuses = normalize_filter_values(filters.get("status"))

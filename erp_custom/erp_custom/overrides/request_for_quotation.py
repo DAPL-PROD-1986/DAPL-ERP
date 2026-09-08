@@ -80,8 +80,6 @@ def send_email_background(doc, method=None):
         header_html += f"<th>{label}</th>"
 
     header_html += """
-        <th>Kgs Per Unit</th>
-        <th>Total Weight</th>
         <th>Rate</th>
         <th>Amount</th>
         <th>Remarks</th>
@@ -104,8 +102,6 @@ def send_email_background(doc, method=None):
             row += f"<td>{d.get(fieldname) or ''}</td>"
 
         row += f"""
-            <td>{flt(d.custom_kilogramskgs, 3) if d.custom_kilogramskgs else 0}</td>
-            <td>{flt(d.custom_total_weight, 3) if d.custom_total_weight else 0}</td>
             <td></td>
             <td></td>
             <td>{d.custom_remarks or ""}</td>

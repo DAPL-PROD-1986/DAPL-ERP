@@ -916,9 +916,8 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
 
             .project-filter-grid {
                 display: grid;
-                grid-template-columns:
-                    repeat(6, minmax(0, 1fr));
-                gap: 0 12px;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 14px 12px;
                 align-items: center;
             }
 
@@ -1466,6 +1465,10 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                         </div>
 
                         <div class="project-filter-field">
+                            <div class="project-filter-control" data-field="customer"> </div>
+                        </div>
+
+                        <div class="project-filter-field">
                             <div class="project-filter-control" data-field="status"> </div>
                         </div>
 
@@ -1523,7 +1526,7 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 </div>
             </div>
 
-            <!-- CHARTS (NEW) -->
+            <!-- CHARTS -->
             <div class="project-chart-row">
                 <div class="project-chart-card">
                     <div class="project-chart-header"> <i class="fa fa-pie-chart"></i> ${__("Customer Wise Split")} </div>
@@ -1564,6 +1567,7 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
     }
 
     create_multiselect("project_id",__("Select Project"));
+    create_multiselect("customer", __("Select Customer"));
     create_multiselect("status", __("Select Status"));
     create_multiselect("project_type", __("Select Project Type"));
     create_multiselect("priority", __("Select Priority"));
@@ -1581,6 +1585,7 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
 
                 const options = r.message;
                 set_multiselect_options(controls.project_id, options.project_ids);
+                set_multiselect_options(controls.customer, options.customers);
                 set_multiselect_options(controls.status, options.statuses);
                 set_multiselect_options(controls.project_type, options.project_types);
                 set_multiselect_options(controls.priority, options.priorities);
@@ -1633,6 +1638,9 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
         return {
             project_id:
                 get_control_values(controls.project_id),
+
+            customer:
+                get_control_values(controls.customer),
 
             status:
                 get_control_values(controls.status),
@@ -1794,15 +1802,11 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
         labels.forEach((label, index) => {
             legend.append(`
                 <div class="project-legend-item">
-                    <span
-                        class="project-legend-dot"
-                        style="background: ${colors[index % colors.length]};">
+                    <span class="project-legend-dot" style="background: ${colors[index % colors.length]};">
                     </span>
 
                     <div class="project-legend-text">
-                        <span
-                            class="project-legend-name"
-                            title="${frappe.utils.escape_html(label)}">
+                        <span class="project-legend-name" title="${frappe.utils.escape_html(label)}">
                             ${frappe.utils.escape_html(label)}
                         </span>
 
