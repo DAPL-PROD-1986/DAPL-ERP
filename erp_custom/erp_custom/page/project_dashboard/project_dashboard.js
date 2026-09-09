@@ -2451,3 +2451,4 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
     load_filter_options();
     load_dashboard(true);
 };
+
