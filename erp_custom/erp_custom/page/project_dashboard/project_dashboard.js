@@ -25,7 +25,6 @@
 //                 margin: 15px auto 0;
 //             }
 
-
 //             /* ================= FILTER BOX ====================== */
 //             .project-filter-box {
 //                 background: #ffffff;
@@ -54,22 +53,13 @@
 
 //             .project-filter-grid {
 //                 display: grid;
-//                 grid-template-columns:
-//                     repeat(3, minmax(0, 1fr));
-//                 gap: 18px 16px;
-//                 align-items: end;
+//                 grid-template-columns: repeat(4, minmax(0, 1fr));
+//                 gap: 14px 12px;
+//                 align-items: center;
 //             }
 
 //             .project-filter-field {
 //                 min-width: 0;
-//             }
-
-//             .project-filter-label {
-//                 display: block;
-//                 font-size: 12px;
-//                 font-weight: 600;
-//                 color: #475569;
-//                 margin-bottom: 7px;
 //             }
 
 //             .project-filter-control {
@@ -116,6 +106,7 @@
 //             .project-filter-actions {
 //                 display: flex;
 //                 align-items: center;
+//                 justify-content: flex-end;
 //                 gap: 8px;
 //                 margin-top: 18px;
 //             }
@@ -179,30 +170,38 @@
 //                 margin-bottom: 17px;
 //             }
 
-//             .project-card-label {
-//                 font-size: 13px;
-//                 color: #64748b;
+//             .project-card-values {
+//                 display: flex;
+//                 flex-direction: column;
+//                 align-items: flex-end;
+//                 gap: 4px;
 //             }
 
 //             .project-card-count {
-//                 font-size: 27px;
-//                 font-weight: 600;
+//                 font-size: 26px;
+//                 font-weight: 700;
 //                 color: #1e293b;
-//                 margin-top: 2px;
+//                 line-height: 1.1;
+//             }
+
+//             .project-card-overall-value {
+//                 font-size: 15px;
+//                 font-weight: 600;
+//                 color: #475569;
 //             }
 
 //             .project-card-icon {
 //                 position: absolute;
-//                 top: 20px;
-//                 right: 22px;
-//                 width: 50px;
-//                 height: 50px;
-//                 border-radius: 12px;
+//                 top: 0;
+//                 right: 0;
+//                 width: 46px;
+//                 height: 46px;
+//                 border-radius: 0 14px 0 14px;
 //                 display: flex;
 //                 align-items: center;
 //                 justify-content: center;
 //                 color: #ffffff;
-//                 font-size: 21px;
+//                 font-size: 19px;
 //             }
 
 //             .project-icon-blue {
@@ -211,6 +210,164 @@
 
 //             .project-icon-green {
 //                 background: #16a34a;
+//             }
+
+//             /* ==================== CHARTS SECTION (NEW) ======================= */
+//             .project-chart-row {
+//                 display: grid;
+//                 grid-template-columns:
+//                     repeat(2, minmax(0, 1fr));
+//                 gap: 18px;
+//                 margin-bottom: 20px;
+//             }
+
+//             .project-chart-card {
+//                 background: #ffffff;
+//                 border-radius: 12px;
+//                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+//                 overflow: hidden;
+//             }
+
+//             .project-chart-header {
+//                 background: #334155;
+//                 color: #ffffff;
+//                 padding: 12px 18px;
+//                 font-size: 15px;
+//                 font-weight: 600;
+//             }
+
+//             .project-chart-empty {
+//                 padding: 45px 20px;
+//                 text-align: center;
+//                 color: #94a3b8;
+//                 font-size: 13px;
+//             }
+
+//             /* ---- Customer Wise Split: chart left, scrollable legend right ---- */
+//             .project-chart-split-body {
+//                 display: flex;
+//                 align-items: stretch;
+//                 gap: 16px;
+//                 padding: 20px;
+//             }
+
+//             .project-chart-visual {
+//                 flex: 0 0 44%;
+//                 max-width: 260px;
+//                 display: flex;
+//                 align-items: center;
+//                 justify-content: center;
+//             }
+
+//             .project-chart-legend {
+//                 flex: 1;
+//                 min-width: 0;
+//                 max-height: 280px;
+//                 overflow-y: auto;
+//                 display: flex;
+//                 flex-direction: column;
+//                 gap: 12px;
+//                 padding-right: 4px;
+//             }
+
+//             .project-legend-item {
+//                 display: flex;
+//                 align-items: flex-start;
+//                 gap: 10px;
+//             }
+
+//             .project-legend-dot {
+//                 flex: 0 0 10px;
+//                 width: 10px;
+//                 height: 10px;
+//                 margin-top: 4px;
+//                 border-radius: 50%;
+//             }
+
+//             .project-legend-text {
+//                 display: flex;
+//                 flex-direction: column;
+//                 gap: 2px;
+//                 min-width: 0;
+//             }
+
+//             .project-legend-name {
+//                 font-size: 13px;
+//                 font-weight: 600;
+//                 color: #334155;
+//                 white-space: nowrap;
+//                 overflow: hidden;
+//                 text-overflow: ellipsis;
+//             }
+
+//             .project-legend-value {
+//                 font-size: 12px;
+//                 color: #64748b;
+//             }
+
+//             /* ---- Product Wise Split: horizontal bars, scrollable ---- */
+//             .project-hbar-list {
+//                 padding: 20px;
+//                 max-height: 320px;
+//                 overflow-y: auto;
+//                 display: flex;
+//                 flex-direction: column;
+//                 gap: 14px;
+//             }
+
+//             .project-hbar-row {
+//                 display: flex;
+//                 align-items: center;
+//                 gap: 10px;
+//             }
+
+//             .project-hbar-label {
+//                 flex: 0 0 110px;
+//                 max-width: 110px;
+//                 font-size: 12px;
+//                 font-weight: 600;
+//                 color: #334155;
+//                 white-space: nowrap;
+//                 overflow: hidden;
+//                 text-overflow: ellipsis;
+//             }
+
+//             .project-hbar-track {
+//                 flex: 1;
+//                 height: 14px;
+//                 border-radius: 7px;
+//                 background: #eef2f7;
+//                 overflow: hidden;
+//             }
+
+//             .project-hbar-fill {
+//                 height: 100%;
+//                 border-radius: 7px;
+//                 background: #2563eb;
+//             }
+
+//             .project-hbar-value {
+//                 flex: 0 0 auto;
+//                 min-width: 70px;
+//                 font-size: 12px;
+//                 font-weight: 600;
+//                 color: #1e293b;
+//                 text-align: right;
+//             }
+
+//             @media (max-width: 900px) {
+//                 .project-chart-row {
+//                     grid-template-columns: 1fr;
+//                 }
+
+//                 .project-chart-split-body {
+//                     flex-direction: column;
+//                 }
+
+//                 .project-chart-visual {
+//                     max-width: 100%;
+//                     flex: none;
+//                 }
 //             }
 
 //             /* ==================== TABLE SECTION ======================= */
@@ -381,12 +538,16 @@
 //                 font-weight: 600;
 //             }
 
+//             #project-chart-customer .graph-stats-container {
+//                 display: none !important;
+//             }
 
 //             /* =================== RESPONSIVE =========================== */
 //             @media (max-width: 1100px) {
 //                 .project-filter-grid {
 //                     grid-template-columns:
-//                         repeat(2, minmax(0, 1fr));
+//                         repeat(3, minmax(0, 1fr));
+//                     gap: 14px 12px;
 //                 }
 
 //                 .project-total-summary {
@@ -407,7 +568,8 @@
 
 //             @media (max-width: 650px) {
 //                 .project-filter-grid {
-//                     grid-template-columns: 1fr;
+//                     grid-template-columns: repeat(2, minmax(0, 1fr));
+//                     gap: 12px;
 //                 }
 
 //                 .project-total-summary {
@@ -436,35 +598,30 @@
 //                 <div class="project-filter-body">
 //                     <div class="project-filter-grid">
 //                         <div class="project-filter-field">
-//                             <label class="project-filter-label"> ${__("Project ID")} </label>
 //                             <div class="project-filter-control" data-field="project_id"> </div>
 //                         </div>
 
+//                         <div class="project-filter-field">
+//                             <div class="project-filter-control" data-field="customer"> </div>
+//                         </div>
 
 //                         <div class="project-filter-field">
-//                             <label class="project-filter-label"> ${__("Status")} </label>
 //                             <div class="project-filter-control" data-field="status"> </div>
 //                         </div>
 
-
 //                         <div class="project-filter-field">
-//                             <label class="project-filter-label"> ${__("Project Type")} </label>
 //                             <div class="project-filter-control" data-field="project_type"> </div>
 //                         </div>
 
 //                         <div class="project-filter-field">
-//                             <label class="project-filter-label"> ${__("Priority")} </label>
 //                             <div class="project-filter-control" data-field="priority"> </div>
 //                         </div>
 
 //                         <div class="project-filter-field">
-//                             <label class="project-filter-label"> ${__("Item Code")} </label>
 //                             <div class="project-filter-control" data-field="tag"> </div>
 //                         </div>
 
-
 //                         <div class="project-filter-field">
-//                             <label class="project-filter-label"> ${__("Fiscal Year")} </label>
 //                             <div class="project-filter-control" data-field="fiscal_year"> </div>
 //                         </div>
 //                     </div>
@@ -490,18 +647,35 @@
 //             <div class="project-card-row">
 //                 <div class="project-dashboard-card project-card-blue">
 //                     <div class="project-card-title"> ${__("Total Projects")} </div>
-//                     <div class="project-card-label"> ${__("Count")} </div>
-//                     <div class="project-card-count" id="project-total-count"> 0 </div>
-//                     <div class="project-card-label project-overall-label"> ${__("Overall Value")} </div>
-//                     <div class="project-card-overall-value" id="project-total-overall-value"> ₹0.00 </div>
+//                     <div class="project-card-values">
+//                         <div class="project-card-count" id="project-total-count"> 0 </div>
+//                         <div class="project-card-overall-value" id="project-total-overall-value"> ₹0.00 </div>
+//                     </div>
 //                     <div class="project-card-icon project-icon-blue"> <i class="fa fa-folder-open"></i> </div>
 //                 </div>
 
 //                 <div class="project-dashboard-card project-card-green">
-//                     <div class="project-card-title"> ${__("Customers")} </div>
-//                     <div class="project-card-label"> ${__("Unique Customers")} </div>
-//                     <div class="project-card-count" id="project-customer-count"> 0 </div>
+//                     <div class="project-card-title"> ${__("Total Customers")} </div>
+//                     <div class="project-card-values">
+//                         <div class="project-card-count" id="project-customer-count"> 0 </div>
+//                     </div>
 //                     <div class="project-card-icon project-icon-green"> <i class="fa fa-users"></i> </div>
+//                 </div>
+//             </div>
+
+//             <!-- CHARTS -->
+//             <div class="project-chart-row">
+//                 <div class="project-chart-card">
+//                     <div class="project-chart-header"> <i class="fa fa-pie-chart"></i> ${__("Customer Wise Split")} </div>
+//                     <div class="project-chart-split-body" id="project-customer-split-body">
+//                         <div class="project-chart-visual" id="project-chart-customer"> </div>
+//                         <div class="project-chart-legend" id="project-chart-customer-legend"> </div>
+//                     </div>
+//                 </div>
+
+//                 <div class="project-chart-card">
+//                     <div class="project-chart-header"> <i class="fa fa-bar-chart"></i> ${__("Product Wise Split")} </div>
+//                     <div class="project-hbar-list" id="project-chart-product"> </div>
 //                 </div>
 //             </div>
 
@@ -530,6 +704,7 @@
 //     }
 
 //     create_multiselect("project_id",__("Select Project"));
+//     create_multiselect("customer", __("Select Customer"));
 //     create_multiselect("status", __("Select Status"));
 //     create_multiselect("project_type", __("Select Project Type"));
 //     create_multiselect("priority", __("Select Priority"));
@@ -547,6 +722,7 @@
 
 //                 const options = r.message;
 //                 set_multiselect_options(controls.project_id, options.project_ids);
+//                 set_multiselect_options(controls.customer, options.customers);
 //                 set_multiselect_options(controls.status, options.statuses);
 //                 set_multiselect_options(controls.project_type, options.project_types);
 //                 set_multiselect_options(controls.priority, options.priorities);
@@ -600,6 +776,9 @@
 //             project_id:
 //                 get_control_values(controls.project_id),
 
+//             customer:
+//                 get_control_values(controls.customer),
+
 //             status:
 //                 get_control_values(controls.status),
 
@@ -622,6 +801,7 @@
 //         if (reset) {
 //             current_offset = 0;
 //             current_filters = get_filters();
+//             load_charts();
 //         }
 
 //         frappe.call({
@@ -656,6 +836,160 @@
 //                     reset
 //                 );
 //             }
+//         });
+//     }
+
+//     // ========================== LOAD CHARTS (NEW) ==============================
+//     function load_charts() {
+//         frappe.call({
+//             method: "erp_custom.erp_custom.page.project_dashboard.project_dashboard.get_project_chart_data",
+//             args: {
+//                 filters: JSON.stringify(current_filters)
+//             },
+//             callback: function (r) {
+//                 if (!r.message) {
+//                     return;
+//                 }
+
+//                 render_customer_pie_chart(r.message.customer_wise || []);
+//                 render_product_horizontal_bars(r.message.product_wise || []);
+//             }
+//         });
+//     }
+
+//     // ==================== CHART HELPERS (NEW) ==============================
+//     function chart_flt(value) {
+//         return parseFloat(value) || 0;
+//     }
+
+//     // Groups rows into top N by value, bucketing the remainder into "Others"
+//     // so the pie/bar chart stays readable when there are many customers/items.
+//     function group_top_n(rows, label_key, value_key, top_n) {
+//         top_n = top_n || 8;
+
+//         const sorted = [...rows].sort(
+//             (a, b) => chart_flt(b[value_key]) - chart_flt(a[value_key])
+//         );
+
+//         const top = sorted.slice(0, top_n);
+//         const rest = sorted.slice(top_n);
+
+//         const labels = top.map(row => row[label_key] || __("Not Set"));
+//         const values = top.map(row => chart_flt(row[value_key]));
+
+//         if (rest.length) {
+//             const others_total = rest.reduce(
+//                 (sum, row) => sum + chart_flt(row[value_key]), 0
+//             );
+
+//             labels.push(__("Others"));
+//             values.push(others_total);
+//         }
+
+//         return { labels, values };
+//     }
+
+//     // Customer Wise Split: pie chart on the left, a scrollable legend
+//     // (name + value, professionally stacked) on the right. The whole
+//     // split-body is rebuilt each render so it works cleanly across
+//     // repeated filter apply/reset calls.
+//     let project_customer_chart = null;
+
+//     function render_customer_pie_chart(rows) {
+//         const wrap = $("#project-customer-split-body");
+
+//         if (!rows.length) {
+//             wrap.html(`<div class="project-chart-empty"> ${__("No data found.")} </div>`);
+//             return;
+//         }
+
+//         wrap.html(`
+//             <div class="project-chart-visual" id="project-chart-customer"> </div>
+//             <div class="project-chart-legend" id="project-chart-customer-legend"> </div>
+//         `);
+
+//         const colors = [
+//             "#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed",
+//             "#0891b2", "#db2777", "#f97316", "#94a3b8"
+//         ];
+
+//         // Reserve the last color for the "Others" bucket.
+//         const { labels, values } = group_top_n(
+//             rows,
+//             "customer",
+//             "purchase_value",
+//             colors.length - 1
+//         );
+
+//         project_customer_chart = new frappe.Chart("#project-chart-customer", {
+//             data: {
+//                 labels: labels,
+//                 datasets: [{ values: values }]
+//             },
+//             type: "pie",
+//             height: 220,
+//             colors: colors,
+
+//             // Hide the bottom legend/values generated by Frappe Chart
+//             showLegend: false
+//         });
+
+//         const legend = $("#project-chart-customer-legend");
+
+//         labels.forEach((label, index) => {
+//             legend.append(`
+//                 <div class="project-legend-item">
+//                     <span class="project-legend-dot" style="background: ${colors[index % colors.length]};">
+//                     </span>
+
+//                     <div class="project-legend-text">
+//                         <span class="project-legend-name" title="${frappe.utils.escape_html(label)}">
+//                             ${frappe.utils.escape_html(label)}
+//                         </span>
+
+//                         <span class="project-legend-value">
+//                             ${format_currency(values[index])}
+//                         </span>
+//                     </div>
+//                 </div>
+//             `);
+//         });
+//     }
+
+//     // Product Wise Split: a horizontal bar per item code (label, filled
+//     // track scaled to the highest value, and the value on the right),
+//     // in a scrollable list so it isn't capped to a handful of items.
+//     function render_product_horizontal_bars(rows) {
+//         const container = $("#project-chart-product");
+//         container.empty();
+
+//         if (!rows.length) {
+//             container.html(`<div class="project-chart-empty"> ${__("No data found.")} </div>`);
+//             return;
+//         }
+
+//         const sorted = [...rows].sort(
+//             (a, b) => chart_flt(b.item_value) - chart_flt(a.item_value)
+//         );
+
+//         const max_value = chart_flt(sorted[0].item_value) || 1;
+
+//         sorted.forEach(row => {
+//             const value = chart_flt(row.item_value);
+//             const width_pct = Math.max((value / max_value) * 100, 2);
+//             const item_code = row.item_code || "-";
+
+//             container.append(`
+//                 <div class="project-hbar-row">
+//                     <div class="project-hbar-label" title="${frappe.utils.escape_html(item_code)}">
+//                         ${frappe.utils.escape_html(item_code)}
+//                     </div>
+//                     <div class="project-hbar-track">
+//                         <div class="project-hbar-fill" style="width: ${width_pct}%;"></div>
+//                     </div>
+//                     <div class="project-hbar-value"> ${format_currency(value)} </div>
+//                 </div>
+//             `);
 //         });
 //     }
 
@@ -870,6 +1204,7 @@
 
 
 
+
 frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
 
     const page = frappe.ui.make_app_page({
@@ -1075,7 +1410,7 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 background: #16a34a;
             }
 
-            /* ==================== CHARTS SECTION (NEW) ======================= */
+            /* ==================== CHARTS SECTION ======================= */
             .project-chart-row {
                 display: grid;
                 grid-template-columns:
@@ -1097,6 +1432,13 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 padding: 12px 18px;
                 font-size: 15px;
                 font-weight: 600;
+            }
+
+            .project-chart-subtitle {
+                font-size: 11px;
+                font-weight: 400;
+                color: #cbd5e1;
+                margin-top: 2px;
             }
 
             .project-chart-empty {
@@ -1168,7 +1510,7 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 color: #64748b;
             }
 
-            /* ---- Product Wise Split: horizontal bars, scrollable ---- */
+            /* ---- Portfolio Wise Split: horizontal bars, scrollable ---- */
             .project-hbar-list {
                 padding: 20px;
                 max-height: 320px;
@@ -1256,7 +1598,7 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
             }
 
             .project-table {
-                min-width: 1200px;
+                min-width: 1400px;
                 margin: 0;
             }
 
@@ -1292,6 +1634,11 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 background: #eef2ff;
                 color: #4338ca;
                 font-size: 12px;
+            }
+
+            .project-tag-name {
+                background: #ecfdf5;
+                color: #047857;
             }
 
             /* ================== STATUS ===================== */
@@ -1487,6 +1834,10 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                         <div class="project-filter-field">
                             <div class="project-filter-control" data-field="fiscal_year"> </div>
                         </div>
+
+                        <div class="project-filter-field">
+                            <div class="project-filter-control" data-field="custom_portfolio"> </div>
+                        </div>
                     </div>
 
 
@@ -1529,7 +1880,10 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
             <!-- CHARTS -->
             <div class="project-chart-row">
                 <div class="project-chart-card">
-                    <div class="project-chart-header"> <i class="fa fa-pie-chart"></i> ${__("Customer Wise Split")} </div>
+                    <div class="project-chart-header">
+                        <div> <i class="fa fa-pie-chart"></i> ${__("Customer Wise Split")} </div>
+                        <div class="project-chart-subtitle"> ${__("Values include GST")} </div>
+                    </div>
                     <div class="project-chart-split-body" id="project-customer-split-body">
                         <div class="project-chart-visual" id="project-chart-customer"> </div>
                         <div class="project-chart-legend" id="project-chart-customer-legend"> </div>
@@ -1537,7 +1891,10 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 </div>
 
                 <div class="project-chart-card">
-                    <div class="project-chart-header"> <i class="fa fa-bar-chart"></i> ${__("Product Wise Split")} </div>
+                    <div class="project-chart-header">
+                        <div> <i class="fa fa-bar-chart"></i> ${__("Portfolio Wise Split")} </div>
+                        <div class="project-chart-subtitle"> ${__("Values include GST")} </div>
+                    </div>
                     <div class="project-hbar-list" id="project-chart-product"> </div>
                 </div>
             </div>
@@ -1573,6 +1930,7 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
     create_multiselect("priority", __("Select Priority"));
     create_multiselect("tag", __("Select Item Code"));
     create_multiselect("fiscal_year", __("Select Fiscal Year"));
+    create_multiselect("custom_portfolio", __("Select Portfolio"));
 
     // ======================== FILTER OPTIONS ================================
     function load_filter_options() {
@@ -1591,6 +1949,7 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 set_multiselect_options(controls.priority, options.priorities);
                 set_multiselect_options(controls.tag, options.tags);
                 set_multiselect_options(controls.fiscal_year, options.fiscal_years);
+                set_multiselect_options(controls.custom_portfolio, options.portfolios);
             }
         });
     }
@@ -1655,7 +2014,10 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 get_control_values(controls.tag),
 
             fiscal_year:
-                get_control_values(controls.fiscal_year)
+                get_control_values(controls.fiscal_year),
+
+            custom_portfolio:
+                get_control_values(controls.custom_portfolio)
         };
     }
 
@@ -1702,7 +2064,7 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
         });
     }
 
-    // ========================== LOAD CHARTS (NEW) ==============================
+    // ========================== LOAD CHARTS ==============================
     function load_charts() {
         frappe.call({
             method: "erp_custom.erp_custom.page.project_dashboard.project_dashboard.get_project_chart_data",
@@ -1715,12 +2077,12 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 }
 
                 render_customer_pie_chart(r.message.customer_wise || []);
-                render_product_horizontal_bars(r.message.product_wise || []);
+                render_portfolio_horizontal_bars(r.message.portfolio_wise || []);
             }
         });
     }
 
-    // ==================== CHART HELPERS (NEW) ==============================
+    // ==================== CHART HELPERS ==============================
     function chart_flt(value) {
         return parseFloat(value) || 0;
     }
@@ -1750,6 +2112,34 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
         }
 
         return { labels, values };
+    }
+
+    // Formats a comma-separated qty list (e.g. from GROUP_CONCAT) into
+    // clean, non-decimal-padded numbers: "1.000000000" -> "1".
+    function format_qty_list(raw_value) {
+        if (!raw_value || raw_value === "-") {
+            return "-";
+        }
+
+        return raw_value
+            .split(",")
+            .map(item => {
+                const num = parseFloat(item.trim());
+                return isNaN(num) ? item.trim() : num.toString();
+            })
+            .join(", ");
+    }
+
+    // Renders a comma-separated raw value as a list of chip spans.
+    function render_chip_list(raw_value, chip_class) {
+        if (!raw_value || raw_value === "-") {
+            return "-";
+        }
+
+        return raw_value
+            .split(",")
+            .map(item => `<span class="project-tag ${chip_class}"> ${frappe.utils.escape_html(item.trim())} </span>`)
+            .join("");
     }
 
     // Customer Wise Split: pie chart on the left, a scrollable legend
@@ -1819,10 +2209,10 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
         });
     }
 
-    // Product Wise Split: a horizontal bar per item code (label, filled
+    // Portfolio Wise Split: a horizontal bar per portfolio (label, filled
     // track scaled to the highest value, and the value on the right),
-    // in a scrollable list so it isn't capped to a handful of items.
-    function render_product_horizontal_bars(rows) {
+    // in a scrollable list so it isn't capped to a handful of portfolios.
+    function render_portfolio_horizontal_bars(rows) {
         const container = $("#project-chart-product");
         container.empty();
 
@@ -1832,20 +2222,20 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
         }
 
         const sorted = [...rows].sort(
-            (a, b) => chart_flt(b.item_value) - chart_flt(a.item_value)
+            (a, b) => chart_flt(b.portfolio_value) - chart_flt(a.portfolio_value)
         );
 
-        const max_value = chart_flt(sorted[0].item_value) || 1;
+        const max_value = chart_flt(sorted[0].portfolio_value) || 1;
 
         sorted.forEach(row => {
-            const value = chart_flt(row.item_value);
+            const value = chart_flt(row.portfolio_value);
             const width_pct = Math.max((value / max_value) * 100, 2);
-            const item_code = row.item_code || "-";
+            const portfolio = row.portfolio || "-";
 
             container.append(`
                 <div class="project-hbar-row">
-                    <div class="project-hbar-label" title="${frappe.utils.escape_html(item_code)}">
-                        ${frappe.utils.escape_html(item_code)}
+                    <div class="project-hbar-label" title="${frappe.utils.escape_html(portfolio)}">
+                        ${frappe.utils.escape_html(portfolio)}
                     </div>
                     <div class="project-hbar-track">
                         <div class="project-hbar-fill" style="width: ${width_pct}%;"></div>
@@ -1878,6 +2268,9 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                                 <th> ${__("Project ID")} </th>
                                 <th> ${__("Customer")} </th>
                                 <th> ${__("Item Code")} </th>
+                                <th> ${__("Item Name")} </th>
+                                <th> ${__("Qty")} </th>
+                                <th> ${__("Portfolio")} </th>
                                 <th> ${__("Status")} </th>
                                 <th> ${__("Project Type")} </th>
                                 <th> ${__("Priority")} </th>
@@ -1952,15 +2345,6 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
         const tbody = $("#project-table-body");
 
         projects.forEach(project => {
-            let tags = project.tag || "-";
-
-            if (tags !== "-") {
-                tags = tags
-                    .split(",")
-                    .map(item => `<span class="project-tag"> ${frappe.utils.escape_html(item.trim())} </span>`)
-                    .join("");
-            }
-
             const status_class = (project.status || "")
                     .toLowerCase()
                     .replace(/\s+/g, "-");
@@ -1969,7 +2353,10 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 <tr>
                     <td> <a href="/app/project/${encodeURIComponent(project.name)}"> ${frappe.utils.escape_html(project.name || "")} </a> </td>
                     <td> ${frappe.utils.escape_html(project.customer || "-")} </td>
-                    <td> ${tags} </td>
+                    <td> ${render_chip_list(project.tag, "")} </td>
+                    <td> ${render_chip_list(project.item_name, "project-tag-name")} </td>
+                    <td> ${frappe.utils.escape_html(format_qty_list(project.qty))} </td>
+                    <td> ${frappe.utils.escape_html(project.portfolio || "-")} </td>
                     <td> ${project.status ? `<span class="project-status project-status-${status_class}">
                                         ${frappe.utils.escape_html(project.status)} </span>` : "-" } </td>
                     <td> ${frappe.utils.escape_html(project.project_type || "-")} </td>
