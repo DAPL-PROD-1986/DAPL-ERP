@@ -212,7 +212,7 @@
 //                 background: #16a34a;
 //             }
 
-//             /* ==================== CHARTS SECTION (NEW) ======================= */
+//             /* ==================== CHARTS SECTION ======================= */
 //             .project-chart-row {
 //                 display: grid;
 //                 grid-template-columns:
@@ -234,6 +234,13 @@
 //                 padding: 12px 18px;
 //                 font-size: 15px;
 //                 font-weight: 600;
+//             }
+
+//             .project-chart-subtitle {
+//                 font-size: 11px;
+//                 font-weight: 400;
+//                 color: #cbd5e1;
+//                 margin-top: 2px;
 //             }
 
 //             .project-chart-empty {
@@ -305,7 +312,7 @@
 //                 color: #64748b;
 //             }
 
-//             /* ---- Product Wise Split: horizontal bars, scrollable ---- */
+//             /* ---- Portfolio Wise Split: horizontal bars, scrollable ---- */
 //             .project-hbar-list {
 //                 padding: 20px;
 //                 max-height: 320px;
@@ -393,7 +400,7 @@
 //             }
 
 //             .project-table {
-//                 min-width: 1200px;
+//                 min-width: 1400px;
 //                 margin: 0;
 //             }
 
@@ -429,6 +436,11 @@
 //                 background: #eef2ff;
 //                 color: #4338ca;
 //                 font-size: 12px;
+//             }
+
+//             .project-tag-name {
+//                 background: #ecfdf5;
+//                 color: #047857;
 //             }
 
 //             /* ================== STATUS ===================== */
@@ -624,6 +636,10 @@
 //                         <div class="project-filter-field">
 //                             <div class="project-filter-control" data-field="fiscal_year"> </div>
 //                         </div>
+
+//                         <div class="project-filter-field">
+//                             <div class="project-filter-control" data-field="custom_portfolio"> </div>
+//                         </div>
 //                     </div>
 
 
@@ -666,7 +682,10 @@
 //             <!-- CHARTS -->
 //             <div class="project-chart-row">
 //                 <div class="project-chart-card">
-//                     <div class="project-chart-header"> <i class="fa fa-pie-chart"></i> ${__("Customer Wise Split")} </div>
+//                     <div class="project-chart-header">
+//                         <div> <i class="fa fa-pie-chart"></i> ${__("Customer Wise Split")} </div>
+//                         <div class="project-chart-subtitle"> ${__("Values include GST")} </div>
+//                     </div>
 //                     <div class="project-chart-split-body" id="project-customer-split-body">
 //                         <div class="project-chart-visual" id="project-chart-customer"> </div>
 //                         <div class="project-chart-legend" id="project-chart-customer-legend"> </div>
@@ -674,7 +693,10 @@
 //                 </div>
 
 //                 <div class="project-chart-card">
-//                     <div class="project-chart-header"> <i class="fa fa-bar-chart"></i> ${__("Product Wise Split")} </div>
+//                     <div class="project-chart-header">
+//                         <div> <i class="fa fa-bar-chart"></i> ${__("Portfolio Wise Split")} </div>
+//                         <div class="project-chart-subtitle"> ${__("Values include GST")} </div>
+//                     </div>
 //                     <div class="project-hbar-list" id="project-chart-product"> </div>
 //                 </div>
 //             </div>
@@ -710,6 +732,7 @@
 //     create_multiselect("priority", __("Select Priority"));
 //     create_multiselect("tag", __("Select Item Code"));
 //     create_multiselect("fiscal_year", __("Select Fiscal Year"));
+//     create_multiselect("custom_portfolio", __("Select Portfolio"));
 
 //     // ======================== FILTER OPTIONS ================================
 //     function load_filter_options() {
@@ -728,6 +751,7 @@
 //                 set_multiselect_options(controls.priority, options.priorities);
 //                 set_multiselect_options(controls.tag, options.tags);
 //                 set_multiselect_options(controls.fiscal_year, options.fiscal_years);
+//                 set_multiselect_options(controls.custom_portfolio, options.portfolios);
 //             }
 //         });
 //     }
@@ -792,7 +816,10 @@
 //                 get_control_values(controls.tag),
 
 //             fiscal_year:
-//                 get_control_values(controls.fiscal_year)
+//                 get_control_values(controls.fiscal_year),
+
+//             custom_portfolio:
+//                 get_control_values(controls.custom_portfolio)
 //         };
 //     }
 
@@ -839,7 +866,7 @@
 //         });
 //     }
 
-//     // ========================== LOAD CHARTS (NEW) ==============================
+//     // ========================== LOAD CHARTS ==============================
 //     function load_charts() {
 //         frappe.call({
 //             method: "erp_custom.erp_custom.page.project_dashboard.project_dashboard.get_project_chart_data",
@@ -852,12 +879,12 @@
 //                 }
 
 //                 render_customer_pie_chart(r.message.customer_wise || []);
-//                 render_product_horizontal_bars(r.message.product_wise || []);
+//                 render_portfolio_horizontal_bars(r.message.portfolio_wise || []);
 //             }
 //         });
 //     }
 
-//     // ==================== CHART HELPERS (NEW) ==============================
+//     // ==================== CHART HELPERS ==============================
 //     function chart_flt(value) {
 //         return parseFloat(value) || 0;
 //     }
@@ -887,6 +914,34 @@
 //         }
 
 //         return { labels, values };
+//     }
+
+//     // Formats a comma-separated qty list (e.g. from GROUP_CONCAT) into
+//     // clean, non-decimal-padded numbers: "1.000000000" -> "1".
+//     function format_qty_list(raw_value) {
+//         if (!raw_value || raw_value === "-") {
+//             return "-";
+//         }
+
+//         return raw_value
+//             .split(",")
+//             .map(item => {
+//                 const num = parseFloat(item.trim());
+//                 return isNaN(num) ? item.trim() : num.toString();
+//             })
+//             .join(", ");
+//     }
+
+//     // Renders a comma-separated raw value as a list of chip spans.
+//     function render_chip_list(raw_value, chip_class) {
+//         if (!raw_value || raw_value === "-") {
+//             return "-";
+//         }
+
+//         return raw_value
+//             .split(",")
+//             .map(item => `<span class="project-tag ${chip_class}"> ${frappe.utils.escape_html(item.trim())} </span>`)
+//             .join("");
 //     }
 
 //     // Customer Wise Split: pie chart on the left, a scrollable legend
@@ -956,10 +1011,10 @@
 //         });
 //     }
 
-//     // Product Wise Split: a horizontal bar per item code (label, filled
+//     // Portfolio Wise Split: a horizontal bar per portfolio (label, filled
 //     // track scaled to the highest value, and the value on the right),
-//     // in a scrollable list so it isn't capped to a handful of items.
-//     function render_product_horizontal_bars(rows) {
+//     // in a scrollable list so it isn't capped to a handful of portfolios.
+//     function render_portfolio_horizontal_bars(rows) {
 //         const container = $("#project-chart-product");
 //         container.empty();
 
@@ -969,20 +1024,20 @@
 //         }
 
 //         const sorted = [...rows].sort(
-//             (a, b) => chart_flt(b.item_value) - chart_flt(a.item_value)
+//             (a, b) => chart_flt(b.portfolio_value) - chart_flt(a.portfolio_value)
 //         );
 
-//         const max_value = chart_flt(sorted[0].item_value) || 1;
+//         const max_value = chart_flt(sorted[0].portfolio_value) || 1;
 
 //         sorted.forEach(row => {
-//             const value = chart_flt(row.item_value);
+//             const value = chart_flt(row.portfolio_value);
 //             const width_pct = Math.max((value / max_value) * 100, 2);
-//             const item_code = row.item_code || "-";
+//             const portfolio = row.portfolio || "-";
 
 //             container.append(`
 //                 <div class="project-hbar-row">
-//                     <div class="project-hbar-label" title="${frappe.utils.escape_html(item_code)}">
-//                         ${frappe.utils.escape_html(item_code)}
+//                     <div class="project-hbar-label" title="${frappe.utils.escape_html(portfolio)}">
+//                         ${frappe.utils.escape_html(portfolio)}
 //                     </div>
 //                     <div class="project-hbar-track">
 //                         <div class="project-hbar-fill" style="width: ${width_pct}%;"></div>
@@ -1015,6 +1070,9 @@
 //                                 <th> ${__("Project ID")} </th>
 //                                 <th> ${__("Customer")} </th>
 //                                 <th> ${__("Item Code")} </th>
+//                                 <th> ${__("Item Name")} </th>
+//                                 <th> ${__("Qty")} </th>
+//                                 <th> ${__("Portfolio")} </th>
 //                                 <th> ${__("Status")} </th>
 //                                 <th> ${__("Project Type")} </th>
 //                                 <th> ${__("Priority")} </th>
@@ -1089,15 +1147,6 @@
 //         const tbody = $("#project-table-body");
 
 //         projects.forEach(project => {
-//             let tags = project.tag || "-";
-
-//             if (tags !== "-") {
-//                 tags = tags
-//                     .split(",")
-//                     .map(item => `<span class="project-tag"> ${frappe.utils.escape_html(item.trim())} </span>`)
-//                     .join("");
-//             }
-
 //             const status_class = (project.status || "")
 //                     .toLowerCase()
 //                     .replace(/\s+/g, "-");
@@ -1106,7 +1155,10 @@
 //                 <tr>
 //                     <td> <a href="/app/project/${encodeURIComponent(project.name)}"> ${frappe.utils.escape_html(project.name || "")} </a> </td>
 //                     <td> ${frappe.utils.escape_html(project.customer || "-")} </td>
-//                     <td> ${tags} </td>
+//                     <td> ${render_chip_list(project.tag, "")} </td>
+//                     <td> ${render_chip_list(project.item_name, "project-tag-name")} </td>
+//                     <td> ${frappe.utils.escape_html(format_qty_list(project.qty))} </td>
+//                     <td> ${frappe.utils.escape_html(project.portfolio || "-")} </td>
 //                     <td> ${project.status ? `<span class="project-status project-status-${status_class}">
 //                                         ${frappe.utils.escape_html(project.status)} </span>` : "-" } </td>
 //                     <td> ${frappe.utils.escape_html(project.project_type || "-")} </td>
@@ -1201,7 +1253,6 @@
 //     load_filter_options();
 //     load_dashboard(true);
 // };
-
 
 
 
@@ -1752,6 +1803,147 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 display: none !important;
             }
 
+            /* ==================== STATUS SPLIT SECTION (Completed vs Open) ======================= */
+            /* NEW: full-width card below the table. Left = scrollable "Open / Not Completed" list,
+               Center = Completed vs Not Completed pie chart with % legend,
+               Right = scrollable "Completed" list. */
+            .project-status-split-section {
+                margin-top: 20px;
+            }
+
+            .project-status-split-body {
+                display: flex;
+                align-items: stretch;
+                gap: 20px;
+                padding: 22px;
+            }
+
+            .project-status-list {
+                flex: 1 1 0;
+                min-width: 0;
+                max-height: 360px;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding-right: 6px;
+            }
+
+            .project-status-list-title {
+                font-size: 12px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                margin-bottom: 4px;
+                padding-bottom: 8px;
+                border-bottom: 2px solid #e2e8f0;
+                position: sticky;
+                top: 0;
+                background: #ffffff;
+                z-index: 1;
+            }
+
+            .project-status-list-title.open-title {
+                color: #a16207;
+            }
+
+            .project-status-list-title.completed-title {
+                color: #1d4ed8;
+            }
+
+            .project-status-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 8px;
+                background: #f8fafc;
+                border: 1px solid #eef2f7;
+            }
+
+            .project-status-item-info {
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .project-status-item-name {
+                font-size: 13px;
+                font-weight: 600;
+                color: #1e293b;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .project-status-item-customer {
+                font-size: 11px;
+                color: #64748b;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .project-status-item-value {
+                flex: 0 0 auto;
+                font-size: 12px;
+                font-weight: 700;
+                color: #334155;
+                text-align: right;
+                white-space: nowrap;
+            }
+
+            .project-status-chart-wrap {
+                flex: 0 0 300px;
+                max-width: 300px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 14px;
+            }
+
+            .project-status-chart-legend {
+                display: flex;
+                gap: 18px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .project-status-legend-item {
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                font-size: 12px;
+                font-weight: 600;
+                color: #334155;
+            }
+
+            .project-status-legend-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                flex: 0 0 10px;
+            }
+
+            @media (max-width: 900px) {
+                .project-status-split-body {
+                    flex-direction: column;
+                }
+
+                .project-status-chart-wrap {
+                    max-width: 100%;
+                    flex: none;
+                    order: -1;
+                }
+
+                .project-status-list {
+                    max-height: 260px;
+                }
+            }
+
             /* =================== RESPONSIVE =========================== */
             @media (max-width: 1100px) {
                 .project-filter-grid {
@@ -1903,6 +2095,27 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
             <div class="project-dashboard-section">
                 <div class="project-section-header"> <i class="fa fa-bar-chart"></i> ${__("Projects")} </div>
                 <div id="project-dashboard-table"> </div>
+            </div>
+
+            <!-- STATUS SPLIT (NEW): full-width, Open list | Completed vs Not-Completed pie | Completed list -->
+            <div class="project-dashboard-section project-status-split-section">
+                <div class="project-section-header">
+                    <i class="fa fa-pie-chart"></i> ${__("Completed vs Open Projects")}
+                </div>
+                <div class="project-status-split-body" id="project-status-split-body">
+                    <div class="project-status-list" id="project-open-list">
+                        <div class="project-status-list-title open-title"> ${__("Open / Not Completed")} </div>
+                    </div>
+
+                    <div class="project-status-chart-wrap">
+                        <div id="project-status-chart"></div>
+                        <div class="project-status-chart-legend" id="project-status-chart-legend"></div>
+                    </div>
+
+                    <div class="project-status-list" id="project-completed-list">
+                        <div class="project-status-list-title completed-title"> ${__("Completed")} </div>
+                    </div>
+                </div>
             </div>
         </div>
     `).appendTo(page.body);
@@ -2080,6 +2293,10 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                 render_portfolio_horizontal_bars(r.message.portfolio_wise || []);
             }
         });
+
+        // NEW: Completed vs Open split card - reacts to the same filters
+        // (including Fiscal Year) as the rest of the dashboard.
+        load_project_status_split();
     }
 
     // ==================== CHART HELPERS ==============================
@@ -2241,6 +2458,116 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
                         <div class="project-hbar-fill" style="width: ${width_pct}%;"></div>
                     </div>
                     <div class="project-hbar-value"> ${format_currency(value)} </div>
+                </div>
+            `);
+        });
+    }
+
+    // ==================== STATUS SPLIT (NEW) ==============================
+    // Completed vs Open/Not Completed card below the table:
+    // left = scrollable Open list, center = pie chart with % legend,
+    // right = scrollable Completed list. Reuses the same current_filters
+    // as the rest of the dashboard (Fiscal Year included).
+    let project_status_chart = null;
+
+    function load_project_status_split() {
+        frappe.call({
+            method: "erp_custom.erp_custom.page.project_dashboard.project_dashboard.get_project_status_split_data",
+            args: {
+                filters: JSON.stringify(current_filters)
+            },
+            callback: function (r) {
+                if (!r.message) {
+                    return;
+                }
+
+                render_project_status_split(r.message);
+            }
+        });
+    }
+
+    function render_project_status_split(data) {
+        const completed_count = data.completed_count || 0;
+        const not_completed_count = data.not_completed_count || 0;
+        const total_count = completed_count + not_completed_count;
+
+        const completed_pct = total_count
+            ? ((completed_count / total_count) * 100).toFixed(1)
+            : "0.0";
+
+        const not_completed_pct = total_count
+            ? ((not_completed_count / total_count) * 100).toFixed(1)
+            : "0.0";
+
+        // [Not Completed, Completed] - order matches the chart dataset below.
+        const colors = ["#f59e0b", "#16a34a"];
+
+        const chart_el = $("#project-status-chart");
+        chart_el.empty();
+
+        if (!total_count) {
+            chart_el.html(`<div class="project-chart-empty"> ${__("No data found.")} </div>`);
+        } else {
+            project_status_chart = new frappe.Chart("#project-status-chart", {
+                data: {
+                    labels: [__("Not Completed"), __("Completed")],
+                    datasets: [{ values: [not_completed_count, completed_count] }]
+                },
+                type: "pie",
+                height: 220,
+                colors: colors,
+                showLegend: false
+            });
+        }
+
+        $("#project-status-chart-legend").html(`
+            <div class="project-status-legend-item">
+                <span class="project-status-legend-dot" style="background: ${colors[0]};"></span>
+                ${__("Not Completed")}: ${not_completed_pct}%
+            </div>
+            <div class="project-status-legend-item">
+                <span class="project-status-legend-dot" style="background: ${colors[1]};"></span>
+                ${__("Completed")}: ${completed_pct}%
+            </div>
+        `);
+
+        render_status_list(
+            "#project-open-list",
+            data.not_completed_list || [],
+            __("Open / Not Completed"),
+            "open-title"
+        );
+
+        render_status_list(
+            "#project-completed-list",
+            data.completed_list || [],
+            __("Completed"),
+            "completed-title"
+        );
+    }
+
+    function render_status_list(selector, rows, title, title_class) {
+        const container = $(selector);
+        container.empty();
+        container.append(`<div class="project-status-list-title ${title_class}"> ${title} </div>`);
+
+        if (!rows.length) {
+            container.append(`<div class="project-chart-empty"> ${__("No data found.")} </div>`);
+            return;
+        }
+
+        rows.forEach(row => {
+            container.append(`
+                <div class="project-status-item">
+                    <div class="project-status-item-info">
+                        <span class="project-status-item-name" title="${frappe.utils.escape_html(row.name || "")}">
+                            ${frappe.utils.escape_html(row.name || "")}
+                        </span>
+                        <span class="project-status-item-customer" title="${frappe.utils.escape_html(row.customer || "-")}">
+                            ${frappe.utils.escape_html(row.customer || "-")}
+                        </span>
+                    </div>
+                    <div class="project-status-item-value"> ${format_currency(chart_flt(row.purchase_value))} </div>
                 </div>
             `);
         });
@@ -2451,4 +2778,3 @@ frappe.pages["project-dashboard"].on_page_load = function (wrapper) {
     load_filter_options();
     load_dashboard(true);
 };
-

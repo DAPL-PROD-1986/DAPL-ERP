@@ -367,14 +367,15 @@ def download_purchase_excel(filters=None):
 		SELECT
 			po.name AS purchase_order_no,
 			po.supplier,
+			po.transaction_date, po.schedule_date,
 			po.project,
 			IFNULL(po.custom_order_type, 'Purchase Order') AS custom_order_type,
 
 			poi.item_code,
 			poi.item_group,
 			poi.description,
-
 			poi.custom_material_type,
+
 			poi.custom_length,
 			poi.custom_width,
 			poi.custom_thickness,
@@ -384,7 +385,7 @@ def download_purchase_excel(filters=None):
 
 			poi.qty,
 			poi.uom,
-			poi.rate, poi.custom_rate_per_kg,
+			poi.rate, poi.custom_rate_per_kg, poi.custom_rate_per_mtr,
 			poi.amount
 
 		FROM `tabPurchase Order` po
@@ -393,26 +394,22 @@ def download_purchase_excel(filters=None):
 		ORDER BY po.transaction_date DESC, po.name DESC, poi.idx ASC""", filters, as_dict=True)
 
 	# -------------------------------------- NO DATA --------------------------------------
-
 	if not data:
 		frappe.throw("No Purchase Order data found for the selected filters.")
 
 	# -------------------------------------- CREATE WORKBOOK -----------------------------------------
-
 	wb = Workbook()
 	ws = wb.active
 	ws.title = "Purchase Orders"
 
 	# ----------------------------- HEADER --------------------------------------------
-
-	headers = ["Purchase Order No", "Supplier", "Project", "Order Type",
+	headers = ["Purchase Order No", "Supplier", "Date", "Required By", "Project", "Order Type",
 		"Item Code", "Item Group", "Description", "Material Type",
 		"Length", "Width", "Thickness", "Outer Diameter", "Inner Diameter", "Density",
-		"Qty", "UOM", "Rate", "Rate (Per Kg / Per Mtr)", "Amount"]
+		"Qty", "UOM", "Rate", "Rate (Per Kg)", "Rate (Per Mtr)", "Amount"]
 	ws.append(headers)
 
 	# ----------------------------------------- HEADER STYLE ---------------------------------------------
-
 	header_fill = PatternFill(fill_type="solid", fgColor="22C55E")
 	header_font = Font(bold=True, color="FFFFFF", size=11)
 	header_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
@@ -440,12 +437,16 @@ def download_purchase_excel(filters=None):
 		# Repeat Purchase Order parent details for EVERY item row
 		po_no = row.get("purchase_order_no") or ""
 		supplier = row.get("supplier") or ""
+		transaction_date = row.get("transaction_date") or ""
+		schedule_date = row.get("schedule_date") or ""
 		project = row.get("project") or ""
 		order_type = row.get("custom_order_type") or "Purchase Order"
 
 		excel_row = [
 			po_no,
 			supplier,
+			transaction_date,
+    		schedule_date,
 			project,
 			order_type,
 
@@ -467,6 +468,7 @@ def download_purchase_excel(filters=None):
 			row.get("uom") or "",
 			row.get("rate"),
 			row.get("custom_rate_per_kg"),
+			row.get("custom_rate_per_mtr"),
 			row.get("amount")
 		]
 		ws.append(excel_row)
@@ -482,53 +484,56 @@ def download_purchase_excel(filters=None):
 	# Length
 	for row in range(2, ws.max_row + 1):
 		for col in [
-			9,   # Length
-			10,  # Width
-			11,  # Thickness
-			12,  # Outer Diameter
-			13,  # Inner Diameter
-			14   # Density
+			11,   # Length
+			12,  # Width
+			13,  # Thickness
+			14,  # Outer Diameter
+			15,  # Inner Diameter
+			16   # Density
 		]:
 
 			ws.cell(row=row, column=col).number_format = "0.000"
 
 		# Qty
-		ws.cell(row=row, column=15).number_format = "0.000"
+		ws.cell(row=row, column=17).number_format = "0.000"
 
 		# Rate
-		ws.cell(row=row, column=17).number_format = '#,##0.00'
+		ws.cell(row=row, column=19).number_format = '#,##0.00'
 
 		# Rate (Per Kg / Per Mtr)
-		ws.cell(row=row, column=18).number_format = '#,##0.00'
+		ws.cell(row=row, column=20).number_format = '#,##0.00'
+		ws.cell(row=row, column=21).number_format = '#,##0.00'
 
 		# Amount
-		ws.cell(row=row, column=19).number_format = '#,##0.00'
+		ws.cell(row=row, column=22).number_format = '#,##0.00'
 
 	# ----------------------------------- COLUMN WIDTHS -----------------------------------------
 	column_widths = {
-		"A": 20,
-		"B": 28,
-		"C": 25,
-		"D": 20,
+		"A": 20,  # Purchase Order No
+		"B": 28,  # Supplier
+		"C": 15,  # Date
+		"D": 15,  # Required By
+		"E": 25,  # Project
+		"F": 20,  # Order Type
 
-		"E": 20,
-		"F": 25,
-		"G": 45,
+		"G": 20,  # Item Code
+		"H": 25,  # Item Group
+		"I": 45,  # Description
+		"J": 22,  # Material Type
 
-		"H": 22,
+		"K": 14,  # Length
+		"L": 14,  # Width
+		"M": 14,  # Thickness
+		"N": 18,  # Outer Diameter
+		"O": 18,  # Inner Diameter
+		"P": 14,  # Density
 
-		"I": 14,
-		"J": 14,
-		"K": 14,
-		"L": 18,
-		"M": 18,
-		"N": 14,
-
-		"O": 12,
-		"P": 12,
-		"Q": 15,
-		"R": 18,
-		"S": 24
+		"Q": 12,  # Qty
+		"R": 12,  # UOM
+		"S": 15,  # Rate
+		"T": 15,  # Rate per Kg
+		"U": 15,  # Rate per Mtr
+		"V": 24   # Amount
 	}
 
 	for column, width in column_widths.items():
