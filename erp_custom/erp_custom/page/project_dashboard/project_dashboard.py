@@ -2523,9 +2523,7 @@ def get_project_filter_options():
         ORDER BY custom_financial_year DESC
     """, as_dict=False)
 
-    # ============================================================
-    # PORTFOLIO
-    # ============================================================
+    # ====================== PORTFOLIO ===========================
 
     portfolios = frappe.db.sql("""
         SELECT DISTINCT custom_portfolio
