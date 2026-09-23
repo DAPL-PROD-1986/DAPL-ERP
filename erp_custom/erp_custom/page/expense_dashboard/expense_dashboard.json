@@ -1,0 +1,19 @@
+{
+ "content": null,
+ "creation": "2026-09-22 12:37:42.379392",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2026-09-22 12:56:29.912459",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "expense-dashboard",
+ "owner": "Administrator",
+ "page_name": "expense-dashboard",
+ "roles": [],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Expense Dashboard"
+}

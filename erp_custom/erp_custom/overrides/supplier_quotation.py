@@ -135,10 +135,8 @@ class CustomSupplierQuotation(SupplierQuotation):
         # -------------------------
         if self.items and self.items[0].request_for_quotation:
 
-            rfq = frappe.get_doc(
-                "Request for Quotation",
-                self.items[0].request_for_quotation
-            )
+            rfq = frappe.get_doc("Request for Quotation",
+                self.items[0].request_for_quotation)
 
             self.custom_bom_no = rfq.custom_bom_no
             self.custom_cutting_plan_no = rfq.custom_cutting_plan_no
@@ -159,71 +157,37 @@ class CustomSupplierQuotation(SupplierQuotation):
 
         for sq_item in self.items:
 
-            mr_item_name = sq_item.get(
-                "material_request_item"
-            )
+            mr_item_name = sq_item.get("material_request_item")
 
             if not mr_item_name:
                 continue
 
-            if not frappe.db.exists(
-                "Material Request Item",
-                mr_item_name
-            ):
+            if not frappe.db.exists("Material Request Item", mr_item_name):
                 continue
 
-            total_weight = frappe.db.get_value(
-                "Material Request Item",
-                mr_item_name,
-                "custom_total_weight"
-            )
-
-            sq_item.custom_total_weights = (
-                total_weight or 0
-            )
+            total_weight = frappe.db.get_value("Material Request Item", mr_item_name, "custom_total_weight")
+            sq_item.custom_total_weights = (total_weight or 0)
 
 
-# =====================================================
-# OPTIONAL DIRECT METHOD
-# =====================================================
+# ====================== OPTIONAL DIRECT METHOD ======================
 @frappe.whitelist()
-def map_material_request_item_to_supplier_quotation_item(
-    source_name,
-    target_name=None
-):
+def map_material_request_item_to_supplier_quotation_item(source_name, target_name=None):
 
     if not source_name:
-        frappe.throw(
-            "Material Request Item name is required."
-        )
+        frappe.throw("Material Request Item name is required.")
 
-    source = frappe.get_doc(
-        "Material Request Item",
-        source_name
-    )
+    source = frappe.get_doc("Material Request Item", source_name)
 
     values = {
         "material_request_item": source.name,
-        "custom_total_weights":
-            source.custom_total_weight or 0,
+        "custom_total_weights": source.custom_total_weight or 0,
     }
 
     if target_name:
 
-        target = frappe.get_doc(
-            "Supplier Quotation Item",
-            target_name
-        )
-
-        target.db_set(
-            "material_request_item",
-            source.name
-        )
-
-        target.db_set(
-            "custom_total_weights",
-            source.custom_total_weight or 0
-        )
+        target = frappe.get_doc("Supplier Quotation Item", target_name)
+        target.db_set("material_request_item", source.name)
+        target.db_set("custom_total_weights", source.custom_total_weight or 0)
 
         return {
             "success": True,
@@ -236,38 +200,19 @@ def map_material_request_item_to_supplier_quotation_item(
     return values
 
 
-# =====================================================
-# DOCUMENT EVENT
-# =====================================================
-def sync_material_request_item_weights(
-    doc,
-    method=None
-):
+# ===================== DOCUMENT EVENT =======================
+def sync_material_request_item_weights(doc, method=None):
 
     if not doc.get("items"):
         return
 
     for sq_item in doc.items:
-
-        mr_item_name = sq_item.get(
-            "material_request_item"
-        )
-
+        mr_item_name = sq_item.get("material_request_item")
         if not mr_item_name:
             continue
 
-        if not frappe.db.exists(
-            "Material Request Item",
-            mr_item_name
-        ):
+        if not frappe.db.exists("Material Request Item", mr_item_name):
             continue
 
-        total_weight = frappe.db.get_value(
-            "Material Request Item",
-            mr_item_name,
-            "custom_total_weight"
-        )
-
-        sq_item.custom_total_weights = (
-            total_weight or 0
-        )
+        total_weight = frappe.db.get_value("Material Request Item", mr_item_name, "custom_total_weight")
+        sq_item.custom_total_weights = (total_weight or 0)
