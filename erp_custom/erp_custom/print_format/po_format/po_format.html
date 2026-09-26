@@ -47,7 +47,6 @@
     {{ frappe.format(doc.schedule_date, {'fieldtype':'Date'}) or '' }}<br>
     
 	{% if items and items[0].supplier_quotation %}
-    
     {% set sq = frappe.get_doc("Supplier Quotation", doc.items[i].supplier_quotation) %}
 
     <div>
@@ -114,13 +113,13 @@
 <table>
 <thead>
 <tr>
-    <th style="width:4%">Sl</th>
+    <th style="width:3%">Sl</th>
     <th style="width:25%">Item Name</th>
     <!-- <th style="width:10%">HSN</th> -->
-    <th style="width:28%">Description</th>
+    <th style="width:27%">Description</th>
     <!-- <th style="width:13%">Measurement</th> -->
     <th style="width:7%">QTY</th>
-    <th style="width:7%">UOM</th>
+    <th style="width:9%">UOM</th>
     <th style="width:15%">Rate</th>
     <th style="width:15%">Amount</th>
 </tr>

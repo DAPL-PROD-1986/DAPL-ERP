@@ -3135,7 +3135,7 @@
     "icon": null,
     "is_query_report": 0,
     "label": "Other",
-    "link_count": 2,
+    "link_count": 3,
     "link_to": null,
     "link_type": "DocType",
     "onboard": 0,
@@ -3172,9 +3172,24 @@
     "only_for": null,
     "report_ref_doctype": null,
     "type": "Link"
+   },
+   {
+    "dependencies": null,
+    "description": null,
+    "hidden": 0,
+    "icon": null,
+    "is_query_report": 0,
+    "label": "Material Reference Library",
+    "link_count": 0,
+    "link_to": "Material Reference Library",
+    "link_type": "DocType",
+    "onboard": 0,
+    "only_for": null,
+    "report_ref_doctype": null,
+    "type": "Link"
    }
   ],
-  "modified": "2026-08-24 14:48:28.500602",
+  "modified": "2026-09-24 10:51:07.404990",
   "module": "Stock",
   "name": "Stock",
   "number_cards": [
