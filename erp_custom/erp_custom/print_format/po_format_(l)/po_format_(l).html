@@ -266,16 +266,21 @@ td:nth-child(3), th:nth-child(3) {
                         <td class="center"> {{ item.qty }} </td>
                         <td class="center">
                             {% if item.item_group in ["Pipes", "Tubes"] %}
-                                {% set length = frappe.utils.flt(item.custom_length or 0) %}
-                                {% set qty = frappe.utils.flt(item.qty or 0) %}
-                                {% set total_mtr = (length / 1000) * qty %}
+                                {% set mtr_per_pc = (item.custom_length or 0) / 1000 %}
+                                {% set total_mtr = mtr_per_pc * (item.qty or 0) %}
 
                                 {% if total_mtr > 0 %}
-                                    {{ frappe.utils.flt(total_mtr, 2) }} {{ item.uom }}
+                                    {{ frappe.utils.flt(total_mtr, 2) }}
                                 {% endif %}
 
+                                {{ item.uom }}
+
                             {% elif frappe.utils.flt(item.custom_total_weights or 0) > 0 %}
-                                {{ frappe.utils.flt(item.custom_total_weights, 2) }} {{ item.uom }}
+                                {{ frappe.utils.flt(item.custom_total_weights, 2) }}
+                                {{ item.uom }}
+
+                            {% else %}
+                                {{ item.uom }}
                             {% endif %}
                         </td>
                         <!-- <td class="center">
