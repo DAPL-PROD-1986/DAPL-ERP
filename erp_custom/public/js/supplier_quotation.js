@@ -650,11 +650,9 @@ frappe.ui.form.on("Supplier Quotation", {
 frappe.ui.form.on("Supplier Quotation Item", {
     custom_shape(frm, cdt, cdn) {
         toggle_manual_fields(frm, cdt, cdn);
-
         const row = locals[cdt][cdn];
 
         if (row.custom_shape === "N/A") return;
-
         calculate_kgs(frm, cdt, cdn);
         calculate_mtr(frm, cdt, cdn);
         calculate_pricing(frm, cdt, cdn);
@@ -757,12 +755,6 @@ frappe.ui.form.on("Supplier Quotation Item", {
         calculate_pricing(frm, cdt, cdn);
     },
 
-    custom_wall_thickness(frm, cdt, cdn) {
-        calculate_kgs(frm, cdt, cdn);
-        calculate_mtr(frm, cdt, cdn);
-        calculate_pricing(frm, cdt, cdn);
-    },
-
     custom_density(frm, cdt, cdn) {
         calculate_kgs(frm, cdt, cdn);
         calculate_mtr(frm, cdt, cdn);
@@ -771,7 +763,6 @@ frappe.ui.form.on("Supplier Quotation Item", {
 
     custom_kilogramskgs(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
-
         if (row.custom_shape === "N/A") {
             calculate_pricing(frm, cdt, cdn);
             calculate_scrap_and_transport(frm, cdt, cdn);
@@ -788,7 +779,6 @@ frappe.ui.form.on("Supplier Quotation Item", {
 
     custom_mtr_per_unit(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
-
         if (row.custom_shape === "N/A") {
             calculate_pricing(frm, cdt, cdn);
         }
@@ -796,7 +786,6 @@ frappe.ui.form.on("Supplier Quotation Item", {
 
     custom_total_mtr(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
-
         if (row.custom_shape === "N/A") {
             calculate_pricing(frm, cdt, cdn);
         }
@@ -818,7 +807,6 @@ function toggle_manual_fields(frm, cdt, cdn) {
     const grid_row = frm.fields_dict.items?.grid?.get_row(cdn);
 
     if (!grid_row) return;
-
     const is_manual = row.custom_shape === "N/A";
 
     grid_row.toggle_editable("custom_kilogramskgs", is_manual);
@@ -923,7 +911,6 @@ function calculate_mtr(frm, cdt, cdn) {
 
     /*
      * All normal items: If Length is available, Meter is calculated.
-     *
      * Example: 2000 mm = 2.0000 Mtr / Unit  |  Qty 5 = 10.0000 Total Mtr
      */
     if (length > 0) {

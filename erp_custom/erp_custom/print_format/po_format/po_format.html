@@ -204,7 +204,8 @@
 </td> -->
 
 <!-- <td class="center">{{ item.custom_total_weights }}</td> -->
- <td>
+ <td class="center">{{ item.description }}</td>
+ <!-- <td>
     {% if item.description %}
         <span>{{ item.description }}</span>
     {% endif %}
@@ -215,22 +216,30 @@
             {% set mtr_per_pc = (item.custom_length or 0) / 1000 %}
             {% set total_mtr = mtr_per_pc * (item.qty or 0) %}
 
-            <span>
-                <b>Total Meter:</b>
-                {{ frappe.utils.flt(total_mtr, 2) }} Mtr
-            </span>
+            <span> <b>Total Meter:</b> {{ frappe.utils.flt(total_mtr, 2) }} Mtr </span>
 
         {% else %}
-            <span>
-                <b>Total Weight:</b>
-                {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg
-            </span>
+            <span> <b>Total Weight:</b> {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg </span>
         {% endif %}
 
     {% endif %}
-</td>
+</td> -->
 <td class="center"> {{ item.qty }} </td>
-<td class="center"> {{ item.uom }} </td>
+<td class="center">
+                            {% if item.item_group in ["Pipes", "Tubes"] %}
+                                {% set length = frappe.utils.flt(item.custom_length or 0) %}
+                                {% set qty = frappe.utils.flt(item.qty or 0) %}
+                                {% set total_mtr = (length / 1000) * qty %}
+
+                                {% if total_mtr > 0 %}
+                                    {{ frappe.utils.flt(total_mtr, 2) }} {{ item.uom }}
+                                {% endif %}
+
+                            {% elif frappe.utils.flt(item.custom_total_weights or 0) > 0 %}
+                                {{ frappe.utils.flt(item.custom_total_weights, 2) }} {{ item.uom }}
+                            {% endif %}
+</td>
+<!-- <td class="center"> {{ item.uom }} </td> -->
 <td class="center"> {{ frappe.format_value((item.rate), {"fieldtype": "Currency"}) }} </td>
 
 <!-- {# ✅ Rate Logic #}

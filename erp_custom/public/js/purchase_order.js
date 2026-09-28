@@ -541,56 +541,17 @@ frappe.ui.form.on("Purchase Order Item", {
 
         if (!row.item_code) return;
 
-        frappe.db.get_value(
-            "Item",
-            row.item_code,
-            [
-                "item_group",
-                "default_bom",
-                "custom_material_type",
-                "custom_density",
-                "custom_thickness"
-            ]
-        ).then(r => {
+        frappe.db.get_value("Item", row.item_code,
+            ["item_group", "default_bom", "custom_material_type", "custom_density", "custom_thickness"]).then(r => {
             if (!r || !r.message) return;
 
             const item = r.message;
 
-            frappe.model.set_value(
-                cdt,
-                cdn,
-                "custom_item_group",
-                item.item_group || ""
-            );
-
-            frappe.model.set_value(
-                cdt,
-                cdn,
-                "bom_no",
-                item.default_bom || ""
-            );
-
-            frappe.model.set_value(
-                cdt,
-                cdn,
-                "custom_material_type",
-                item.custom_material_type || ""
-            );
-
-            frappe.model.set_value(
-                cdt,
-                cdn,
-                "custom_density",
-                item.custom_density || 0
-            );
-
-            frappe.model.set_value(
-                cdt,
-                cdn,
-                "custom_thickness",
-                item.custom_thickness || 0
-            );
-
+            frappe.model.set_value(cdt, cdn, "custom_item_group", item.item_group || "");
+            frappe.model.set_value(cdt, cdn, "bom_no", item.default_bom || "");
+            frappe.model.set_value(cdt, cdn, "custom_material_type", item.custom_material_type || "");
+            frappe.model.set_value(cdt, cdn, "custom_density", item.custom_density || 0);
+            frappe.model.set_value(cdt, cdn, "custom_thickness", item.custom_thickness || 0);
             toggle_manual_fields(frm, cdt, cdn);
 
             if (row.custom_shape !== "N/A") {
@@ -764,10 +725,7 @@ function calculate_meter(frm, cdt, cdn) {
         total_mtr = mtr_per_unit * qty;
     }
 
-    if (
-        flt(row.custom_mtr_per_unit) !==
-        flt(mtr_per_unit, 4)
-    ) {
+    if (flt(row.custom_mtr_per_unit) !== flt(mtr_per_unit, 4)) {
         frappe.model.set_value(cdt, cdn, "custom_mtr_per_unit", flt(mtr_per_unit, 4));
     }
 
@@ -836,6 +794,10 @@ function calculate_total(frm) {
         frm.set_value("total", flt(total, 2));
     }
 }
+
+
+
+
 
 
 
@@ -918,6 +880,7 @@ function calculate_total(frm) {
 //         });
 //     },
 // });
+
 
 
 // // ======================== PURCHASE ORDER ITEM (CHILD) ====================================

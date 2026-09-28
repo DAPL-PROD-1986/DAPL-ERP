@@ -224,12 +224,12 @@ td:nth-child(3), th:nth-child(3) {
         <table class="item-table">
             <thead>
                 <tr>
-                    <th style="width:4%">Sl</th>
-                    <th style="width:20%">Item Name</th>
-                    <th style="width:10%">HSN</th>
-                    <th style="width:23%">Description</th>
-                    <th style="width:8%">Qty</th>
-                    <th style="width:7%">UOM</th>
+                    <th style="width:3%">Sl</th>
+                    <th style="width:25%">Item Name</th>
+                    <!-- <th style="width:10%">HSN</th> -->
+                    <th style="width:28%">Description</th>
+                    <th style="width:7%">Qty</th>
+                    <th style="width:9%">UOM</th>
                     <th style="width:15%">Rate</th>
                     <th style="width:13%">Amount</th>
                 </tr>
@@ -243,19 +243,51 @@ td:nth-child(3), th:nth-child(3) {
                     {% for item in doc.items %}
                     <tr>
                         <td class="center">{{ loop.index }}</td>
-                        <td>
-                            <b>{{ item.item_name }}</b> <br>
+                        <td> <b>{{ item.item_name }}</b> <br>
+
                             {% if item.custom_material_type %}
                                 <span>{{ item.custom_material_type }}</span><br>
                             {% endif %}
+
+                            <!-- {% if item.description %}
+                                <span>{{ item.description }}</span><br>
+                            {% endif %} -->
+
                             {% if item.custom_item_brand %}
-                                <span><b>Brand:</b> {{ item.custom_item_brand }}</span>
+                                <span><b>Brand:</b> {{ item.custom_item_brand }}</span><br>
+                            {% endif %}
+
+                            {% if item.gst_hsn_code or item.hsn_code %}
+                                <span><b>HSN:</b> {{ item.gst_hsn_code or item.hsn_code }}</span>
                             {% endif %}
                         </td>
-                        <td class="center"> {{ item.gst_hsn_code or item.hsn_code or "" }} </td>
+                        <!-- <td class="center"> {{ item.gst_hsn_code or item.hsn_code or "" }} </td> -->
                         <td> {{ item.description or "" }} </td>
                         <td class="center"> {{ item.qty }} </td>
-                        <td class="center"> {{ item.uom }} </td>
+                        <td class="center">
+                            {% if item.item_group in ["Pipes", "Tubes"] %}
+                                {% set length = frappe.utils.flt(item.custom_length or 0) %}
+                                {% set qty = frappe.utils.flt(item.qty or 0) %}
+                                {% set total_mtr = (length / 1000) * qty %}
+
+                                {% if total_mtr > 0 %}
+                                    {{ frappe.utils.flt(total_mtr, 2) }} {{ item.uom }}
+                                {% endif %}
+
+                            {% elif frappe.utils.flt(item.custom_total_weights or 0) > 0 %}
+                                {{ frappe.utils.flt(item.custom_total_weights, 2) }} {{ item.uom }}
+                            {% endif %}
+                        </td>
+                        <!-- <td class="center">
+                            {% if item.custom_rate_basis == "Kg" %}
+                                {{ item.custom_total_weights }}
+                            {% elif item.custom_rate_basis == "Mtr" %}
+                                {{ item.custom_total_mtr }}
+                            {% else %}
+                                {{ item.uom }}
+                            {% endif %}
+                        </td> -->
+                        <!-- <td class="center"> {{ item.uom }} </td> -->
 
                         <!-- {# Rate Conditional calculations #}
                         {% if item.item_group == "Plates" or item.item_group == "Pipes" %}
